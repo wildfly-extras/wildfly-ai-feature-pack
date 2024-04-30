@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+~ Copyright The WildFly Authors
+~ SPDX-License-Identifier: Apache-2.0
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-ai</artifactId>
+        <!--
+        Maintain separation between the artifact id and the version to help prevent
+        merge conflicts between commits changing the GA and those changing the V.
+        -->
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>wildfly-ai-subsystem</artifactId>
+    <name>WildFly: AI Subsystem</name>
+    <dependencies>
+        <dependency>
+            <groupId>org.wildfly.core</groupId>
+            <artifactId>wildfly-subsystem</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-core</artifactId>
+        </dependency>
+        <!-- CDI -->
+        <dependency>
+            <groupId>io.smallrye.common</groupId>
+            <artifactId>smallrye-common-annotation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wildfly-weld-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wildfly-ai-injection</artifactId>
+        </dependency>
+        <!-- CDI -->
+
+        <!-- required for embeddings -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings-all-minilm-l6-v2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings-all-minilm-l6-v2-q</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings-bge-small-en</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings-bge-small-en-q</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings-bge-small-en-v15</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings-bge-small-en-v15-q</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings-e5-small-v2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings-e5-small-v2-q</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.djl</groupId>
+            <artifactId>api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.djl.huggingface</groupId>
+            <artifactId>tokenizers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.onnxruntime</groupId>
+            <artifactId>onnxruntime</artifactId>
+        </dependency>
+        <!-- required for embeddings -->
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-ollama</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-annotations</artifactId>
+            <!-- This is a compile-time dependency of this project, but is not needed at compile or runtime by other
+            projects that depend on this project.-->
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-processor</artifactId>
+            <!-- This is a compile-time dependency of this project, but is not needed at compile or runtime by other
+            projects that depend on this project.-->
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wildfly.core</groupId>
+            <artifactId>wildfly-subsystem-test</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+        </dependency>
+        <!--        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp-sse</artifactId>
+            <version>${version.com.squareup.okhttp}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-stdlib-jdk8</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>-->
+        <dependency>
+            <groupId>com.squareup.okio</groupId>
+            <artifactId>okio</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okio</groupId>
+            <artifactId>okio-jvm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.knuddels</groupId>
+            <artifactId>jtokkit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.ai4j</groupId>
+            <artifactId>openai4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-gson</artifactId>
+        </dependency>
+    </dependencies>
+</project>

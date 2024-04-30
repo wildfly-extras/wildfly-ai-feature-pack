@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright The WildFly Authors
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+<module name="dev.langchain4j" xmlns="urn:jboss:module:1.9">
+
+    <properties>
+        <property name="jboss.api" value="private"/>
+    </properties>
+
+    <resources>
+        <artifact name="${dev.langchain4j:langchain4j}"/>
+        <artifact name="${dev.langchain4j:langchain4j-core}"/>
+        <artifact name="${dev.langchain4j:langchain4j-embeddings}"/>
+        <artifact name="${com.microsoft.onnxruntime:onnxruntime}"/>
+        <artifact name="${ai.djl:api}"/>
+        <artifact name="${ai.djl.huggingface:tokenizers}"/>
+        <artifact name="${net.java.dev.jna:jna}"/>
+    </resources>
+
+    <dependencies>
+        <module name="com.google.code.gson"/>
+        <module name="org.slf4j"/>
+        <module name="java.logging"/>
+        <module name="dev.langchain4j.openai" export="true" services="import"/>
+        <module name="com.squareup.retrofit2" export="true" services="import"/>
+        <module name="dev.langchain4j.embeddings.all-minilm-l6-v2" optional="true"/>
+    </dependencies>
+</module> 

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<!--
+  ~ Copyright The WildFly Authors
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+
+<!DOCTYPE suppressions PUBLIC
+        "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+        "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+    <!-- Ignore internationalized text files -->
+    <suppress files="LocalDescriptions_.+\.properties|.*\.i18n_.+\.properties" checks=".*"/>
+</suppressions>

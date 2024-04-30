@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright The WildFly Authors
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+<module xmlns="urn:jboss:module:1.9" name="com.squareup.retrofit2">
+
+    <properties>
+        <property name="jboss.api" value="private"/>
+    </properties>
+
+    <resources>
+        <artifact name="${com.squareup.retrofit2:converter-gson}"/>
+        <artifact name="${com.squareup.retrofit2:retrofit}"/>
+        <artifact name="${org.jetbrains.kotlin:kotlin-stdlib}"/>
+        <artifact name="${org.jetbrains.kotlin:kotlin-stdlib-common}"/>
+        <artifact name="${com.squareup.okhttp3:okhttp}"/>
+        <artifact name="${com.squareup.okio:okio}"/>
+        <artifact name="${com.squareup.okio:okio-jvm}"/>
+        <artifact name="${com.knuddels:jtokkit}"/>
+    </resources>
+
+    <dependencies>
+        <module name="com.google.code.gson"/>
+        <module name="org.slf4j"/>
+        <module name="java.logging"/>
+    </dependencies>
+</module>
+
