@@ -26,13 +26,7 @@
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-galleon-pack</artifactId>
             <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.wildfly</groupId>
-            <artifactId>wildfly-standard-expansion-bom</artifactId>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
+        </dependency>        
         <dependency>
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-ai-injection</artifactId>
@@ -49,6 +43,10 @@
         <dependency>
             <groupId>ai.djl.huggingface</groupId>
             <artifactId>tokenizers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
         <dependency>
             <groupId>com.knuddels</groupId>
@@ -68,6 +66,10 @@
         <dependency>
             <groupId>com.squareup.okio</groupId>
             <artifactId>okio</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okio</groupId>
+            <artifactId>okio-jvm</artifactId>
         </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>

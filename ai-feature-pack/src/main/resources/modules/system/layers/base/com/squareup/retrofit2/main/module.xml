@@ -11,6 +11,7 @@
     </properties>
 
     <resources>
+        <artifact name="${com.knuddels:jtokkit}"/>
         <artifact name="${com.squareup.retrofit2:converter-gson}"/>
         <artifact name="${com.squareup.retrofit2:retrofit}"/>
         <artifact name="${org.jetbrains.kotlin:kotlin-stdlib}"/>
@@ -18,7 +19,6 @@
         <artifact name="${com.squareup.okhttp3:okhttp}"/>
         <artifact name="${com.squareup.okio:okio}"/>
         <artifact name="${com.squareup.okio:okio-jvm}"/>
-        <artifact name="${com.knuddels:jtokkit}"/>
     </resources>
 
     <dependencies>
