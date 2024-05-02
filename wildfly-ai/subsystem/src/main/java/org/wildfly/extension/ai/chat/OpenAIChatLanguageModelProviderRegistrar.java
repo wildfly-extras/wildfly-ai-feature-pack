@@ -43,12 +43,15 @@ public class OpenAIChatLanguageModelProviderRegistrar implements ChildResourceDe
             .setAllowExpression(true)
             .setDefaultValue(new ModelNode(1000))
             .build();
+    public static final SimpleAttributeDefinition MODEL_NAME = new SimpleAttributeDefinitionBuilder("model-name", ModelType.STRING, false)
+            .setAllowExpression(true)
+            .build();
     public static final SimpleAttributeDefinition TEMPERATURE = new SimpleAttributeDefinitionBuilder("temperature", ModelType.DOUBLE, true)
             .setAllowExpression(true)
             .setDefaultValue(ModelNode.ZERO)
             .build();
 
-    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(API_KEY, BASE_URL, CONNECT_TIMEOUT, MAX_TOKEN, TEMPERATURE);
+    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(API_KEY, BASE_URL, CONNECT_TIMEOUT, MAX_TOKEN, MODEL_NAME, TEMPERATURE);
 
     private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;

@@ -106,6 +106,13 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="model-name" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of the model to use
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="temperature" type="xs:double" use="optional">
             <xs:annotation>
                 <xs:documentation>
