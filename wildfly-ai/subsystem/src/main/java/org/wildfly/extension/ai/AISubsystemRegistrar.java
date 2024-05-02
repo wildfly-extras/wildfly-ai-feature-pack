@@ -17,7 +17,7 @@ import org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.deployment.AIDependencyProcessor;
 import org.wildfly.extension.ai.deployment.AIDeploymentProcessor;
 import org.wildfly.extension.ai.embeddings.EmbeddingModelProviderRegistrar;
-import org.wildfly.extension.ai.embeddings.InMemoryEmbeddingStoreProviderRegistrar;
+import org.wildfly.extension.ai.stores.InMemoryEmbeddingStoreProviderRegistrar;
 import org.wildfly.extension.ai.embeddings.OllamaEmbeddingModelProviderRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrationContext;

@@ -2,10 +2,10 @@
  * Copyright The WildFly Authors
  * SPDX-License-Identifier: Apache-2.0
  */
-package org.wildfly.extension.ai.embeddings;
+package org.wildfly.extension.ai.stores;
 
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAPABILITY;
-import static org.wildfly.extension.ai.embeddings.InMemoryEmbeddingStoreProviderRegistrar.STORE_FILE;
+import static org.wildfly.extension.ai.stores.InMemoryEmbeddingStoreProviderRegistrar.STORE_FILE;
 
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;

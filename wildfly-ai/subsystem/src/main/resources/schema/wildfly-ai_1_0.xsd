@@ -27,6 +27,78 @@
             </xs:documentation>
         </xs:annotation>
         <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="chat-language-models" type="chatLanguageModelsType">
+                <xs:annotation>
+                    <xs:documentation>
+                        The chat language models.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="embedding-models" type="embeddingModelsType">
+                <xs:annotation>
+                    <xs:documentation>
+                        The chat embedding models.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="embedding-stores" type="embeddingStoresType">
+                <xs:annotation>
+                    <xs:documentation>
+                        The chat embedding models.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="embeddingModelsType">
+        <xs:annotation>
+            <xs:documentation>
+                The embedding models.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="embedding-model" type="embeddingModelType">
+                <xs:annotation>
+                    <xs:documentation>
+                        An embedding-model provider definition element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ollama-embedding-model" type="ollamaEmbeddingModelType">
+                <xs:annotation>
+                    <xs:documentation>
+                        An embedding-model provider definition element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="embeddingStoresType">
+        <xs:annotation>
+            <xs:documentation>
+                The embedding stores.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="in-memory-embedding-store" type="inMemoryEmbeddingStoreType">
+                <xs:annotation>
+                    <xs:documentation>
+                        An in-memory embedding-store provider definition element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="chatLanguageModelsType">
+        <xs:annotation>
+            <xs:documentation>
+                The chat language models.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element name="openai-chat-model" type="openaiChatModelType">
                 <xs:annotation>
                     <xs:documentation>
@@ -38,27 +110,6 @@
                 <xs:annotation>
                     <xs:documentation>
                         A chat model provider element.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="embedding-model" type="embeddingModelType">
-                <xs:annotation>
-                    <xs:documentation>
-                        An embedding-model provider definition element.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="ollama-embedding-model" type="embeddingModelType">
-                <xs:annotation>
-                    <xs:documentation>
-                        An embedding-model provider definition element.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="in-memory-embedding-store" type="inMemoryEmbeddingStoreType">
-                <xs:annotation>
-                    <xs:documentation>
-                        An in-memory embedding-store provider definition element.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
