@@ -19,6 +19,7 @@ import org.wildfly.extension.ai.deployment.AIDeploymentProcessor;
 import org.wildfly.extension.ai.embeddings.EmbeddingModelProviderRegistrar;
 import org.wildfly.extension.ai.stores.InMemoryEmbeddingStoreProviderRegistrar;
 import org.wildfly.extension.ai.embeddings.OllamaEmbeddingModelProviderRegistrar;
+import org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrationContext;
 import org.wildfly.subsystem.resource.ResourceDescriptor;
@@ -50,6 +51,7 @@ class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
         new EmbeddingModelProviderRegistrar(RESOLVER).register(registration, context);
         new OllamaEmbeddingModelProviderRegistrar(RESOLVER).register(registration, context);
         new InMemoryEmbeddingStoreProviderRegistrar(RESOLVER).register(registration, context);
+        new WeaviateEmbeddingStoreProviderRegistrar(RESOLVER).register(registration, context);
         return registration;
     }
 }

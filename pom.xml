@@ -11,9 +11,9 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>AI integration for WildFly Galleon Pack Parent</name>
+    <name>Parent AI integration for WildFly</name>
   
-    <description>AI integration for WildFly Galleon Pack Parent</description>
+    <description>Parent of the galleon feature pack for AI integration in WildFly</description>
 
     <licenses>
         <license>
@@ -34,14 +34,16 @@
         <version.ai.djl>0.26.0</version.ai.djl>
         <version.com.knuddels.jtokkit>1.0.0</version.com.knuddels.jtokkit>
         <version.com.microsoft.onnxruntime>1.17.1</version.com.microsoft.onnxruntime>
+        <version.com.squareup.okio-jvm>3.4.0</version.com.squareup.okio-jvm>
         <version.com.squareup.retrofit2>2.9.0</version.com.squareup.retrofit2>
         <version.commons-compress>1.26.1</version.commons-compress>
         <version.dev.ai4j.openai4j>0.17.0</version.dev.ai4j.openai4j>
         <version.dev.langchain4j>0.30.0</version.dev.langchain4j>
+        <version.io.weaviate.client>4.6.0</version.io.weaviate.client>
         <version.net.java.dev.jna>5.13.0</version.net.java.dev.jna>
         <version.org.jetbrains.kotlin>1.9.10</version.org.jetbrains.kotlin>
-        <version.com.squareup.okio-jvm>3.4.0</version.com.squareup.okio-jvm>
     </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -108,6 +110,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
                 <groupId>com.knuddels</groupId>
                 <artifactId>jtokkit</artifactId>
@@ -131,6 +134,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
                 <groupId>com.squareup.okio</groupId>
                 <artifactId>okio</artifactId>
@@ -142,6 +146,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
                 <groupId>com.squareup.retrofit2</groupId>
                 <artifactId>converter-gson</artifactId>
@@ -153,6 +158,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
                 <groupId>com.squareup.retrofit2</groupId>
                 <artifactId>retrofit</artifactId>
@@ -164,6 +170,18 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
+            <dependency>
+                <groupId>dev.ai4j</groupId>
+                <artifactId>openai4j</artifactId>
+                <version>${version.dev.ai4j.openai4j}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency> 
 
             <dependency>
                 <groupId>dev.langchain4j</groupId>
@@ -264,16 +282,29 @@
             </dependency>
 
             <dependency>
-                <groupId>dev.ai4j</groupId>
-                <artifactId>openai4j</artifactId>
-                <version>${version.dev.ai4j.openai4j}</version>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-weaviate</artifactId>
+                <version>${version.dev.langchain4j}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
                         <artifactId>*</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency> 
+            </dependency>
+
+            <dependency>
+                <groupId>io.weaviate</groupId>
+                <artifactId>client</artifactId>
+                <version>${version.io.weaviate.client}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna</artifactId>

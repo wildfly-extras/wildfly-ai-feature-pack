@@ -1,0 +1,52 @@
+/*
+ * Copyright The WildFly Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+package org.wildfly.extension.ai.stores;
+
+import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAPABILITY;
+import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.OBJECT_CLASS;
+import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.SSL_ENABLED;
+import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.STORE_BINDING;
+
+import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.store.embedding.EmbeddingStore;
+import dev.langchain4j.store.embedding.weaviate.WeaviateEmbeddingStore;
+import java.util.function.Supplier;
+import org.jboss.as.controller.OperationContext;
+import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.network.OutboundSocketBinding;
+import org.jboss.dmr.ModelNode;
+import org.wildfly.subsystem.service.ResourceServiceConfigurator;
+import org.wildfly.subsystem.service.ResourceServiceInstaller;
+import org.wildfly.subsystem.service.ServiceDependency;
+import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
+
+class WeaviateEmbeddingStoreProviderServiceConfigurator implements ResourceServiceConfigurator {
+
+    WeaviateEmbeddingStoreProviderServiceConfigurator() {
+    }
+
+    @Override
+    public ResourceServiceInstaller configure(OperationContext context, ModelNode model) throws OperationFailedException {
+        String objectClass = OBJECT_CLASS.resolveModelAttribute(context, model).asString();
+        String scheme = SSL_ENABLED.resolveModelAttribute(context, model).asBoolean() ? "https" : "http";
+        String socketBindingName = STORE_BINDING.resolveModelAttribute(context, model).asString();
+        ServiceDependency<OutboundSocketBinding> outboundSocketBinding = ServiceDependency.on(OutboundSocketBinding.SERVICE_DESCRIPTOR, socketBindingName);
+        Supplier<EmbeddingStore<TextSegment>> factory = new Supplier<>() {
+            @Override
+            public EmbeddingStore<TextSegment> get() {
+                return WeaviateEmbeddingStore.builder()
+                        .scheme(scheme)
+                        .host(outboundSocketBinding.get().getUnresolvedDestinationAddress())
+                        .port(outboundSocketBinding.get().getDestinationPort())
+                        .objectClass(objectClass)
+                        .avoidDups(true)
+                        .consistencyLevel("ALL")
+                        .build();
+            }
+        };
+        return CapabilityServiceInstaller.builder(EMBEDDING_STORE_PROVIDER_CAPABILITY, factory).requires(outboundSocketBinding).async().asActive().build();
+    }
+
+}

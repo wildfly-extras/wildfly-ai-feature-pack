@@ -37,7 +37,8 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
 
     public static final String[] OPTIONAL_MODULES = {
         "dev.langchain4j.openai",
-        "dev.langchain4j.ollama"
+        "dev.langchain4j.ollama",
+        "dev.langchain4j.weaviate"
     };
 
     public static final String[] EXPORTED_MODULES = {

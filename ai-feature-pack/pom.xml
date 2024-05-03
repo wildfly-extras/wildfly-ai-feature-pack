@@ -10,9 +10,9 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>AI integration for WildFly Galleon Pack</name>
+    <name>AI Galleon pack for WildFly</name>
   
-    <description>AI integration for WildFly Galleon Pack</description>
+    <description>Galleon pack to provide AI integration for WildFly</description>
 
     <licenses>
         <license>
@@ -136,9 +136,21 @@
         </dependency>
 
         <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-weaviate</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>dev.ai4j</groupId>
             <artifactId>openai4j</artifactId>
         </dependency> 
+
+
+        <dependency>
+            <groupId>io.weaviate</groupId>
+            <artifactId>client</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>

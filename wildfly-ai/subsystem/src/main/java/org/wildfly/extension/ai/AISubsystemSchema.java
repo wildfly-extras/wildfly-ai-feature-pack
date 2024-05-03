@@ -14,6 +14,7 @@ import org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.embeddings.EmbeddingModelProviderRegistrar;
 import org.wildfly.extension.ai.stores.InMemoryEmbeddingStoreProviderRegistrar;
 import org.wildfly.extension.ai.embeddings.OllamaEmbeddingModelProviderRegistrar;
+import org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar;
 
 /**
  * Enumeration of AI subsystem schema versions.
@@ -47,6 +48,7 @@ enum AISubsystemSchema implements PersistentSubsystemSchema<AISubsystemSchema> {
                         .build())
                 .addChild(PersistentResourceXMLDescription.decorator("embedding-stores")
                         .addChild(factory.builder(InMemoryEmbeddingStoreProviderRegistrar.PATH).addAttributes(InMemoryEmbeddingStoreProviderRegistrar.ATTRIBUTES.stream()).build())
+                        .addChild(factory.builder(WeaviateEmbeddingStoreProviderRegistrar.PATH).addAttributes(WeaviateEmbeddingStoreProviderRegistrar.ATTRIBUTES.stream()).build())
                         .build())
                 .build();
     }
