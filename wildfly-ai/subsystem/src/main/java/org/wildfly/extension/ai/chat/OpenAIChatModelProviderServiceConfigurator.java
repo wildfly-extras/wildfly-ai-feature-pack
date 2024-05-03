@@ -8,9 +8,14 @@ import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILI
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.API_KEY;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.BASE_URL;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.FREQUENCY_PENALTY;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.MAX_TOKEN;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.MODEL_NAME;
+import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.ORGANIZATION_ID;
+import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.PRESENCE_PENALTY;
+import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.SEED;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.TEMPERATURE;
+import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.TOP_P;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
@@ -34,25 +39,35 @@ public class OpenAIChatModelProviderServiceConfigurator implements ResourceServi
 
     @Override
     public ResourceServiceInstaller configure(OperationContext context, ModelNode model) throws OperationFailedException {
-        double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDouble();
-        long connectTimeOut = CONNECT_TIMEOUT.resolveModelAttribute(context, model).asLong();
         String baseUrl = BASE_URL.resolveModelAttribute(context, model).asString();
+        long connectTimeOut = CONNECT_TIMEOUT.resolveModelAttribute(context, model).asLong();
+        Double frequencyPenalty = FREQUENCY_PENALTY.resolveModelAttribute(context, model).asDoubleOrNull();
         String key = API_KEY.resolveModelAttribute(context, model).asString();
+        String organizationId = ORGANIZATION_ID.resolveModelAttribute(context, model).asString();
         String modelName = MODEL_NAME.resolveModelAttribute(context, model).asString();
-        int maxToken = MAX_TOKEN.resolveModelAttribute(context, model).asInt();
+        Integer maxToken = MAX_TOKEN.resolveModelAttribute(context, model).asIntOrNull();
+        Double presencePenalty = PRESENCE_PENALTY.resolveModelAttribute(context, model).asDoubleOrNull();
+        Integer seed = SEED.resolveModelAttribute(context, model).asIntOrNull();
+        Double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDoubleOrNull();
+        Double topP = TOP_P.resolveModelAttribute(context, model).asDoubleOrNull();
         Supplier<ChatLanguageModel> factory = new Supplier<>() {
             @Override
             public ChatLanguageModel get() {
                 ChatLanguageModel model =  OpenAiChatModel.builder()
-                        .baseUrl(baseUrl)
                         .apiKey(key)
-                        .modelName(modelName)
-                        .maxRetries(5)
-                        .temperature(temperature)
-                        .timeout(Duration.ofMillis(connectTimeOut))
+                        .baseUrl(baseUrl)
+                        .frequencyPenalty(frequencyPenalty)
                         .logRequests(Boolean.TRUE)
                         .logResponses(Boolean.TRUE)
+                        .maxRetries(5)
                         .maxTokens(maxToken)
+                        .modelName(modelName)
+                        .organizationId(organizationId)
+                        .presencePenalty(presencePenalty)
+                        .seed(seed)
+                        .temperature(temperature)
+                        .timeout(Duration.ofMillis(connectTimeOut))
+                        .topP(topP)
                         .build();
                 return model;
             }

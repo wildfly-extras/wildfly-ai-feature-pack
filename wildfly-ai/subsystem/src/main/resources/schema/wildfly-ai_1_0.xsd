@@ -150,6 +150,13 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="frequency-penalty" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The frequency penalty of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="max-token" type="xs:int" use="optional">
             <xs:annotation>
                 <xs:documentation>
@@ -164,10 +171,38 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="organization-id" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The organization id of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="presence-penalty" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The presence penalty of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="seed" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The seed of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="temperature" type="xs:double" use="optional">
             <xs:annotation>
                 <xs:documentation>
                     The temperature of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="top-p" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The top P of the chat model
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
