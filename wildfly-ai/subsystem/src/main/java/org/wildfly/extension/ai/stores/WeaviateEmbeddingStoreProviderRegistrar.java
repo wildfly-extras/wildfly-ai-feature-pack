@@ -30,6 +30,16 @@ public class WeaviateEmbeddingStoreProviderRegistrar implements ChildResourceDef
 
     static final String OUTBOUND_SOCKET_BINDING_CAPABILITY_NAME = "org.wildfly.network.outbound-socket-binding";
 
+    public static final SimpleAttributeDefinition AVOID_DUPS = SimpleAttributeDefinitionBuilder.create("avoid-dups", ModelType.BOOLEAN, true)
+            .setAllowExpression(true)
+            .setRestartAllServices()
+            .build();
+    public static final SimpleAttributeDefinition CONSISTENCY_LEVEL = SimpleAttributeDefinitionBuilder.create("consistency-level", ModelType.STRING, true)
+            .setAllowExpression(true)
+            .setDefaultValue(new ModelNode("ALL"))
+            .setAllowedValues("ONE", "QUORUM", "ALL")
+            .setRestartAllServices()
+            .build();
     public static final SimpleAttributeDefinition OBJECT_CLASS = SimpleAttributeDefinitionBuilder.create("object-class", ModelType.STRING, false)
             .setAllowExpression(true)
             .setRestartAllServices()
@@ -46,7 +56,7 @@ public class WeaviateEmbeddingStoreProviderRegistrar implements ChildResourceDef
             .setRestartAllServices()
             .build();
 
-    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(OBJECT_CLASS, SSL_ENABLED, STORE_BINDING);
+    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(AVOID_DUPS, CONSISTENCY_LEVEL, OBJECT_CLASS, SSL_ENABLED, STORE_BINDING);
 
     private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;

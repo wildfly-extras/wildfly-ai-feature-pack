@@ -5,6 +5,8 @@
 package org.wildfly.extension.ai.stores;
 
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAPABILITY;
+import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.AVOID_DUPS;
+import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.CONSISTENCY_LEVEL;
 import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.OBJECT_CLASS;
 import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.SSL_ENABLED;
 import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.STORE_BINDING;
@@ -32,6 +34,8 @@ class WeaviateEmbeddingStoreProviderServiceConfigurator implements ResourceServi
         String objectClass = OBJECT_CLASS.resolveModelAttribute(context, model).asString();
         String scheme = SSL_ENABLED.resolveModelAttribute(context, model).asBoolean() ? "https" : "http";
         String socketBindingName = STORE_BINDING.resolveModelAttribute(context, model).asString();
+        Boolean avoidDups = AVOID_DUPS.resolveModelAttribute(context, model).asBooleanOrNull();
+        String consistencyLevel = CONSISTENCY_LEVEL.resolveModelAttribute(context, model).asStringOrNull();
         ServiceDependency<OutboundSocketBinding> outboundSocketBinding = ServiceDependency.on(OutboundSocketBinding.SERVICE_DESCRIPTOR, socketBindingName);
         Supplier<EmbeddingStore<TextSegment>> factory = new Supplier<>() {
             @Override
@@ -41,8 +45,8 @@ class WeaviateEmbeddingStoreProviderServiceConfigurator implements ResourceServi
                         .host(outboundSocketBinding.get().getUnresolvedDestinationAddress())
                         .port(outboundSocketBinding.get().getDestinationPort())
                         .objectClass(objectClass)
-                        .avoidDups(true)
-                        .consistencyLevel("ALL")
+                        .avoidDups(avoidDups)
+                        .consistencyLevel(consistencyLevel)
                         .build();
             }
         };
