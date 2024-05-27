@@ -44,7 +44,7 @@
         <version.com.squareup.retrofit2>2.9.0</version.com.squareup.retrofit2>
         <version.commons-compress>1.26.1</version.commons-compress>
         <version.dev.ai4j.openai4j>0.17.0</version.dev.ai4j.openai4j>
-        <version.dev.langchain4j>0.30.0</version.dev.langchain4j>
+        <version.dev.langchain4j>0.31.0</version.dev.langchain4j>
         <version.io.weaviate.client>4.6.0</version.io.weaviate.client>
         <version.net.java.dev.jna>5.13.0</version.net.java.dev.jna>
         <version.org.jetbrains.kotlin>1.9.10</version.org.jetbrains.kotlin>

@@ -36,7 +36,7 @@ public class EmbeddingModelProviderServiceConfigurator implements ResourceServic
                 try {
                     ClassLoader moduleCL = org.jboss.modules.Module.getCallerModuleLoader().loadModule(moduleName).getClassLoader();
                     Thread.currentThread().setContextClassLoader(moduleCL);
-                    return (EmbeddingModel) EmbeddingModel.class.getClassLoader().loadClass(embeddingModelClassName).getConstructor().newInstance();
+                    return (EmbeddingModel) moduleCL.loadClass(embeddingModelClassName).getConstructor().newInstance();
                 } catch (Exception e) {
                     AILogger.ROOT_LOGGER.error("Coudln't load EmbeddingModel " + e.getMessage(), e);
                     throw new RuntimeException(e);
