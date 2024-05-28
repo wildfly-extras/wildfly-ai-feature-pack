@@ -7,6 +7,7 @@ package org.wildfly.extension.ai.stores;
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAPABILITY;
 import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.AVOID_DUPS;
 import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.CONSISTENCY_LEVEL;
+import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.METADATA;
 import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.OBJECT_CLASS;
 import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.SSL_ENABLED;
 import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.STORE_BINDING;
@@ -14,6 +15,7 @@ import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegi
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.weaviate.WeaviateEmbeddingStore;
+import java.util.List;
 import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
@@ -36,6 +38,7 @@ class WeaviateEmbeddingStoreProviderServiceConfigurator implements ResourceServi
         String socketBindingName = STORE_BINDING.resolveModelAttribute(context, model).asString();
         Boolean avoidDups = AVOID_DUPS.resolveModelAttribute(context, model).asBooleanOrNull();
         String consistencyLevel = CONSISTENCY_LEVEL.resolveModelAttribute(context, model).asStringOrNull();
+        List<String> metadataKeys = METADATA.unwrap(context, model);
         ServiceDependency<OutboundSocketBinding> outboundSocketBinding = ServiceDependency.on(OutboundSocketBinding.SERVICE_DESCRIPTOR, socketBindingName);
         Supplier<EmbeddingStore<TextSegment>> factory = new Supplier<>() {
             @Override
@@ -46,6 +49,7 @@ class WeaviateEmbeddingStoreProviderServiceConfigurator implements ResourceServi
                         .port(outboundSocketBinding.get().getDestinationPort())
                         .objectClass(objectClass)
                         .avoidDups(avoidDups)
+                        .metadataKeys(metadataKeys)
                         .consistencyLevel(consistencyLevel)
                         .build();
             }

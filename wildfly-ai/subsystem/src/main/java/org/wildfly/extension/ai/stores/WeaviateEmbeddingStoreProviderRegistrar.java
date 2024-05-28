@@ -15,6 +15,7 @@ import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.ResourceRegistration;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
+import org.jboss.as.controller.StringListAttributeDefinition;
 import org.jboss.as.controller.access.management.SensitiveTargetAccessConstraintDefinition;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
@@ -55,8 +56,14 @@ public class WeaviateEmbeddingStoreProviderRegistrar implements ChildResourceDef
             .addAccessConstraint(SensitiveTargetAccessConstraintDefinition.SOCKET_BINDING_REF)
             .setRestartAllServices()
             .build();
+    public static final StringListAttributeDefinition METADATA = StringListAttributeDefinition.Builder.of("metadata")
+            .setRequired(false)
+            .setMinSize(0)
+            .setAllowExpression(true)
+            .setRestartAllServices()
+            .build();
 
-    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(AVOID_DUPS, CONSISTENCY_LEVEL, OBJECT_CLASS, SSL_ENABLED, STORE_BINDING);
+    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(AVOID_DUPS, CONSISTENCY_LEVEL, METADATA, OBJECT_CLASS, SSL_ENABLED, STORE_BINDING);
 
     private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;
