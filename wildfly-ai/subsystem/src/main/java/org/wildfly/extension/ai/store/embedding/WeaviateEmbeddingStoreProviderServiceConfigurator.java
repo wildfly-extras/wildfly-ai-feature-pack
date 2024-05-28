@@ -2,15 +2,15 @@
  * Copyright The WildFly Authors
  * SPDX-License-Identifier: Apache-2.0
  */
-package org.wildfly.extension.ai.stores;
+package org.wildfly.extension.ai.store.embedding;
 
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAPABILITY;
-import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.AVOID_DUPS;
-import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.CONSISTENCY_LEVEL;
-import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.METADATA;
-import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.OBJECT_CLASS;
-import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.SSL_ENABLED;
-import static org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar.STORE_BINDING;
+import static org.wildfly.extension.ai.store.embedding.WeaviateEmbeddingStoreProviderRegistrar.AVOID_DUPS;
+import static org.wildfly.extension.ai.store.embedding.WeaviateEmbeddingStoreProviderRegistrar.CONSISTENCY_LEVEL;
+import static org.wildfly.extension.ai.store.embedding.WeaviateEmbeddingStoreProviderRegistrar.METADATA;
+import static org.wildfly.extension.ai.store.embedding.WeaviateEmbeddingStoreProviderRegistrar.OBJECT_CLASS;
+import static org.wildfly.extension.ai.store.embedding.WeaviateEmbeddingStoreProviderRegistrar.SSL_ENABLED;
+import static org.wildfly.extension.ai.store.embedding.WeaviateEmbeddingStoreProviderRegistrar.STORE_BINDING;
 
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;

@@ -75,21 +75,26 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
             if (annotation.target().kind() == AnnotationTarget.Kind.FIELD) {
                 FieldInfo field = annotation.target().asField();
                 if (field.type().kind() == Type.Kind.CLASS) {
-                    if (field.toString().startsWith("dev.langchain4j.model.chat.ChatLanguageModel")) {
-                        ROOT_LOGGER.warn("We need the ChatLanguageModel in the class " + field.declaringClass());
-                        String chatLanguageModelName = annotation.value().asString();
-                        ROOT_LOGGER.warn("We need the ChatLanguageModel called " + chatLanguageModelName);
-                        requiredChatModels.add(chatLanguageModelName);
-                    } else if (field.toString().startsWith("dev.langchain4j.model.embedding.EmbeddingModel")) {
-                        ROOT_LOGGER.warn("We need the EmbeddingModel in the class " + field.declaringClass());
-                        String embeddingModelName = annotation.value().asString();
-                        ROOT_LOGGER.warn("We need the EmbeddingModel called " + embeddingModelName);
-                        requiredEmbeddingModels.add(embeddingModelName);
-                    } else if (field.toString().startsWith("dev.langchain4j.store.embedding.EmbeddingStore")) {
-                        ROOT_LOGGER.warn("We need the EmbeddingStore in the class " + field.declaringClass());
-                        String embeddingStoreName = annotation.value().asString();
-                        ROOT_LOGGER.warn("We need the EmbeddingStore called " + embeddingStoreName);
-                        requiredEmbeddingStores.add(embeddingStoreName);
+                    try {
+                        Class fieldClass = Class.forName(field.type().asClassType().name().toString());
+                        if (dev.langchain4j.model.chat.ChatLanguageModel.class.isAssignableFrom(fieldClass)) {
+                            ROOT_LOGGER.warn("We need the ChatLanguageModel in the class " + field.declaringClass());
+                            String chatLanguageModelName = annotation.value().asString();
+                            ROOT_LOGGER.warn("We need the ChatLanguageModel called " + chatLanguageModelName);
+                            requiredChatModels.add(chatLanguageModelName);
+                        } else if (dev.langchain4j.model.embedding.EmbeddingModel.class.isAssignableFrom(fieldClass)) {
+                            ROOT_LOGGER.warn("We need the EmbeddingModel in the class " + field.declaringClass());
+                            String embeddingModelName = annotation.value().asString();
+                            ROOT_LOGGER.warn("We need the EmbeddingModel called " + embeddingModelName);
+                            requiredEmbeddingModels.add(embeddingModelName);
+                        } else if (dev.langchain4j.store.embedding.EmbeddingStore.class.isAssignableFrom(fieldClass)) {
+                            ROOT_LOGGER.warn("We need the EmbeddingStore in the class " + field.declaringClass());
+                            String embeddingStoreName = annotation.value().asString();
+                            ROOT_LOGGER.warn("We need the EmbeddingStore called " + embeddingStoreName);
+                            requiredEmbeddingStores.add(embeddingStoreName);
+                        }
+                    } catch (ClassNotFoundException ex) {
+                        ROOT_LOGGER.error("Coudln't get the class type for " + field.type().asClassType().name().toString() + " to be able to check what to inject", ex);
                     }
                 }
             }

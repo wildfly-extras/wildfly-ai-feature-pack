@@ -2,12 +2,12 @@
  * Copyright The WildFly Authors
  * SPDX-License-Identifier: Apache-2.0
  */
-package org.wildfly.extension.ai.embeddings;
+package org.wildfly.extension.ai.model.embedding;
 
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_MODEL_PROVIDER_CAPABILITY;
-import static org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar.CONNECT_TIMEOUT;
-import static org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar.MODEL_NAME;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.BASE_URL;
+import static org.wildfly.extension.ai.model.chat.OllamaChatLanguageModelProviderRegistrar.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.model.chat.OllamaChatLanguageModelProviderRegistrar.MODEL_NAME;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.BASE_URL;
 
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.ollama.OllamaEmbeddingModel;

@@ -2,20 +2,20 @@
  * Copyright The WildFly Authors
  * SPDX-License-Identifier: Apache-2.0
  */
-package org.wildfly.extension.ai.chat;
+package org.wildfly.extension.ai.model.chat;
 
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.API_KEY;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.BASE_URL;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.CONNECT_TIMEOUT;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.FREQUENCY_PENALTY;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.MAX_TOKEN;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.MODEL_NAME;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.ORGANIZATION_ID;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.PRESENCE_PENALTY;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.SEED;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.TEMPERATURE;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.TOP_P;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.API_KEY;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.BASE_URL;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.FREQUENCY_PENALTY;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.MAX_TOKEN;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.MODEL_NAME;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.ORGANIZATION_ID;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.PRESENCE_PENALTY;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.SEED;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.TEMPERATURE;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.TOP_P;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;

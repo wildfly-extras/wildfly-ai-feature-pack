@@ -4,17 +4,17 @@
  */
 package org.wildfly.extension.ai;
 
-import org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar;
+import org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar;
 import org.jboss.as.controller.PersistentResourceXMLDescription;
 import org.jboss.as.controller.PersistentSubsystemSchema;
 import org.jboss.as.controller.SubsystemSchema;
 import org.jboss.as.controller.xml.VersionedNamespace;
 import org.jboss.staxmapper.IntVersion;
-import org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar;
-import org.wildfly.extension.ai.embeddings.EmbeddingModelProviderRegistrar;
-import org.wildfly.extension.ai.stores.InMemoryEmbeddingStoreProviderRegistrar;
-import org.wildfly.extension.ai.embeddings.OllamaEmbeddingModelProviderRegistrar;
-import org.wildfly.extension.ai.stores.WeaviateEmbeddingStoreProviderRegistrar;
+import org.wildfly.extension.ai.model.chat.OllamaChatLanguageModelProviderRegistrar;
+import org.wildfly.extension.ai.model.embedding.EmbeddingModelProviderRegistrar;
+import org.wildfly.extension.ai.store.embedding.InMemoryEmbeddingStoreProviderRegistrar;
+import org.wildfly.extension.ai.model.embedding.OllamaEmbeddingModelProviderRegistrar;
+import org.wildfly.extension.ai.store.embedding.WeaviateEmbeddingStoreProviderRegistrar;
 
 /**
  * Enumeration of AI subsystem schema versions.

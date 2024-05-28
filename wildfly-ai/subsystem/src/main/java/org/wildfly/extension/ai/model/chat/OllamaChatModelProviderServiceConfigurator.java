@@ -2,15 +2,15 @@
  * Copyright The WildFly Authors
  * SPDX-License-Identifier: Apache-2.0
  */
-package org.wildfly.extension.ai.chat;
+package org.wildfly.extension.ai.model.chat;
 
 
 
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
-import static org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar.BASE_URL;
-import static org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar.MODEL_NAME;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.CONNECT_TIMEOUT;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.TEMPERATURE;
+import static org.wildfly.extension.ai.model.chat.OllamaChatLanguageModelProviderRegistrar.BASE_URL;
+import static org.wildfly.extension.ai.model.chat.OllamaChatLanguageModelProviderRegistrar.MODEL_NAME;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.TEMPERATURE;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;

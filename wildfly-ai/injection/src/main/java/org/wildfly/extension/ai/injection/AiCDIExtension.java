@@ -39,7 +39,7 @@ public class AiCDIExtension implements Extension {
          embeddingStores.put(id, embeddingStore);
     }
 
-    public void registerChatLanguageModelBean(@Observes AfterBeanDiscovery abd, BeanManager beanManager) {
+    public void registerAIModelBean(@Observes AfterBeanDiscovery abd, BeanManager beanManager) {
         for (Map.Entry<String, ChatLanguageModel> entry : chatModels.entrySet()) {
             abd.addBean()
                     .scope(ApplicationScoped.class)
