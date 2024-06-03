@@ -14,4 +14,14 @@
     <embedding-stores>
         <in-memory-embedding-store name="mystore" file="/home/ehugonne/dev/AI/crawler/crawler/wildfly-admin-embeddings.json"/>
     </embedding-stores>
+    <content-retrievers>
+        <embedding-store-content-retriever name="myretriever" embedding-store="mystore" embedding-model="myembedding"/>
+        <web-search-content-retriever name="google-test">
+            <google api-key="key" connect-timeout="10000" custom-search-id="id" log-requests="true" log-responses="true"/>
+        </web-search-content-retriever>
+        <web-search-content-retriever name="tavily-test">
+            <tavily api-key="key" base-url="https://api.tavily.com" connect-timeout="20000" exclude-domains="example.org" include-answer="true" include-domains="example.com" include-raw-content="true" search-depth="basic"/>
+        </web-search-content-retriever>
+    </content-retrievers>
+
 </subsystem>

@@ -4,10 +4,12 @@
  */
 package org.wildfly.extension.ai.model.chat;
 
+import static org.wildfly.extension.ai.AIAttributeDefinitions.API_KEY;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
-import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.API_KEY;
-import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.BASE_URL;
-import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.CONNECT_TIMEOUT;
 import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.FREQUENCY_PENALTY;
 import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.MAX_TOKEN;
 import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.MODEL_NAME;
@@ -47,6 +49,8 @@ public class OpenAIChatModelProviderServiceConfigurator implements ResourceServi
         String modelName = MODEL_NAME.resolveModelAttribute(context, model).asString();
         Integer maxToken = MAX_TOKEN.resolveModelAttribute(context, model).asIntOrNull();
         Double presencePenalty = PRESENCE_PENALTY.resolveModelAttribute(context, model).asDoubleOrNull();
+        Boolean logRequests = LOG_REQUESTS.resolveModelAttribute(context, model).asBooleanOrNull();
+        Boolean logResponses = LOG_RESPONSES.resolveModelAttribute(context, model).asBooleanOrNull();
         Integer seed = SEED.resolveModelAttribute(context, model).asIntOrNull();
         Double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDoubleOrNull();
         Double topP = TOP_P.resolveModelAttribute(context, model).asDoubleOrNull();
@@ -57,8 +61,8 @@ public class OpenAIChatModelProviderServiceConfigurator implements ResourceServi
                         .apiKey(key)
                         .baseUrl(baseUrl)
                         .frequencyPenalty(frequencyPenalty)
-                        .logRequests(Boolean.TRUE)
-                        .logResponses(Boolean.TRUE)
+                        .logRequests(logRequests)
+                        .logResponses(logResponses)
                         .maxRetries(5)
                         .maxTokens(maxToken)
                         .modelName(modelName)

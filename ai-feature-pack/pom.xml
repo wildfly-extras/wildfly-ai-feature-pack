@@ -26,7 +26,7 @@
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-galleon-pack</artifactId>
             <type>zip</type>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-ai-injection</artifactId>
@@ -43,6 +43,10 @@
         <dependency>
             <groupId>ai.djl.huggingface</groupId>
             <artifactId>tokenizers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-customsearch</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -127,17 +131,27 @@
 
         <dependency>
             <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-open-ai</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-ollama</artifactId>
         </dependency>
 
         <dependency>
             <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-weaviate</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-web-search-engine-google-custom</artifactId>
+        </dependency>
+
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-web-search-engine-tavily</artifactId>
         </dependency>
 
         <dependency>

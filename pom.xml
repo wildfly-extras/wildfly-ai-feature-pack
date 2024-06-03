@@ -38,6 +38,7 @@
         <version.org.wildfly.galleon-plugins>7.0.0.Final</version.org.wildfly.galleon-plugins>
 
         <version.ai.djl>0.26.0</version.ai.djl>
+        <version.com.google.apis>v1-rev20240417-2.0.0</version.com.google.apis>
         <version.com.knuddels.jtokkit>1.0.0</version.com.knuddels.jtokkit>
         <version.com.microsoft.onnxruntime>1.17.1</version.com.microsoft.onnxruntime>
         <version.com.squareup.okio-jvm>3.6.0</version.com.squareup.okio-jvm>
@@ -109,6 +110,18 @@
                 <groupId>ai.djl.huggingface</groupId>
                 <artifactId>tokenizers</artifactId>
                 <version>${version.ai.djl}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.apis</groupId>
+                <artifactId>google-api-services-customsearch</artifactId>
+                <version>${version.com.google.apis}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -290,6 +303,30 @@
             <dependency>
                 <groupId>dev.langchain4j</groupId>
                 <artifactId>langchain4j-weaviate</artifactId>
+                <version>${version.dev.langchain4j}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-web-search-engine-google-custom</artifactId>
+                <version>${version.dev.langchain4j}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-web-search-engine-tavily</artifactId>
                 <version>${version.dev.langchain4j}</version>
                 <exclusions>
                     <exclusion>

@@ -19,6 +19,8 @@ import org.wildfly.extension.ai.deployment.AIDeploymentProcessor;
 import org.wildfly.extension.ai.model.embedding.EmbeddingModelProviderRegistrar;
 import org.wildfly.extension.ai.store.embedding.InMemoryEmbeddingStoreProviderRegistrar;
 import org.wildfly.extension.ai.model.embedding.OllamaEmbeddingModelProviderRegistrar;
+import org.wildfly.extension.ai.rag.retriever.EmbeddingStoreContentRetrieverProviderRegistrar;
+import org.wildfly.extension.ai.rag.retriever.WebSearchContentContentRetrieverProviderRegistrar;
 import org.wildfly.extension.ai.store.embedding.WeaviateEmbeddingStoreProviderRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrationContext;
@@ -52,6 +54,8 @@ class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
         new OllamaEmbeddingModelProviderRegistrar(RESOLVER).register(registration, context);
         new InMemoryEmbeddingStoreProviderRegistrar(RESOLVER).register(registration, context);
         new WeaviateEmbeddingStoreProviderRegistrar(RESOLVER).register(registration, context);
+        new EmbeddingStoreContentRetrieverProviderRegistrar(RESOLVER).register(registration, context);
+        new WebSearchContentContentRetrieverProviderRegistrar(RESOLVER).register(registration, context);
         return registration;
     }
 }

@@ -6,6 +6,7 @@ package org.wildfly.extension.ai.injection;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import io.smallrye.common.annotation.Identifier;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -25,6 +26,7 @@ public class AiCDIExtension implements Extension {
     private static final Map<String, ChatLanguageModel> chatModels = new HashMap<>();
     private static final Map<String, EmbeddingModel> embeddingModels = new HashMap<>();
     private static final Map<String, EmbeddingStore> embeddingStores = new HashMap<>();
+    private static final Map<String, ContentRetriever> contentRetrievers = new HashMap<>();
 
 
     public static final void registerChatLanguageModel(String id, ChatLanguageModel chatModel) {
@@ -37,6 +39,10 @@ public class AiCDIExtension implements Extension {
 
     public static void registerEmbeddingStore(String id, EmbeddingStore embeddingStore) {
          embeddingStores.put(id, embeddingStore);
+    }
+
+    public static void registerContentRetriever(String id, ContentRetriever contentRetriever) {
+        contentRetrievers.put(id, contentRetriever);
     }
 
     public void registerAIModelBean(@Observes AfterBeanDiscovery abd, BeanManager beanManager) {
@@ -59,6 +65,13 @@ public class AiCDIExtension implements Extension {
                     .scope(ApplicationScoped.class)
                     .addQualifier(Identifier.Literal.of(entry.getKey()))
                     .types(EmbeddingStore.class)
+                    .createWith(c -> entry.getValue());
+        }
+        for (Map.Entry<String, ContentRetriever> entry : contentRetrievers.entrySet()) {
+            abd.addBean()
+                    .scope(ApplicationScoped.class)
+                    .addQualifier(Identifier.Literal.of(entry.getKey()))
+                    .types(ContentRetriever.class)
                     .createWith(c -> entry.getValue());
         }
     }

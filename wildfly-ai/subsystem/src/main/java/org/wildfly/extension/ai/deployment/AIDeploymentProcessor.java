@@ -9,6 +9,7 @@ import static org.wildfly.extension.ai.AILogger.ROOT_LOGGER;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import java.util.List;
 import org.jboss.as.controller.capability.CapabilityServiceSupport;
@@ -41,6 +42,8 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
             List<String> requiredEmbeddingModelNames = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_MODEL_KEYS);
             List<EmbeddingStore> requiredEmbeddingStores = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_STORES);
             List<String> requiredEmbeddingStoreNames = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_STORE_KEYS);
+            List<ContentRetriever> requiredContentRetrievers = deploymentUnit.getAttachmentList(AIAttachements.CONTENT_RETRIEVERS);
+            List<String> requiredContentRetrieverNames = deploymentUnit.getAttachmentList(AIAttachements.CONTENT_RETRIEVER_KEYS);
             if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || ! requiredEmbeddingStores.isEmpty()) {
                 if (!requiredChatModels.isEmpty()) {
                     for (int i = 0 ; i <  requiredChatModels.size(); i++) {
@@ -55,6 +58,11 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
                 if (!requiredEmbeddingStores.isEmpty()) {
                     for (int i = 0 ; i <  requiredEmbeddingModels.size(); i++) {
                         AiCDIExtension.registerEmbeddingStore(requiredEmbeddingStoreNames.get(i), requiredEmbeddingStores.get(i));
+                    }
+                }
+                if (!requiredContentRetrievers.isEmpty()) {
+                    for (int i = 0 ; i <  requiredContentRetrievers.size(); i++) {
+                        AiCDIExtension.registerContentRetriever(requiredContentRetrieverNames.get(i), requiredContentRetrievers.get(i));
                     }
                 }
                 support.getOptionalCapabilityRuntimeAPI(WELD_CAPABILITY_NAME, WeldCapability.class).get()

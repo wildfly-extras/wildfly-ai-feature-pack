@@ -4,10 +4,10 @@
  */
 package org.wildfly.extension.ai.model.embedding;
 
+import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_MODEL_PROVIDER_CAPABILITY;
-import static org.wildfly.extension.ai.model.chat.OllamaChatLanguageModelProviderRegistrar.CONNECT_TIMEOUT;
 import static org.wildfly.extension.ai.model.chat.OllamaChatLanguageModelProviderRegistrar.MODEL_NAME;
-import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.BASE_URL;
 
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.ollama.OllamaEmbeddingModel;

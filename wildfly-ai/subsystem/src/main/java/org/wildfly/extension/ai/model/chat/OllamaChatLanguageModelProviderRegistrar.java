@@ -4,6 +4,8 @@
  */
 package org.wildfly.extension.ai.model.chat;
 
+import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
 
 import java.util.Collection;
@@ -14,8 +16,6 @@ import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.ResourceRegistration;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.controller.access.management.SensitiveTargetAccessConstraintDefinition;
-import org.jboss.as.controller.client.helpers.MeasurementUnit;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.controller.registry.RuntimePackageDependency;
@@ -29,15 +29,6 @@ import org.wildfly.subsystem.resource.operation.ResourceOperationRuntimeHandler;
 
 public class OllamaChatLanguageModelProviderRegistrar implements ChildResourceDefinitionRegistrar {
 
-    public static final SimpleAttributeDefinition BASE_URL = new SimpleAttributeDefinitionBuilder("base-url", ModelType.STRING, false)
-            .addAccessConstraint(SensitiveTargetAccessConstraintDefinition.SOCKET_CONFIG)
-            .setAllowExpression(true)
-            .build();
-    public static final SimpleAttributeDefinition CONNECT_TIMEOUT = new SimpleAttributeDefinitionBuilder("connect-timeout", ModelType.LONG, true)
-            .setAllowExpression(true)
-            .setDefaultValue(ModelNode.ZERO)
-            .setMeasurementUnit(MeasurementUnit.MILLISECONDS)
-            .build();
     public static final SimpleAttributeDefinition MODEL_NAME = new SimpleAttributeDefinitionBuilder("model-name", ModelType.STRING, false)
             .setAllowExpression(true)
             .build();

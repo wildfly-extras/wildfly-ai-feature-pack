@@ -6,10 +6,10 @@ package org.wildfly.extension.ai.model.chat;
 
 
 
+import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
-import static org.wildfly.extension.ai.model.chat.OllamaChatLanguageModelProviderRegistrar.BASE_URL;
 import static org.wildfly.extension.ai.model.chat.OllamaChatLanguageModelProviderRegistrar.MODEL_NAME;
-import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.CONNECT_TIMEOUT;
 import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.TEMPERATURE;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;

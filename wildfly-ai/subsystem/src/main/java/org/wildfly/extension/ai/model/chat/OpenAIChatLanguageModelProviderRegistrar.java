@@ -4,6 +4,11 @@
  */
 package org.wildfly.extension.ai.model.chat;
 
+import static org.wildfly.extension.ai.AIAttributeDefinitions.API_KEY;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
 
 import java.util.Collection;
@@ -14,8 +19,6 @@ import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.ResourceRegistration;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.controller.access.management.SensitiveTargetAccessConstraintDefinition;
-import org.jboss.as.controller.client.helpers.MeasurementUnit;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.controller.registry.RuntimePackageDependency;
@@ -28,20 +31,6 @@ import org.wildfly.subsystem.resource.ResourceDescriptor;
 import org.wildfly.subsystem.resource.operation.ResourceOperationRuntimeHandler;
 
 public class OpenAIChatLanguageModelProviderRegistrar implements ChildResourceDefinitionRegistrar {
-
-    public static final SimpleAttributeDefinition API_KEY = new SimpleAttributeDefinitionBuilder("api-key", ModelType.STRING, false)
-            .addAccessConstraint(SensitiveTargetAccessConstraintDefinition.CREDENTIAL)
-            .setAllowExpression(true)
-            .build();
-    public static final SimpleAttributeDefinition BASE_URL = new SimpleAttributeDefinitionBuilder("base-url", ModelType.STRING, false)
-            .addAccessConstraint(SensitiveTargetAccessConstraintDefinition.SOCKET_CONFIG)
-            .setAllowExpression(true)
-            .build();
-    public static final SimpleAttributeDefinition CONNECT_TIMEOUT = new SimpleAttributeDefinitionBuilder("connect-timeout", ModelType.LONG, true)
-            .setAllowExpression(true)
-            .setDefaultValue(ModelNode.ZERO)
-            .setMeasurementUnit(MeasurementUnit.MILLISECONDS)
-            .build();
     public static final SimpleAttributeDefinition FREQUENCY_PENALTY = new SimpleAttributeDefinitionBuilder("frequency-penalty", ModelType.DOUBLE, true)
             .setAllowExpression(true)
             .build();
@@ -69,7 +58,7 @@ public class OpenAIChatLanguageModelProviderRegistrar implements ChildResourceDe
             .build();
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(API_KEY, BASE_URL, CONNECT_TIMEOUT,
-            FREQUENCY_PENALTY, MAX_TOKEN, MODEL_NAME, ORGANIZATION_ID, PRESENCE_PENALTY, SEED, TEMPERATURE, TOP_P);
+            FREQUENCY_PENALTY, LOG_REQUESTS, LOG_RESPONSES, MAX_TOKEN, MODEL_NAME, ORGANIZATION_ID, PRESENCE_PENALTY, SEED, TEMPERATURE, TOP_P);
 
     private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;

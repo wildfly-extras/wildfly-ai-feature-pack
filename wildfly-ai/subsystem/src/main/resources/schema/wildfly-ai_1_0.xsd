@@ -48,6 +48,13 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="content-retrievers" type="contentRetrieversType">
+                <xs:annotation>
+                    <xs:documentation>
+                        The chat content retrievers.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
         </xs:choice>
     </xs:complexType>
 
@@ -88,7 +95,8 @@
                         An in-memory embedding-store provider definition element.
                     </xs:documentation>
                 </xs:annotation>
-            </xs:element><xs:element name="weaviate-embedding-store" type="weaviateEmbeddingStoreType">
+            </xs:element>
+            <xs:element name="weaviate-embedding-store" type="weaviateEmbeddingStoreType">
                 <xs:annotation>
                     <xs:documentation>
                         A Weaviate embedding-store provider definition element.
@@ -97,6 +105,32 @@
             </xs:element>
         </xs:choice>
     </xs:complexType>
+
+
+    <xs:complexType name="contentRetrieversType">
+        <xs:annotation>
+            <xs:documentation>
+                The content retrievers.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="embedding-store-content-retriever" type="embeddingStoreContentRetrieverType">
+                <xs:annotation>
+                    <xs:documentation>
+                        A content retriever retriving content from an embedding store definition element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="web-search-content-retriever" type="webSearchContentRetrieverType">
+                <xs:annotation>
+                    <xs:documentation>
+                        A content retriever retriving content from a web search definition element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
 
     <xs:complexType name="chatLanguageModelsType">
         <xs:annotation>
@@ -362,7 +396,7 @@
         <xs:attribute name="avoid-dups" type="xs:boolean" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    =If true the object id is a hashed ID based on provided text segment else a random ID will be generated.
+                    If true the object id is a hashed ID based on provided text segment else a random ID will be generated.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -402,5 +436,213 @@
             </xs:annotation>
         </xs:attribute>
     </xs:complexType>
-    
+
+
+    <xs:complexType name="embeddingStoreContentRetrieverType">
+        <xs:annotation>
+            <xs:documentation>
+                A content retriever retriving content from an embedding store.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of this provider.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="embedding-store" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The embedding store to retrieve content from the embedding model from.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="embedding-model" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The embedding model to use.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="max-results" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The maximum number of contents to retrieve.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="min-score" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The minimum relevance score for the returned contents.Contentss scoring below this score are excluded from the results.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="webSearchContentRetrieverType">
+        <xs:annotation>
+            <xs:documentation>
+                A content retriever retriving content from a web search.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element name="google" type="googleCustomSearchEngineType">
+                <xs:annotation>
+                    <xs:documentation>
+                        The Google Custom Search Engine to retrieve content from.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="tavily" type="tavilySearchEngineType">
+                <xs:annotation>
+                    <xs:documentation>
+                        The Tavily Search Engine to retrieve content from.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of this provider.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="max-results" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The maximum number of contents to retrieve.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="googleCustomSearchEngineType">
+        <xs:annotation>
+            <xs:documentation>
+                A Google Custom Search Engine to retrieve content from.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="api-key" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    The Google Search API key for accessing the Google Custom Search API.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="connect-timeout" type="xs:long" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The connection timeout of the search
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="custom-search-id" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    The Custom Search ID parameter for search the entire web.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="site-restrict" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    If your Search Engine is restricted to only searching specific sites, you can set this parameter to true.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-requests" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API requests
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-responses" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API responses
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="max-retries" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The maximum number of retries for API requests
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="tavilySearchEngineType">
+        <xs:annotation>
+            <xs:documentation>
+                A Tavily Search Engine to retrieve content from.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="api-key" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    The Google Search API key for accessing the Google Custom Search API.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="base-url" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    The URL to call the Tavily APi from: "https://api.tavily.com".
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="connect-timeout" type="xs:long" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The connection timeout of the search
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="exclude-domains" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    A list of domains to specifically exclude from the search results.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="include-answer" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Include answers in the search results.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="include-domains" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    A list of domains to specifically include in the search results.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="include-raw-content" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Include raw content in the search results.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="search-depth" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The depth of the search. It can be basic or advanced. Default is basic for quick results and advanced for indepth high quality results but longer response time. Advanced calls equals 2 requests.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="basic"/>
+                    <xs:enumeration value="advanced"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
 </xs:schema>

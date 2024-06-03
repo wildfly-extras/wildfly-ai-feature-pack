@@ -28,6 +28,7 @@ import org.jboss.jandex.FieldInfo;
 import org.jboss.jandex.Type;
 import org.jboss.modules.Module;
 import org.jboss.modules.ModuleLoader;
+import org.wildfly.extension.ai.Capabilities;
 
 /**
  *
@@ -38,7 +39,8 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
     public static final String[] OPTIONAL_MODULES = {
         "dev.langchain4j.openai",
         "dev.langchain4j.ollama",
-        "dev.langchain4j.weaviate"
+        "dev.langchain4j.weaviate",
+        "dev.langchain4j.web-search-engines"
     };
 
     public static final String[] EXPORTED_MODULES = {
@@ -71,6 +73,7 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         Set<String> requiredChatModels = new HashSet<>();
         Set<String> requiredEmbeddingModels = new HashSet<>();
         Set<String> requiredEmbeddingStores = new HashSet<>();
+        Set<String> requiredContentRetrievers = new HashSet<>();
         for (AnnotationInstance annotation : annotations) {
             if (annotation.target().kind() == AnnotationTarget.Kind.FIELD) {
                 FieldInfo field = annotation.target().asField();
@@ -92,6 +95,11 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                             String embeddingStoreName = annotation.value().asString();
                             ROOT_LOGGER.warn("We need the EmbeddingStore called " + embeddingStoreName);
                             requiredEmbeddingStores.add(embeddingStoreName);
+                        }else if (dev.langchain4j.rag.content.retriever.ContentRetriever.class.isAssignableFrom(fieldClass)) {
+                            ROOT_LOGGER.warn("We need the ContentRetriever in the class " + field.declaringClass());
+                            String contentRetrieverName = annotation.value().asString();
+                            ROOT_LOGGER.warn("We need the ContentRetriever called " + contentRetrieverName);
+                            requiredContentRetrievers.add(contentRetrieverName);
                         }
                     } catch (ClassNotFoundException ex) {
                         ROOT_LOGGER.error("Coudln't get the class type for " + field.type().asClassType().name().toString() + " to be able to check what to inject", ex);
@@ -116,6 +124,12 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                 for (String embeddingStoreName : requiredEmbeddingStores) {
                     deploymentUnit.addToAttachmentList(AIAttachements.EMBEDDING_STORE_KEYS, embeddingStoreName);
                     deploymentPhaseContext.addDeploymentDependency(EMBEDDING_STORE_PROVIDER_CAPABILITY.getCapabilityServiceName(embeddingStoreName), AIAttachements.EMBEDDING_STORES);
+                }
+            }
+            if (!requiredContentRetrievers.isEmpty()) {
+                for (String contentRetrieverName : requiredContentRetrievers) {
+                    deploymentUnit.addToAttachmentList(AIAttachements.CONTENT_RETRIEVER_KEYS, contentRetrieverName);
+                    deploymentPhaseContext.addDeploymentDependency(Capabilities.CONTENT_RETRIEVER_PROVIDER_CAPABILITY.getCapabilityServiceName(contentRetrieverName), AIAttachements.CONTENT_RETRIEVERS);
                 }
             }
         }
