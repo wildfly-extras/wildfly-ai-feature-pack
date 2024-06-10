@@ -9,6 +9,7 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
 
 import java.util.Collection;
@@ -48,9 +49,6 @@ public class OpenAIChatLanguageModelProviderRegistrar implements ChildResourceDe
             .setAllowExpression(true)
             .build();
     public static final SimpleAttributeDefinition SEED = new SimpleAttributeDefinitionBuilder("seed", ModelType.INT, true)
-            .setAllowExpression(true)
-            .build();
-    public static final SimpleAttributeDefinition TEMPERATURE = new SimpleAttributeDefinitionBuilder("temperature", ModelType.DOUBLE, true)
             .setAllowExpression(true)
             .build();
      public static final SimpleAttributeDefinition TOP_P = new SimpleAttributeDefinitionBuilder("top-p", ModelType.DOUBLE, true)

@@ -197,6 +197,20 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="log-requests" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API requests
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-responses" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API responses
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="max-token" type="xs:int" use="optional">
             <xs:annotation>
                 <xs:documentation>
@@ -275,6 +289,27 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="log-requests" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API requests
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-responses" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API responses
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="max-retries" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The maximum number of retries for API requests
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="model-name" type="xs:string">
             <xs:annotation>
                 <xs:documentation>
@@ -316,6 +351,20 @@
             <xs:annotation>
                 <xs:documentation>
                     The connection timeout of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-requests" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API requests
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-responses" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API responses
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -585,7 +634,7 @@
         <xs:attribute name="api-key" type="xs:string">
             <xs:annotation>
                 <xs:documentation>
-                    The Google Search API key for accessing the Google Custom Search API.
+                    The unique API key.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>

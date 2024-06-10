@@ -9,6 +9,7 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
 import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.FREQUENCY_PENALTY;
 import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.MAX_TOKEN;
@@ -16,7 +17,6 @@ import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProvide
 import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.ORGANIZATION_ID;
 import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.PRESENCE_PENALTY;
 import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.SEED;
-import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.TEMPERATURE;
 import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.TOP_P;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;

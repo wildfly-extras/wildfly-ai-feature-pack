@@ -8,9 +8,12 @@ package org.wildfly.extension.ai.model.chat;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_RETRIES;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
-import static org.wildfly.extension.ai.model.chat.OllamaChatLanguageModelProviderRegistrar.MODEL_NAME;
-import static org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar.TEMPERATURE;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
@@ -37,14 +40,19 @@ public class OllamaChatModelProviderServiceConfigurator implements ResourceServi
     public ResourceServiceInstaller configure(OperationContext context, ModelNode model) throws OperationFailedException {
         double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDouble();
         long connectTimeOut = CONNECT_TIMEOUT.resolveModelAttribute(context, model).asLong();
+        Boolean logRequests = LOG_REQUESTS.resolveModelAttribute(context, model).asBooleanOrNull();
+        Boolean logResponses = LOG_RESPONSES.resolveModelAttribute(context, model).asBooleanOrNull();
         String baseUrl = BASE_URL.resolveModelAttribute(context, model).asString("http://192.168.1.1:11434");
+        Integer maxRetries = MAX_RETRIES.resolveModelAttribute(context, model).asIntOrNull();
         String modelName = MODEL_NAME.resolveModelAttribute(context, model).asString("llama3:8b");
         Supplier<ChatLanguageModel> factory = new Supplier<>() {
             @Override
             public ChatLanguageModel get() {
                 ChatLanguageModel model = OllamaChatModel.builder()
                         .baseUrl(baseUrl)
-                        .maxRetries(5)
+                        .logRequests(logRequests)
+                        .logResponses(logResponses)
+                        .maxRetries(maxRetries)
                         .temperature(temperature)
                         .timeout(Duration.ofMillis(connectTimeOut))
                         .modelName(modelName)

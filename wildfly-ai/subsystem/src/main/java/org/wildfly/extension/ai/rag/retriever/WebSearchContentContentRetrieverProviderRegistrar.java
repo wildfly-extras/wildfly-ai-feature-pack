@@ -10,6 +10,7 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_RETRIES;
 
 import java.util.Collection;
 import java.util.List;
@@ -48,7 +49,7 @@ public class WebSearchContentContentRetrieverProviderRegistrar implements ChildR
             SimpleAttributeDefinitionBuilder.create("include-images", ModelType.BOOLEAN, true).build(),
             LOG_REQUESTS,
             LOG_RESPONSES,
-            SimpleAttributeDefinitionBuilder.create("max-retries", ModelType.INT, true).build(),
+            MAX_RETRIES,
             SimpleAttributeDefinitionBuilder.create("site-restrict", ModelType.BOOLEAN, true).build())
                 .setAttributeMarshaller(AttributeMarshaller.ATTRIBUTE_OBJECT)
                 .setAttributeParser(AttributeParser.OBJECT_PARSER)
