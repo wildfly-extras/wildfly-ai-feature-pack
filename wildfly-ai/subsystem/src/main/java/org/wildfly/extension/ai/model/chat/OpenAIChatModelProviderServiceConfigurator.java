@@ -42,7 +42,7 @@ public class OpenAIChatModelProviderServiceConfigurator implements ResourceServi
     @Override
     public ResourceServiceInstaller configure(OperationContext context, ModelNode model) throws OperationFailedException {
         String baseUrl = BASE_URL.resolveModelAttribute(context, model).asString();
-        long connectTimeOut = CONNECT_TIMEOUT.resolveModelAttribute(context, model).asLong();
+        Long connectTimeOut = CONNECT_TIMEOUT.resolveModelAttribute(context, model).asLong();
         Double frequencyPenalty = FREQUENCY_PENALTY.resolveModelAttribute(context, model).asDoubleOrNull();
         String key = API_KEY.resolveModelAttribute(context, model).asString();
         String organizationId = ORGANIZATION_ID.resolveModelAttribute(context, model).asString();

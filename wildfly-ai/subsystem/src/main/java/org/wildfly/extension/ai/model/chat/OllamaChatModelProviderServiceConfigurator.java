@@ -38,13 +38,13 @@ public class OllamaChatModelProviderServiceConfigurator implements ResourceServi
 
     @Override
     public ResourceServiceInstaller configure(OperationContext context, ModelNode model) throws OperationFailedException {
-        double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDouble();
-        long connectTimeOut = CONNECT_TIMEOUT.resolveModelAttribute(context, model).asLong();
+        Double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDoubleOrNull();
+        Long connectTimeOut = CONNECT_TIMEOUT.resolveModelAttribute(context, model).asLong();
         Boolean logRequests = LOG_REQUESTS.resolveModelAttribute(context, model).asBooleanOrNull();
         Boolean logResponses = LOG_RESPONSES.resolveModelAttribute(context, model).asBooleanOrNull();
-        String baseUrl = BASE_URL.resolveModelAttribute(context, model).asString("http://192.168.1.1:11434");
+        String baseUrl = BASE_URL.resolveModelAttribute(context, model).asString();
         Integer maxRetries = MAX_RETRIES.resolveModelAttribute(context, model).asIntOrNull();
-        String modelName = MODEL_NAME.resolveModelAttribute(context, model).asString("llama3:8b");
+        String modelName = MODEL_NAME.resolveModelAttribute(context, model).asString();
         Supplier<ChatLanguageModel> factory = new Supplier<>() {
             @Override
             public ChatLanguageModel get() {
