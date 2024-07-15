@@ -13,6 +13,7 @@
 
     <resources>
         <artifact name="${org.wildfly:wildfly-ai-injection}"/>
+        <artifact name="${org.wildfly:wildfly-ai-annotations}"/>
     </resources>
 
     <dependencies>
@@ -20,6 +21,7 @@
         <module name="dev.langchain4j.openai"/>
         <module name="io.smallrye.common.annotation"/>
         <module name="jakarta.enterprise.api" />
+        <module name="jakarta.servlet.api"/>
         <module name="org.jboss.as.controller"/>
         <module name="org.jboss.as.server"/>
         <module name="org.jboss.as.weld.common"/>

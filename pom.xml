@@ -74,6 +74,17 @@
             </dependency>
             <dependency>
                 <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-ai-annotations</artifactId>
+                <version>${project.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly</groupId>
                 <artifactId>wildfly-ai-injection</artifactId>
                 <version>${project.version}</version>
                 <exclusions>
@@ -471,5 +482,6 @@
     <modules>
         <module>wildfly-ai</module>
         <module>ai-feature-pack</module>
+        <module>wildfly-ai-annotations</module>
     </modules>
 </project>

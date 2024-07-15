@@ -29,6 +29,10 @@
         </dependency>
         <dependency>
             <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-ai-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly</groupId>
             <artifactId>wildfly-ai-injection</artifactId>
         </dependency>
         <dependency>
