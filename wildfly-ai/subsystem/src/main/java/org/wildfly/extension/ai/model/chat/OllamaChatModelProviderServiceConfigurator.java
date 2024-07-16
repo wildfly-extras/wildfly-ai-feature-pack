@@ -23,6 +23,8 @@ import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.dmr.ModelNode;
+import org.wildfly.extension.ai.AIAttributeDefinitions;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import org.wildfly.subsystem.service.ResourceServiceConfigurator;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
 import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
@@ -45,19 +47,22 @@ public class OllamaChatModelProviderServiceConfigurator implements ResourceServi
         String baseUrl = BASE_URL.resolveModelAttribute(context, model).asString();
         Integer maxRetries = MAX_RETRIES.resolveModelAttribute(context, model).asIntOrNull();
         String modelName = MODEL_NAME.resolveModelAttribute(context, model).asString();
+        boolean isJson = AIAttributeDefinitions.ResponseFormat.isJson(RESPONSE_FORMAT.resolveModelAttribute(context, model).asStringOrNull());
         Supplier<ChatLanguageModel> factory = new Supplier<>() {
             @Override
             public ChatLanguageModel get() {
-                ChatLanguageModel model = OllamaChatModel.builder()
+                OllamaChatModel.OllamaChatModelBuilder builder = OllamaChatModel.builder()
                         .baseUrl(baseUrl)
                         .logRequests(logRequests)
                         .logResponses(logResponses)
                         .maxRetries(maxRetries)
                         .temperature(temperature)
                         .timeout(Duration.ofMillis(connectTimeOut))
-                        .modelName(modelName)
-                        .build();
-                return model;
+                        .modelName(modelName);
+                if(isJson) {
+                    builder.format("json");
+                }
+                return builder.build();
             }
         };
         return CapabilityServiceInstaller.builder(CHAT_MODEL_PROVIDER_CAPABILITY, factory)

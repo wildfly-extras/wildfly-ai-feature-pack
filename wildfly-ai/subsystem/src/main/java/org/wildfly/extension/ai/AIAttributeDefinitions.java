@@ -8,6 +8,7 @@ import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
 import org.jboss.as.controller.access.management.SensitiveTargetAccessConstraintDefinition;
 import org.jboss.as.controller.client.helpers.MeasurementUnit;
+import org.jboss.as.controller.operations.validation.EnumValidator;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
@@ -45,4 +46,16 @@ public class AIAttributeDefinitions {
     public static final SimpleAttributeDefinition TEMPERATURE = new SimpleAttributeDefinitionBuilder("temperature", ModelType.DOUBLE, true)
             .setAllowExpression(true)
             .build();
+    public static final SimpleAttributeDefinition RESPONSE_FORMAT = new SimpleAttributeDefinitionBuilder("response-format", ModelType.STRING, true)
+            .setValidator(EnumValidator.create(ResponseFormat.class))
+            .setAllowExpression(true)
+            .build();
+
+    public static enum ResponseFormat {
+        JSON, TEXT;
+        
+        public static boolean isJson(String format){
+            return format != null && JSON == valueOf(format);
+        }
+    }
 }

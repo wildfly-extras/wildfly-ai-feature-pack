@@ -25,6 +25,7 @@ import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.controller.registry.RuntimePackageDependency;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import org.wildfly.subsystem.resource.ChildResourceDefinitionRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrationContext;
@@ -56,7 +57,8 @@ public class OpenAIChatLanguageModelProviderRegistrar implements ChildResourceDe
             .build();
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(API_KEY, BASE_URL, CONNECT_TIMEOUT,
-            FREQUENCY_PENALTY, LOG_REQUESTS, LOG_RESPONSES, MAX_TOKEN, MODEL_NAME, ORGANIZATION_ID, PRESENCE_PENALTY, SEED, TEMPERATURE, TOP_P);
+            FREQUENCY_PENALTY, LOG_REQUESTS, LOG_RESPONSES, MAX_TOKEN, MODEL_NAME, ORGANIZATION_ID, PRESENCE_PENALTY, 
+            RESPONSE_FORMAT, SEED, TEMPERATURE, TOP_P);
 
     private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;

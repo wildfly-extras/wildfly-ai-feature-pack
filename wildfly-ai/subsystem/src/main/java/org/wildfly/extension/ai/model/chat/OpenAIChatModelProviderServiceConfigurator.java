@@ -27,6 +27,8 @@ import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.dmr.ModelNode;
+import org.wildfly.extension.ai.AIAttributeDefinitions;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import org.wildfly.subsystem.service.ResourceServiceConfigurator;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
 import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
@@ -54,10 +56,11 @@ public class OpenAIChatModelProviderServiceConfigurator implements ResourceServi
         Integer seed = SEED.resolveModelAttribute(context, model).asIntOrNull();
         Double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDoubleOrNull();
         Double topP = TOP_P.resolveModelAttribute(context, model).asDoubleOrNull();
+         boolean isJson = AIAttributeDefinitions.ResponseFormat.isJson(RESPONSE_FORMAT.resolveModelAttribute(context, model).asStringOrNull());
         Supplier<ChatLanguageModel> factory = new Supplier<>() {
             @Override
             public ChatLanguageModel get() {
-                ChatLanguageModel model =  OpenAiChatModel.builder()
+                OpenAiChatModel.OpenAiChatModelBuilder builder =  OpenAiChatModel.builder()
                         .apiKey(key)
                         .baseUrl(baseUrl)
                         .frequencyPenalty(frequencyPenalty)
@@ -71,9 +74,11 @@ public class OpenAIChatModelProviderServiceConfigurator implements ResourceServi
                         .seed(seed)
                         .temperature(temperature)
                         .timeout(Duration.ofMillis(connectTimeOut))
-                        .topP(topP)
-                        .build();
-                return model;
+                        .topP(topP);
+                if(isJson) {
+                    builder.responseFormat("json_object");
+                }
+                return builder.build();
             }
         };
         return CapabilityServiceInstaller.builder(CHAT_MODEL_PROVIDER_CAPABILITY, factory)
