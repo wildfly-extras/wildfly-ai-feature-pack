@@ -66,7 +66,7 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
                     }
                 }
                 support.getOptionalCapabilityRuntimeAPI(WELD_CAPABILITY_NAME, WeldCapability.class).get()
-                        .registerExtensionInstance(new AiCDIExtension(), deploymentUnit);
+                        .registerBuildCompatibleExtension(AiCDIExtension.class, deploymentUnit);
             }
         } catch (CapabilityServiceSupport.NoSuchCapabilityException e) {
         }

@@ -54,7 +54,7 @@ public class EmbeddingStoreContentRetrieverProviderServiceConfigurator implement
         return CapabilityServiceInstaller.builder(CONTENT_RETRIEVER_PROVIDER_CAPABILITY, factory)
                     .requires(embeddingStore)
                     .requires(embeddingModel)
-                    .async()
+                    .blocking()
                     .asActive()
                     .build();
     }

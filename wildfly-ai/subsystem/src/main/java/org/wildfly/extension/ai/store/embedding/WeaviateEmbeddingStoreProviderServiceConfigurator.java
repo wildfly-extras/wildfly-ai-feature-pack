@@ -54,7 +54,7 @@ class WeaviateEmbeddingStoreProviderServiceConfigurator implements ResourceServi
                         .build();
             }
         };
-        return CapabilityServiceInstaller.builder(EMBEDDING_STORE_PROVIDER_CAPABILITY, factory).requires(outboundSocketBinding).async().asActive().build();
+        return CapabilityServiceInstaller.builder(EMBEDDING_STORE_PROVIDER_CAPABILITY, factory).requires(outboundSocketBinding).blocking().asActive().build();
     }
 
 }

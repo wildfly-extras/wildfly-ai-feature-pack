@@ -4,45 +4,39 @@
  */
 package org.wildfly.extension.ai.injection;
 
-import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
-import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import io.smallrye.common.annotation.Identifier;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
-import jakarta.enterprise.inject.Instance;
-import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
-import jakarta.enterprise.inject.spi.BeanManager;
-import jakarta.enterprise.inject.spi.Extension;
-import jakarta.enterprise.inject.spi.ProcessAnnotatedType;
-import jakarta.enterprise.inject.spi.WithAnnotations;
-import jakarta.servlet.http.HttpSession;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
+import jakarta.enterprise.inject.build.compatible.spi.ClassConfig;
+import jakarta.enterprise.inject.build.compatible.spi.Enhancement;
+import jakarta.enterprise.inject.build.compatible.spi.Synthesis;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanBuilder;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanCreator;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticComponents;
+import jakarta.enterprise.lang.model.declarations.ClassInfo;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.wildfly.ai.annotations.RegisterAIService;
 
 /**
  *
  * @author Emmanuel Hugonnet (c) 2024 Red Hat, Inc.
  */
-public class AiCDIExtension implements Extension {
+public class AiCDIExtension implements BuildCompatibleExtension {
 
-    private static final Map<String, ChatLanguageModel> chatModels = new HashMap<>();
-    private static final Map<String, EmbeddingModel> embeddingModels = new HashMap<>();
-    private static final Map<String, EmbeddingStore> embeddingStores = new HashMap<>();
-    private static final Map<String, ContentRetriever> contentRetrievers = new HashMap<>();
-    private static final Set<Class> detectedAIServicesDeclaredInterfaces = new HashSet<>();
+    static final Map<String, ChatLanguageModel> chatModels = new HashMap<>();
+    static final Map<String, EmbeddingModel> embeddingModels = new HashMap<>();
+    static final Map<String, EmbeddingStore> embeddingStores = new HashMap<>();
+    static final Map<String, ContentRetriever> contentRetrievers = new HashMap<>();
+    static final Set<Class> detectedAIServicesDeclaredInterfaces = new HashSet<>();
     public static final String PARAM_INTERFACE_CLASS = "interfaceClass";
+    public static final String PARAM_RESULT_KEY = "result";
 
     public static Set<Class> getDetectedAIServicesDeclaredInterfaces() {
         return detectedAIServicesDeclaredInterfaces;
@@ -64,77 +58,65 @@ public class AiCDIExtension implements Extension {
         contentRetrievers.put(id, contentRetriever);
     }
 
-    public void processAnnotatedType(@Observes @WithAnnotations({RegisterAIService.class}) ProcessAnnotatedType pat) {
-        if (pat.getAnnotatedType().isAnnotationPresent(RegisterAIService.class)) {
-            detectedAIServicesDeclaredInterfaces.add(pat.getAnnotatedType().getJavaClass());
+    @SuppressWarnings("unused")
+    @Enhancement(types = Object.class, withAnnotations = RegisterAIService.class, withSubtypes = true)
+    public void detectRegisterAIService(ClassConfig classConfig) throws ClassNotFoundException {
+        ClassInfo classInfo = classConfig.info();
+        if (classInfo.isInterface()) {
+            detectedAIServicesDeclaredInterfaces.add(Thread.currentThread().getContextClassLoader().loadClass(classInfo.name()));
         }
     }
 
-    public void registerAIModelBean(@Observes AfterBeanDiscovery abd, BeanManager beanManager) throws ClassNotFoundException {
+    @Synthesis
+    @SuppressWarnings("unchecked")
+    public void registerAIModelBean(SyntheticComponents syntheticComponents) throws ClassNotFoundException {
+        Class<?> creatorClass = new BeanCreator<ChatLanguageModel>().getClass();
         for (Map.Entry<String, ChatLanguageModel> entry : chatModels.entrySet()) {
-            abd.addBean()
+            syntheticComponents.addBean(ChatLanguageModel.class)
                     .scope(ApplicationScoped.class)
-                    .addQualifier(Identifier.Literal.of(entry.getKey()))
-                    .types(ChatLanguageModel.class)
-                    .createWith(c -> entry.getValue());
+                    .qualifier(Identifier.Literal.of(entry.getKey()))
+                    .type(ChatLanguageModel.class)
+                    .createWith((Class<? extends SyntheticBeanCreator<ChatLanguageModel>>) creatorClass)
+                    .withParam(PARAM_RESULT_KEY, entry.getKey());
         }
+        creatorClass = new BeanCreator<EmbeddingModel>().getClass();
         for (Map.Entry<String, EmbeddingModel> entry : embeddingModels.entrySet()) {
-            abd.addBean()
+            syntheticComponents.addBean(EmbeddingModel.class)
                     .scope(ApplicationScoped.class)
-                    .addQualifier(Identifier.Literal.of(entry.getKey()))
-                    .types(EmbeddingModel.class)
-                    .createWith(c -> entry.getValue());
+                    .qualifier(Identifier.Literal.of(entry.getKey()))
+                    .type(EmbeddingModel.class)
+                    .createWith((Class<? extends SyntheticBeanCreator<EmbeddingModel>>) creatorClass)
+                    .withParam(PARAM_RESULT_KEY, entry.getKey());
         }
+        creatorClass = new BeanCreator<EmbeddingStore>().getClass();
         for (Map.Entry<String, EmbeddingStore> entry : embeddingStores.entrySet()) {
-            abd.addBean()
+            syntheticComponents.addBean(EmbeddingStore.class)
                     .scope(ApplicationScoped.class)
-                    .addQualifier(Identifier.Literal.of(entry.getKey()))
-                    .types(EmbeddingStore.class)
-                    .createWith(c -> entry.getValue());
+                    .qualifier(Identifier.Literal.of(entry.getKey()))
+                    .type(EmbeddingStore.class)
+                    .createWith((Class<? extends SyntheticBeanCreator<EmbeddingStore>>) creatorClass)
+                    .withParam(PARAM_RESULT_KEY, entry.getKey());
         }
+        creatorClass = new BeanCreator<ContentRetriever>().getClass();
         for (Map.Entry<String, ContentRetriever> entry : contentRetrievers.entrySet()) {
-            abd.addBean()
+            syntheticComponents.addBean(ContentRetriever.class)
                     .scope(ApplicationScoped.class)
-                    .addQualifier(Identifier.Literal.of(entry.getKey()))
-                    .types(ContentRetriever.class)
-                    .createWith(c -> entry.getValue());
+                    .qualifier(Identifier.Literal.of(entry.getKey()))
+                    .type(ContentRetriever.class)
+                    .createWith((Class<? extends SyntheticBeanCreator<ContentRetriever>>) creatorClass)
+                    .withParam(PARAM_RESULT_KEY, entry.getKey());
         }
         for (Class<?> interfaceClass : detectedAIServicesDeclaredInterfaces) {
             RegisterAIService annotation = interfaceClass.getAnnotation(RegisterAIService.class);
             AILogger.ROOT_LOGGER.warn("We need an AI service for " + interfaceClass);
-
-            abd.addBean()
-                    .types(interfaceClass)
+            SyntheticBeanBuilder<Object> builder = (SyntheticBeanBuilder<Object>) syntheticComponents.addBean(interfaceClass);
+            builder.createWith(AIServiceCreator.class)
+                    .type(interfaceClass)
                     .scope(annotation.scope())
-                    .beanClass(interfaceClass)
-                    .produceWith(lookup -> {
-                        AILogger.ROOT_LOGGER.warn("Creating the AI service for " + interfaceClass);
-                        Instance<ChatLanguageModel> chatLanguageModel = lookup.select(ChatLanguageModel.class, Identifier.Literal.of(annotation.chatLanguageModelName()));
-                        Instance<ContentRetriever> contentRetriever = lookup.select(ContentRetriever.class, Identifier.Literal.of(annotation.contentRetrieverName()));
-                        HttpSession session = lookup.select(jakarta.servlet.http.HttpSession.class).get();
-                        AiServices<?> aiServices = AiServices.builder(interfaceClass);
-                        if (chatLanguageModel.isResolvable()) {
-                            AILogger.ROOT_LOGGER.warn("ChatLanguageModel " + chatLanguageModel.get());
-                            aiServices.chatLanguageModel(chatLanguageModel.get());
-                        }
-                        if (contentRetriever.isResolvable()) {
-                            AILogger.ROOT_LOGGER.warn("ContentRetriever " + contentRetriever.get());
-                            aiServices.contentRetriever(contentRetriever.get());
-                        }
-                        if (annotation.tools() != null && annotation.tools().length > 0) {
-                            List<Object> tools = new ArrayList<>(annotation.tools().length);
-                            for (Class toolClass : annotation.tools()) {
-                                try {
-                                    tools.add(toolClass.getConstructor(null).newInstance(null));
-                                } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                                    Logger.getLogger(AiCDIExtension.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
-                            aiServices.tools(tools);
-                        }
-                        aiServices.chatMemory(MessageWindowChatMemory.builder().id(session.getId()).maxMessages(annotation.chatMemoryMaxMessages()).build());
-                        return aiServices.build();
-                    });
+                    .name("registeredAIService-" + interfaceClass.getName())
+                    .withParam(PARAM_INTERFACE_CLASS, interfaceClass);
         }
     }
+
+
 }

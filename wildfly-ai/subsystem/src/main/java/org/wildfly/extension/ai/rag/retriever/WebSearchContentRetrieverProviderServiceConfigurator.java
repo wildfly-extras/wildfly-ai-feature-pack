@@ -71,7 +71,7 @@ public class WebSearchContentRetrieverProviderServiceConfigurator implements Res
             }
         };
         return CapabilityServiceInstaller.builder(CONTENT_RETRIEVER_PROVIDER_CAPABILITY, factory)
-                    .async()
+                    .blocking()
                     .asActive()
                     .build();
     }
