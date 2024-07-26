@@ -20,6 +20,7 @@ import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.as.weld.WeldCapability;
 import org.wildfly.extension.ai.injection.AiCDIExtension;
+import org.wildfly.extension.ai.injection.IntegrationExtension;
 
 /**
  *
@@ -66,7 +67,7 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
                     }
                 }
                 support.getOptionalCapabilityRuntimeAPI(WELD_CAPABILITY_NAME, WeldCapability.class).get()
-                        .registerBuildCompatibleExtension(AiCDIExtension.class, deploymentUnit);
+                        .registerExtensionInstance(new IntegrationExtension(), deploymentUnit);
             }
         } catch (CapabilityServiceSupport.NoSuchCapabilityException e) {
         }

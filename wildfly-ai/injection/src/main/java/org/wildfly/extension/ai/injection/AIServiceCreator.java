@@ -12,6 +12,7 @@ import io.smallrye.common.annotation.Identifier;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.build.compatible.spi.Parameters;
 import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanCreator;
+import jakarta.servlet.http.HttpSession;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class AIServiceCreator implements SyntheticBeanCreator<Object> {
         AILogger.ROOT_LOGGER.warn("Creating the AI service for " + interfaceClass);
         Instance<ChatLanguageModel> chatLanguageModel = lookup.select(ChatLanguageModel.class, Identifier.Literal.of(annotation.chatLanguageModelName()));
         Instance<ContentRetriever> contentRetriever = lookup.select(ContentRetriever.class, Identifier.Literal.of(annotation.contentRetrieverName()));
-//        HttpSession session = lookup.select(jakarta.servlet.http.HttpSession.class).get();
+        HttpSession session = lookup.select(jakarta.servlet.http.HttpSession.class).get();
         AiServices<?> aiServices = AiServices.builder(interfaceClass);
         if (chatLanguageModel.isResolvable()) {
             AILogger.ROOT_LOGGER.warn("ChatLanguageModel " + chatLanguageModel.get());
@@ -53,8 +54,7 @@ public class AIServiceCreator implements SyntheticBeanCreator<Object> {
             }
             aiServices.tools(tools);
         }
-//        aiServices.chatMemory(MessageWindowChatMemory.builder().id(session.getId()).maxMessages(annotation.chatMemoryMaxMessages()).build());
-         aiServices.chatMemory(MessageWindowChatMemory.builder().maxMessages(annotation.chatMemoryMaxMessages()).build());
+        aiServices.chatMemory(MessageWindowChatMemory.builder().id(session.getId()).maxMessages(annotation.chatMemoryMaxMessages()).build());
         return aiServices.build();
     }
     

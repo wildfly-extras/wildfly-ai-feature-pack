@@ -64,6 +64,10 @@
             <artifactId>wildfly-weld-common</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-lite-extension-translator</artifactId>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wildfly-ai-injection</artifactId>
         </dependency>

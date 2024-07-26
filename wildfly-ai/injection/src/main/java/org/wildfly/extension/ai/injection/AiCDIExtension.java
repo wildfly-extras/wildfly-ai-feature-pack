@@ -77,7 +77,8 @@ public class AiCDIExtension implements BuildCompatibleExtension {
                     .qualifier(Identifier.Literal.of(entry.getKey()))
                     .type(ChatLanguageModel.class)
                     .createWith((Class<? extends SyntheticBeanCreator<ChatLanguageModel>>) creatorClass)
-                    .withParam(PARAM_RESULT_KEY, entry.getKey());
+                    .withParam(PARAM_RESULT_KEY, entry.getKey())
+                    .withParam(PARAM_INTERFACE_CLASS, ChatLanguageModel.class);
         }
         creatorClass = new BeanCreator<EmbeddingModel>().getClass();
         for (Map.Entry<String, EmbeddingModel> entry : embeddingModels.entrySet()) {
@@ -86,7 +87,8 @@ public class AiCDIExtension implements BuildCompatibleExtension {
                     .qualifier(Identifier.Literal.of(entry.getKey()))
                     .type(EmbeddingModel.class)
                     .createWith((Class<? extends SyntheticBeanCreator<EmbeddingModel>>) creatorClass)
-                    .withParam(PARAM_RESULT_KEY, entry.getKey());
+                    .withParam(PARAM_RESULT_KEY, entry.getKey())
+                    .withParam(PARAM_INTERFACE_CLASS, EmbeddingModel.class);
         }
         creatorClass = new BeanCreator<EmbeddingStore>().getClass();
         for (Map.Entry<String, EmbeddingStore> entry : embeddingStores.entrySet()) {
@@ -95,7 +97,8 @@ public class AiCDIExtension implements BuildCompatibleExtension {
                     .qualifier(Identifier.Literal.of(entry.getKey()))
                     .type(EmbeddingStore.class)
                     .createWith((Class<? extends SyntheticBeanCreator<EmbeddingStore>>) creatorClass)
-                    .withParam(PARAM_RESULT_KEY, entry.getKey());
+                    .withParam(PARAM_RESULT_KEY, entry.getKey())
+                    .withParam(PARAM_INTERFACE_CLASS, EmbeddingStore.class);
         }
         creatorClass = new BeanCreator<ContentRetriever>().getClass();
         for (Map.Entry<String, ContentRetriever> entry : contentRetrievers.entrySet()) {
@@ -104,7 +107,8 @@ public class AiCDIExtension implements BuildCompatibleExtension {
                     .qualifier(Identifier.Literal.of(entry.getKey()))
                     .type(ContentRetriever.class)
                     .createWith((Class<? extends SyntheticBeanCreator<ContentRetriever>>) creatorClass)
-                    .withParam(PARAM_RESULT_KEY, entry.getKey());
+                    .withParam(PARAM_RESULT_KEY, entry.getKey())
+                    .withParam(PARAM_INTERFACE_CLASS, ContentRetriever.class);
         }
         for (Class<?> interfaceClass : detectedAIServicesDeclaredInterfaces) {
             RegisterAIService annotation = interfaceClass.getAnnotation(RegisterAIService.class);
