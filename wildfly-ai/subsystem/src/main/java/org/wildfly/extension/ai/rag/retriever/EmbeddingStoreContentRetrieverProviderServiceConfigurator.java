@@ -42,6 +42,7 @@ public class EmbeddingStoreContentRetrieverProviderServiceConfigurator implement
         ServiceDependency<EmbeddingModel> embeddingModel = ServiceDependency.on(EMBEDDING_MODEL_PROVIDER_DESCRIPTOR, embeddingModelName);
         Supplier<ContentRetriever> factory = new Supplier<>() {
             @Override
+            @SuppressWarnings("unchecked")
             public ContentRetriever get() {
                 return EmbeddingStoreContentRetriever.builder()
                     .embeddingStore(embeddingStore.get())
@@ -54,7 +55,7 @@ public class EmbeddingStoreContentRetrieverProviderServiceConfigurator implement
         return CapabilityServiceInstaller.builder(CONTENT_RETRIEVER_PROVIDER_CAPABILITY, factory)
                     .requires(embeddingStore)
                     .requires(embeddingModel)
-                    .async()
+                    .blocking()
                     .asActive()
                     .build();
     }

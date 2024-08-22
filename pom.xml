@@ -32,15 +32,16 @@
         <!-- Require Java 11 -->
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
-        <version.org.wildfly>32.0.0.Final</version.org.wildfly>
-        <version.org.wildfly.core>24.0.0.Final</version.org.wildfly.core>
+        <version.org.wildfly>33.0.0.Final</version.org.wildfly>
+        <version.org.wildfly.core>25.0.0.Final</version.org.wildfly.core>
         <version.org.wildfly.common>1.6.0.Final</version.org.wildfly.common>    
         <version.org.wildfly.galleon-plugins>7.0.0.Final</version.org.wildfly.galleon-plugins>
 
         <version.ai.djl>0.26.0</version.ai.djl>
         <version.com.google.apis>v1-rev20240417-2.0.0</version.com.google.apis>
         <version.com.knuddels.jtokkit>1.0.0</version.com.knuddels.jtokkit>
-        <version.com.microsoft.onnxruntime>1.17.1</version.com.microsoft.onnxruntime>
+        <version.com.microsoft.onnxruntime>1.17.1</version.com.microsoft.onnxruntime>        
+        <version.com.squareup.okhttp3.okhttp>4.12.0</version.com.squareup.okhttp3.okhttp>
         <version.com.squareup.okio-jvm>3.6.0</version.com.squareup.okio-jvm>
         <version.com.squareup.retrofit2>2.9.0</version.com.squareup.retrofit2>
         <version.commons-compress>1.26.1</version.commons-compress>
@@ -166,8 +167,32 @@
             </dependency>
 
             <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${version.com.squareup.okhttp3.okhttp}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
                 <groupId>com.squareup.okio</groupId>
                 <artifactId>okio</artifactId>
+                <version>${version.com.squareup.okio-jvm}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.squareup.okio</groupId>
+                <artifactId>okio-jvm</artifactId>
                 <version>${version.com.squareup.okio-jvm}</version>
                 <exclusions>
                     <exclusion>

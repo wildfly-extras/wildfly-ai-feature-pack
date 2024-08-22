@@ -32,7 +32,7 @@ class InMemoryEmbeddingStoreProviderServiceConfigurator implements ResourceServi
                 return InMemoryEmbeddingStore.fromFile(storeFile);
             }
         };
-        return CapabilityServiceInstaller.builder(EMBEDDING_STORE_PROVIDER_CAPABILITY, factory).async().asActive().build();
+        return CapabilityServiceInstaller.builder(EMBEDDING_STORE_PROVIDER_CAPABILITY, factory).blocking().asActive().build();
     }
 
 }

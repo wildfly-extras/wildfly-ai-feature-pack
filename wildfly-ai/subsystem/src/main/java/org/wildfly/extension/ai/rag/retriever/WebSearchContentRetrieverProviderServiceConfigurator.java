@@ -70,10 +70,7 @@ public class WebSearchContentRetrieverProviderServiceConfigurator implements Res
                 return new WebSearchContentRetriever(engine, maxResults);
             }
         };
-        return CapabilityServiceInstaller.builder(CONTENT_RETRIEVER_PROVIDER_CAPABILITY, factory)
-                    .async()
-                    .asActive()
-                    .build();
+        return CapabilityServiceInstaller.builder(CONTENT_RETRIEVER_PROVIDER_CAPABILITY, factory).blocking().asActive().build();
     }
 
 }
