@@ -35,6 +35,15 @@
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-ai-subsystem</artifactId>
         </dependency>
+        <!-- CDI -->
+        <dependency>
+            <groupId>io.smallrye.llm</groupId>
+            <artifactId>smallrye-llm-langchain4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.smallrye.llm</groupId>
+            <artifactId>smallrye-llm-langchain4j-portable-extension</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>ai.djl</groupId>
@@ -77,7 +86,7 @@
         </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
-            <artifactId>converter-gson</artifactId>
+            <artifactId>converter-jackson</artifactId>
         </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>

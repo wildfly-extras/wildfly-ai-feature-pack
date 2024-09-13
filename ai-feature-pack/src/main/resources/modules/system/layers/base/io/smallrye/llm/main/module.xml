@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright The WildFly Authors
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+<module name="io.smallrye.llm" xmlns="urn:jboss:module:1.9">
+
+    <properties>
+        <property name="jboss.api" value="private"/>
+    </properties>
+
+    <resources>
+        <artifact name="${io.smallrye.llm:smallrye-llm-langchain4j-core}"/>
+        <artifact name="${io.smallrye.llm:smallrye-llm-langchain4j-portable-extension}"/>
+    </resources>
+
+    <exports>
+        <exclude path="META-INF"/>
+    </exports>
+
+    <dependencies>
+        <module name="dev.langchain4j"/>
+        <module name="dev.langchain4j.openai" optional="true"/>
+        <module name="dev.langchain4j.ollama" optional="true"/>
+        <module name="dev.langchain4j.weaviate" optional="true"/>
+        <module name="dev.langchain4j.web-search-engines" optional="true"/>
+        <module name="jakarta.enterprise.api" />
+        <module name="org.jboss.logging"/>
+        <module name="org.wildfly.extension.ai.injection" services="import"/>
+    </dependencies>
+</module> 

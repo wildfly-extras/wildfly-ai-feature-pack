@@ -44,6 +44,6 @@ public class EmbeddingModelProviderServiceConfigurator implements ResourceServic
                 }
             }
         };
-        return CapabilityServiceInstaller.builder(EMBEDDING_MODEL_PROVIDER_CAPABILITY, factory).async().asActive().build();
+        return CapabilityServiceInstaller.builder(EMBEDDING_MODEL_PROVIDER_CAPABILITY, factory).blocking().asActive().build();
     }
 }

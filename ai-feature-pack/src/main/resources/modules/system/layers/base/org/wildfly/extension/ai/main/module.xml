@@ -21,6 +21,7 @@
         <module name="dev.langchain4j.ollama" optional="true"/>
         <module name="dev.langchain4j.weaviate" optional="true"/>
         <module name="dev.langchain4j.web-search-engines" optional="true"/>
+        <module name="io.smallrye.llm"/>
         <module name="io.smallrye.common.annotation"/>
         <module name="io.smallrye.jandex"/>
         <module name="jakarta.enterprise.api" />
