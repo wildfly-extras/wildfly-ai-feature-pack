@@ -33,8 +33,12 @@
         </dependency>
         <!-- CDI -->
         <dependency>
-            <groupId>io.smallrye.common</groupId>
-            <artifactId>smallrye-common-annotation</artifactId>
+            <groupId>io.smallrye.llm</groupId>
+            <artifactId>smallrye-llm-langchain4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.smallrye.llm</groupId>
+            <artifactId>smallrye-llm-langchain4j-portable-extension</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.annotation</groupId>
@@ -47,6 +51,10 @@
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

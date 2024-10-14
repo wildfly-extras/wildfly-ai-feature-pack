@@ -44,10 +44,6 @@
         </dependency>
         <!-- CDI -->
         <dependency>
-            <groupId>io.smallrye.common</groupId>
-            <artifactId>smallrye-common-annotation</artifactId>
-        </dependency>
-        <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
@@ -219,7 +215,7 @@
         </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
-            <artifactId>converter-gson</artifactId>
+            <artifactId>converter-jackson</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -14,12 +14,18 @@
     <resources>
         <artifact name="${org.wildfly:wildfly-ai-injection}"/>
     </resources>
+    <provides>
+        <service name="io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig">
+          <with-class name="org.wildfly.extension.ai.injection.WildFlyLLMConfig"/>
+        </service>
+    </provides>
 
     <dependencies>
         <module name="dev.langchain4j"/>
         <module name="dev.langchain4j.openai"/>
-        <module name="io.smallrye.common.annotation"/>
+        <module name="io.smallrye.llm"/>
         <module name="jakarta.enterprise.api" />
+        <module name="jakarta.servlet.api"/>
         <module name="org.jboss.as.controller"/>
         <module name="org.jboss.as.server"/>
         <module name="org.jboss.as.weld.common"/>

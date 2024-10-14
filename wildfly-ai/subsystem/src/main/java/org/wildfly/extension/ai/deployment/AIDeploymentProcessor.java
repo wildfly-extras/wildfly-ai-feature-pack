@@ -11,6 +11,7 @@ import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
+import jakarta.enterprise.inject.spi.Extension;
 import java.util.List;
 import org.jboss.as.controller.capability.CapabilityServiceSupport;
 import org.jboss.as.server.deployment.Attachments;
@@ -19,7 +20,7 @@ import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.as.weld.WeldCapability;
-import org.wildfly.extension.ai.injection.AiCDIExtension;
+import org.wildfly.extension.ai.injection.WildFlyBeanRegistry;
 
 /**
  *
@@ -44,29 +45,31 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
             List<String> requiredEmbeddingStoreNames = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_STORE_KEYS);
             List<ContentRetriever> requiredContentRetrievers = deploymentUnit.getAttachmentList(AIAttachements.CONTENT_RETRIEVERS);
             List<String> requiredContentRetrieverNames = deploymentUnit.getAttachmentList(AIAttachements.CONTENT_RETRIEVER_KEYS);
-            if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || ! requiredEmbeddingStores.isEmpty()) {
+            if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty()) {
                 if (!requiredChatModels.isEmpty()) {
-                    for (int i = 0 ; i <  requiredChatModels.size(); i++) {
-                        AiCDIExtension.registerChatLanguageModel(chatLanguageModelNames.get(i), requiredChatModels.get(i));
+                    for (int i = 0; i < requiredChatModels.size(); i++) {
+                        WildFlyBeanRegistry.registerChatLanguageModel(chatLanguageModelNames.get(i), requiredChatModels.get(i));
                     }
                 }
                 if (!requiredEmbeddingModels.isEmpty()) {
-                    for (int i = 0 ; i <  requiredEmbeddingModels.size(); i++) {
-                        AiCDIExtension.registerEmbeddingModel(requiredEmbeddingModelNames.get(i), requiredEmbeddingModels.get(i));
+                    for (int i = 0; i < requiredEmbeddingModels.size(); i++) {
+                        WildFlyBeanRegistry.registerEmbeddingModel(requiredEmbeddingModelNames.get(i), requiredEmbeddingModels.get(i));
                     }
                 }
                 if (!requiredEmbeddingStores.isEmpty()) {
-                    for (int i = 0 ; i <  requiredEmbeddingModels.size(); i++) {
-                        AiCDIExtension.registerEmbeddingStore(requiredEmbeddingStoreNames.get(i), requiredEmbeddingStores.get(i));
+                    for (int i = 0; i < requiredEmbeddingModels.size(); i++) {
+                        WildFlyBeanRegistry.registerEmbeddingStore(requiredEmbeddingStoreNames.get(i), requiredEmbeddingStores.get(i));
                     }
                 }
                 if (!requiredContentRetrievers.isEmpty()) {
-                    for (int i = 0 ; i <  requiredContentRetrievers.size(); i++) {
-                        AiCDIExtension.registerContentRetriever(requiredContentRetrieverNames.get(i), requiredContentRetrievers.get(i));
+                    for (int i = 0; i < requiredContentRetrievers.size(); i++) {
+                        WildFlyBeanRegistry.registerContentRetriever(requiredContentRetrieverNames.get(i), requiredContentRetrievers.get(i));
                     }
                 }
-                support.getOptionalCapabilityRuntimeAPI(WELD_CAPABILITY_NAME, WeldCapability.class).get()
-                        .registerExtensionInstance(new AiCDIExtension(), deploymentUnit);
+                for (Extension extension : WildFlyBeanRegistry.getCDIExtensions()) {
+                    support.getOptionalCapabilityRuntimeAPI(WELD_CAPABILITY_NAME, WeldCapability.class).get()
+                            .registerExtensionInstance(extension, deploymentUnit);
+                }
             }
         } catch (CapabilityServiceSupport.NoSuchCapabilityException e) {
         }

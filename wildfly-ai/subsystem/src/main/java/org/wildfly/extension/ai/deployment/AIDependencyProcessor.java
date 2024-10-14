@@ -9,7 +9,7 @@ import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILI
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_MODEL_PROVIDER_CAPABILITY;
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAPABILITY;
 
-import io.smallrye.common.annotation.Identifier;
+import jakarta.inject.Named;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,8 +45,8 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
 
     public static final String[] EXPORTED_MODULES = {
         "dev.langchain4j",
-        "org.wildfly.extension.ai.injection",
-        "io.smallrye.common.annotation"
+        "io.smallrye.llm",
+        "org.wildfly.extension.ai.injection"
     };
 
     @Override
@@ -66,7 +66,7 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         if (index == null) {
             throw ROOT_LOGGER.unableToResolveAnnotationIndex(deploymentUnit);
         }
-        List<AnnotationInstance> annotations = index.getAnnotations(DotName.createSimple(Identifier.class));
+        List<AnnotationInstance> annotations = index.getAnnotations(DotName.createSimple(Named.class));
         if (annotations == null || annotations.isEmpty()) {
             return;
         }
@@ -81,24 +81,24 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                     try {
                         Class fieldClass = Class.forName(field.type().asClassType().name().toString());
                         if (dev.langchain4j.model.chat.ChatLanguageModel.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.warn("We need the ChatLanguageModel in the class " + field.declaringClass());
+                            ROOT_LOGGER.debug("We need the ChatLanguageModel in the class " + field.declaringClass());
                             String chatLanguageModelName = annotation.value().asString();
-                            ROOT_LOGGER.warn("We need the ChatLanguageModel called " + chatLanguageModelName);
+                            ROOT_LOGGER.debug("We need the ChatLanguageModel called " + chatLanguageModelName);
                             requiredChatModels.add(chatLanguageModelName);
                         } else if (dev.langchain4j.model.embedding.EmbeddingModel.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.warn("We need the EmbeddingModel in the class " + field.declaringClass());
+                            ROOT_LOGGER.debug("We need the EmbeddingModel in the class " + field.declaringClass());
                             String embeddingModelName = annotation.value().asString();
-                            ROOT_LOGGER.warn("We need the EmbeddingModel called " + embeddingModelName);
+                            ROOT_LOGGER.debug("We need the EmbeddingModel called " + embeddingModelName);
                             requiredEmbeddingModels.add(embeddingModelName);
                         } else if (dev.langchain4j.store.embedding.EmbeddingStore.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.warn("We need the EmbeddingStore in the class " + field.declaringClass());
+                            ROOT_LOGGER.debug("We need the EmbeddingStore in the class " + field.declaringClass());
                             String embeddingStoreName = annotation.value().asString();
-                            ROOT_LOGGER.warn("We need the EmbeddingStore called " + embeddingStoreName);
+                            ROOT_LOGGER.debug("We need the EmbeddingStore called " + embeddingStoreName);
                             requiredEmbeddingStores.add(embeddingStoreName);
                         }else if (dev.langchain4j.rag.content.retriever.ContentRetriever.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.warn("We need the ContentRetriever in the class " + field.declaringClass());
+                            ROOT_LOGGER.debug("We need the ContentRetriever in the class " + field.declaringClass());
                             String contentRetrieverName = annotation.value().asString();
-                            ROOT_LOGGER.warn("We need the ContentRetriever called " + contentRetrieverName);
+                            ROOT_LOGGER.debug("We need the ContentRetriever called " + contentRetrieverName);
                             requiredContentRetrievers.add(contentRetrieverName);
                         }
                     } catch (ClassNotFoundException ex) {
