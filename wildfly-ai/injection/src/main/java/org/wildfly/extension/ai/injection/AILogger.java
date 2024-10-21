@@ -23,8 +23,6 @@ public interface AILogger extends BasicLogger {
  /**
      * Logs a warning message indicating the address, represented by the {@code address} parameter, could not be
      * resolved, so cannot match it to any InetAddress.
-     *
-     * @param address the address that could not be resolved.
      */
     @LogMessage(level = WARN)
     @Message(id = 1, value = "The deployment does not have Jakarta Dependency Injection enabled.")
