@@ -38,6 +38,7 @@ public class WildFlyLLMConfig implements LLMConfig {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getBeanPropertyValue(String beanName, String propertyName, Class<T> type) {
         return (T) beanData.get(getBeanPropertyName(beanName, propertyName));
     }
