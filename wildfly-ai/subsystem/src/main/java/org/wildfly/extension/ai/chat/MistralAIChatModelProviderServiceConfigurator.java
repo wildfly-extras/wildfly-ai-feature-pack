@@ -14,7 +14,6 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
-import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
 import static org.wildfly.extension.ai.chat.MistralAIChatLanguageModelProviderRegistrar.RANDOM_SEED;
 import static org.wildfly.extension.ai.chat.MistralAIChatLanguageModelProviderRegistrar.SAFE_PROMPT;
 
@@ -28,14 +27,17 @@ import org.jboss.dmr.ModelNode;
 import org.wildfly.extension.ai.AIAttributeDefinitions;
 
 import dev.langchain4j.model.mistralai.MistralAiChatModel;
-import org.wildfly.subsystem.service.ResourceServiceConfigurator;
+import org.wildfly.service.capture.ValueRegistry;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
-import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
 
 /**
  * Configures an aggregate ChatModel provider service.
  */
-public class MistralAIChatModelProviderServiceConfigurator implements ResourceServiceConfigurator {
+public class MistralAIChatModelProviderServiceConfigurator extends AbstractChatModelProviderServiceConfigurator {
+
+    MistralAIChatModelProviderServiceConfigurator(ValueRegistry<String, ChatLanguageModel> registry) {
+        super(registry);
+    }
 
     @Override
     public ResourceServiceInstaller configure(OperationContext context, ModelNode model) throws OperationFailedException {
@@ -73,8 +75,6 @@ public class MistralAIChatModelProviderServiceConfigurator implements ResourceSe
                 return builder.build();
             }
         };
-        return CapabilityServiceInstaller.builder(CHAT_MODEL_PROVIDER_CAPABILITY, factory)
-                .asActive()
-                .build();
+        return installService(context.getCurrentAddressValue(), factory);
     }
 }

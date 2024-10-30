@@ -57,6 +57,9 @@ public class AIAttributeDefinitions {
     public static final SimpleAttributeDefinition TOP_P = new SimpleAttributeDefinitionBuilder("top-p", ModelType.DOUBLE, true)
             .setAllowExpression(true)
             .build();
+    public static final SimpleAttributeDefinition USER_MESSAGE = new SimpleAttributeDefinitionBuilder("user-message", ModelType.STRING, false)
+            .setAllowExpression(true)
+            .build();
 
     public static enum ResponseFormat {
         JSON, TEXT;

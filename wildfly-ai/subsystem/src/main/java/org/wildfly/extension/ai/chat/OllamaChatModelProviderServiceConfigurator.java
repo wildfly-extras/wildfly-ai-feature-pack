@@ -4,8 +4,6 @@
  */
 package org.wildfly.extension.ai.chat;
 
-
-
 import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
@@ -13,7 +11,6 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_RETRIES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
-import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
@@ -24,18 +21,19 @@ import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.dmr.ModelNode;
 import org.wildfly.extension.ai.AIAttributeDefinitions;
+
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
-import org.wildfly.subsystem.service.ResourceServiceConfigurator;
+
+import org.wildfly.service.capture.ValueRegistry;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
-import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
 
 /**
  * Configures an aggregate ChatModel provider service.
  */
-public class OllamaChatModelProviderServiceConfigurator implements ResourceServiceConfigurator {
+public class OllamaChatModelProviderServiceConfigurator extends AbstractChatModelProviderServiceConfigurator {
 
-
-    public OllamaChatModelProviderServiceConfigurator() {
+    public OllamaChatModelProviderServiceConfigurator(ValueRegistry<String, ChatLanguageModel> registry) {
+        super(registry);
     }
 
     @Override
@@ -59,14 +57,12 @@ public class OllamaChatModelProviderServiceConfigurator implements ResourceServi
                         .temperature(temperature)
                         .timeout(Duration.ofMillis(connectTimeOut))
                         .modelName(modelName);
-                if(isJson) {
+                if (isJson) {
                     builder.format("json");
                 }
                 return builder.build();
             }
         };
-        return CapabilityServiceInstaller.builder(CHAT_MODEL_PROVIDER_CAPABILITY, factory)
-                .asActive()
-                .build();
+        return installService(context.getCurrentAddressValue(), factory);
     }
 }

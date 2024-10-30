@@ -30,6 +30,8 @@ import org.jboss.dmr.ModelType;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
 
+import dev.langchain4j.model.chat.ChatLanguageModel;
+import org.wildfly.service.capture.ValueExecutorRegistry;
 import org.wildfly.subsystem.resource.ChildResourceDefinitionRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrationContext;
@@ -59,13 +61,14 @@ public class OpenAIChatLanguageModelProviderRegistrar implements ChildResourceDe
     private final ResourceDescriptor descriptor;
     static final String NAME = "openai-chat-model";
     public static final PathElement PATH = PathElement.pathElement(NAME);
+    private final ValueExecutorRegistry<String, ChatLanguageModel> registry = ValueExecutorRegistry.newInstance();
 
     public OpenAIChatLanguageModelProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
         this.registration = ResourceRegistration.of(PATH);
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(CHAT_MODEL_PROVIDER_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
-                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new OpenAIChatModelProviderServiceConfigurator()))
+                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new OpenAIChatModelProviderServiceConfigurator(registry)))
                 .build();
     }
 
@@ -73,6 +76,7 @@ public class OpenAIChatLanguageModelProviderRegistrar implements ChildResourceDe
     public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext context) {
         ResourceDefinition definition = ResourceDefinition.builder(this.registration, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
+        ChatModelConnectionCheckerOperationHandler.register(resourceRegistration, descriptor, registry);
         resourceRegistration.registerAdditionalRuntimePackages(RuntimePackageDependency.required("dev.langchain4j.openai"));
         ManagementResourceRegistrar.of(this.descriptor).register(resourceRegistration);
         return resourceRegistration;

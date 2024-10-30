@@ -14,7 +14,6 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
-import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.FREQUENCY_PENALTY;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.ORGANIZATION_ID;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.PRESENCE_PENALTY;
@@ -28,16 +27,16 @@ import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.dmr.ModelNode;
 import org.wildfly.extension.ai.AIAttributeDefinitions;
-import org.wildfly.subsystem.service.ResourceServiceConfigurator;
+import org.wildfly.service.capture.ValueRegistry;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
-import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
 
 /**
  * Configures an aggregate ChatModel provider service.
  */
-public class OpenAIChatModelProviderServiceConfigurator implements ResourceServiceConfigurator {
+public class OpenAIChatModelProviderServiceConfigurator extends AbstractChatModelProviderServiceConfigurator {
 
-    public OpenAIChatModelProviderServiceConfigurator() {
+    public OpenAIChatModelProviderServiceConfigurator(ValueRegistry<String, ChatLanguageModel> registry) {
+        super(registry);
     }
 
     @Override
@@ -59,7 +58,7 @@ public class OpenAIChatModelProviderServiceConfigurator implements ResourceServi
         Supplier<ChatLanguageModel> factory = new Supplier<>() {
             @Override
             public ChatLanguageModel get() {
-                OpenAiChatModel.OpenAiChatModelBuilder builder =  OpenAiChatModel.builder()
+                OpenAiChatModel.OpenAiChatModelBuilder builder = OpenAiChatModel.builder()
                         .apiKey(key)
                         .baseUrl(baseUrl)
                         .frequencyPenalty(frequencyPenalty)
@@ -74,14 +73,12 @@ public class OpenAIChatModelProviderServiceConfigurator implements ResourceServi
                         .temperature(temperature)
                         .timeout(Duration.ofMillis(connectTimeOut))
                         .topP(topP);
-                if(isJson) {
+                if (isJson) {
                     builder.responseFormat("json_object");
                 }
                 return builder.build();
             }
         };
-        return CapabilityServiceInstaller.builder(CHAT_MODEL_PROVIDER_CAPABILITY, factory)
-                .asActive()
-                .build();
+        return installService(context.getCurrentAddressValue(), factory);
     }
 }

@@ -16,6 +16,7 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
 
+import dev.langchain4j.model.chat.ChatLanguageModel;
 import java.util.Collection;
 import java.util.List;
 import org.jboss.as.controller.AttributeDefinition;
@@ -28,6 +29,7 @@ import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.controller.registry.RuntimePackageDependency;
 import org.jboss.dmr.ModelType;
+import org.wildfly.service.capture.ValueExecutorRegistry;
 
 import org.wildfly.subsystem.resource.ChildResourceDefinitionRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
@@ -51,13 +53,14 @@ public class MistralAIChatLanguageModelProviderRegistrar implements ChildResourc
     private final ResourceDescriptor descriptor;
     static final String NAME = "mistral-ai-chat-model";
     public static final PathElement PATH = PathElement.pathElement(NAME);
+    private final ValueExecutorRegistry<String, ChatLanguageModel> registry = ValueExecutorRegistry.newInstance();
 
     public MistralAIChatLanguageModelProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
         this.registration = ResourceRegistration.of(PATH);
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(CHAT_MODEL_PROVIDER_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
-                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new MistralAIChatModelProviderServiceConfigurator()))
+                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new MistralAIChatModelProviderServiceConfigurator(registry)))
                 .build();
     }
 
@@ -65,6 +68,7 @@ public class MistralAIChatLanguageModelProviderRegistrar implements ChildResourc
     public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext context) {
         ResourceDefinition definition = ResourceDefinition.builder(this.registration, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
+        ChatModelConnectionCheckerOperationHandler.register(resourceRegistration, descriptor, registry);
         resourceRegistration.registerAdditionalRuntimePackages(RuntimePackageDependency.required("dev.langchain4j.mistral-ai"));
         ManagementResourceRegistrar.of(this.descriptor).register(resourceRegistration);
         return resourceRegistration;
