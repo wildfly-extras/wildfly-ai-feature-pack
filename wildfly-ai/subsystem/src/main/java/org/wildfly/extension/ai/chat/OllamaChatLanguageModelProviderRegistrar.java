@@ -22,7 +22,11 @@ import org.jboss.as.controller.ResourceRegistration;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.controller.registry.RuntimePackageDependency;
+
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
+
+import dev.langchain4j.model.chat.ChatLanguageModel;
+import org.wildfly.service.capture.ValueExecutorRegistry;
 import org.wildfly.subsystem.resource.ChildResourceDefinitionRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrationContext;
@@ -38,13 +42,14 @@ public class OllamaChatLanguageModelProviderRegistrar implements ChildResourceDe
     private final ResourceDescriptor descriptor;
     static final String NAME = "ollama-chat-model";
     public static final PathElement PATH = PathElement.pathElement(NAME);
+    private final ValueExecutorRegistry<String, ChatLanguageModel> registry = ValueExecutorRegistry.newInstance();
 
     public OllamaChatLanguageModelProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
         this.registration = ResourceRegistration.of(PATH);
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(CHAT_MODEL_PROVIDER_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
-                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new OllamaChatModelProviderServiceConfigurator()))
+                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new OllamaChatModelProviderServiceConfigurator(registry)))
                 .build();
     }
 
@@ -52,6 +57,7 @@ public class OllamaChatLanguageModelProviderRegistrar implements ChildResourceDe
     public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext context) {
         ResourceDefinition definition = ResourceDefinition.builder(this.registration, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
+        ChatModelConnectionCheckerOperationHandler.register(resourceRegistration, descriptor, registry);
         resourceRegistration.registerAdditionalRuntimePackages(RuntimePackageDependency.required("dev.langchain4j.ollama"));
         ManagementResourceRegistrar.of(this.descriptor).register(resourceRegistration);
         return resourceRegistration;
