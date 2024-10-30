@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright The WildFly Authors
+~ SPDX-License-Identifier: Apache-2.0
+-->
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="default-embedding-content-retriever">
+    <props>
+        <prop name="org.wildfly.rule.add-on-depends-on" value="all-dependencies"/>
+        <prop name="org.wildfly.rule.class" value="dev.langchain4j.rag.content.retriever.ContentRetriever"/>
+        <prop name="org.wildfly.rule.add-on" value="ai-content-retriever,default-embedding-content-retriever"/>
+        <prop name="org.wildfly.rule.add-on-description" value="Use embedding content retriever"/>
+    </props>
+    <dependencies>
+        <layer name="ai"/>
+        <layer name="in-memory-embedding-model-all-minilm-l6-v2"/>
+        <layer name="in-memory-embedding-store"/>
+    </dependencies>
+    <feature spec="subsystem.ai">
+        <feature spec="subsystem.ai.embedding-store-content-retriever">
+            <param name="embedding-store-content-retriever" value="embedding-store-retriever"/>
+            <param name="embedding-model" value="all-minilm-l6-v2"/>
+            <param name="embedding-store" value="in-memory"/>
+            <param name="max-results" value="${org.wildfly.ai.embedding.retriever.max.results,env.EMBEDDING_RETRIEVER_MAX_RESULTS:2}"/>
+            <param name="min-score" value="${org.wildfly.ai.embedding.retriever.min.score,env.EMBEDDING_RETRIEVER_MIN_SCORE:0.7}"/>
+        </feature>
+    </feature>
+</layer-spec>

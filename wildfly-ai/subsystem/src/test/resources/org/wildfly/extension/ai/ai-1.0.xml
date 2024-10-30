@@ -9,10 +9,11 @@
         <openai-chat-model name="mychat" api-key="${env.GROQ_API_KEY}" base-url="https://api.groq.com/openai/v1" model-name="llama3-8b-8192"/>
     </chat-language-models>
     <embedding-models>
-        <embedding-model name="myembedding" module="dev.langchain4j.embeddings.all-minilm-l6-v2" embedding-class="dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel"/>
+        <in-memory-embedding-model name="myembedding" module="dev.langchain4j.embeddings.all-minilm-l6-v2" embedding-class="dev.langchain4j.model.embedding.AllMiniLmL6V2EmbeddingModel"/>
     </embedding-models>
     <embedding-stores>
-        <in-memory-embedding-store name="mystore" file="/home/ehugonne/dev/AI/crawler/crawler/wildfly-admin-embeddings.json"/>
+        <in-memory-embedding-store name="mystore" path="/home/ehugonne/dev/AI/crawler/crawler/wildfly-admin-embeddings.json"/>
+        <weaviate-embedding-store name="myWeaviatestore" socket-binding="weaviate" ssl-enabled="false" object-class="Simple" metadata="url language parent_url file_name file_path title subtitle"/>
     </embedding-stores>
     <content-retrievers>
         <embedding-store-content-retriever name="myretriever" embedding-store="mystore" embedding-model="myembedding"/>

@@ -4,10 +4,22 @@
   ~ SPDX-License-Identifier: Apache-2.0
   -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="web-search-engines">
+    <props>
+        <prop name="org.wildfly.rule.class" value="dev.langchain4j.rag.content.retriever.ContentRetriever"/>
+        <prop name="org.wildfly.rule.add-on-depends-on" value="ai"/>
+        <prop name="org.wildfly.rule.add-on" value="ai-content-retriever,web-search-engines"/>
+        <prop name="org.wildfly.rule.add-on-description" value="Use Web search engines as content retrievers"/>
+    </props>
     <dependencies>
         <layer name="ai"/>
     </dependencies>
     <packages>
         <package name="dev.langchain4j.web-search-engines"/>
     </packages>
+    <feature spec="subsystem.ai">
+        <feature spec="subsystem.ai.web-search-content-retriever">
+            <param name="web-search-content-retriever" value="web-search-retriever" />
+            <param name="tavily" value="{api-key=${env.TAVILY_API_KEY}, base-url=https://api.tavily.com, connect-timeout=20000, exclude-domains=[example.org], include-domains=[example.com], include-answer=true}"/>
+        </feature>
+    </feature>
 </layer-spec>

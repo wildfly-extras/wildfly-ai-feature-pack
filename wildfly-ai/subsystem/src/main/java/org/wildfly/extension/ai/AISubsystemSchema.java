@@ -4,19 +4,19 @@
  */
 package org.wildfly.extension.ai;
 
-import org.wildfly.extension.ai.model.chat.OpenAIChatLanguageModelProviderRegistrar;
+import org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar;
 import org.jboss.as.controller.PersistentResourceXMLDescription;
 import org.jboss.as.controller.PersistentSubsystemSchema;
 import org.jboss.as.controller.SubsystemSchema;
 import org.jboss.as.controller.xml.VersionedNamespace;
 import org.jboss.staxmapper.IntVersion;
-import org.wildfly.extension.ai.model.chat.OllamaChatLanguageModelProviderRegistrar;
-import org.wildfly.extension.ai.model.embedding.EmbeddingModelProviderRegistrar;
-import org.wildfly.extension.ai.store.embedding.InMemoryEmbeddingStoreProviderRegistrar;
-import org.wildfly.extension.ai.model.embedding.OllamaEmbeddingModelProviderRegistrar;
+import org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar;
+import org.wildfly.extension.ai.embedding.model.InMemoryEmbeddingModelProviderRegistrar;
+import org.wildfly.extension.ai.embedding.store.InMemoryEmbeddingStoreProviderRegistrar;
+import org.wildfly.extension.ai.embedding.model.OllamaEmbeddingModelProviderRegistrar;
 import org.wildfly.extension.ai.rag.retriever.EmbeddingStoreContentRetrieverProviderRegistrar;
 import org.wildfly.extension.ai.rag.retriever.WebSearchContentContentRetrieverProviderRegistrar;
-import org.wildfly.extension.ai.store.embedding.WeaviateEmbeddingStoreProviderRegistrar;
+import org.wildfly.extension.ai.embedding.store.WeaviateEmbeddingStoreProviderRegistrar;
 
 /**
  * Enumeration of AI subsystem schema versions.
@@ -46,7 +46,7 @@ enum AISubsystemSchema implements PersistentSubsystemSchema<AISubsystemSchema> {
                         .build())
                 .addChild(PersistentResourceXMLDescription.decorator("embedding-models")
                         .addChild(factory.builder(OllamaEmbeddingModelProviderRegistrar.PATH).addAttributes(OllamaEmbeddingModelProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .addChild(factory.builder(EmbeddingModelProviderRegistrar.PATH).addAttributes(EmbeddingModelProviderRegistrar.ATTRIBUTES.stream()).build())
+                        .addChild(factory.builder(InMemoryEmbeddingModelProviderRegistrar.PATH).addAttributes(InMemoryEmbeddingModelProviderRegistrar.ATTRIBUTES.stream()).build())
                         .build())
                 .addChild(PersistentResourceXMLDescription.decorator("embedding-stores")
                         .addChild(factory.builder(InMemoryEmbeddingStoreProviderRegistrar.PATH).addAttributes(InMemoryEmbeddingStoreProviderRegistrar.ATTRIBUTES.stream()).build())

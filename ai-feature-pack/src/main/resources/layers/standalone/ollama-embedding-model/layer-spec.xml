@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright The WildFly Authors
+~ SPDX-License-Identifier: Apache-2.0
+-->
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="ollama-embedding-model">
+    <props>
+        <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
+        <prop name="org.wildfly.rule.add-on" value="ai-embedding-model,ollama-embedding-model"/>
+        <prop name="org.wildfly.rule.add-on-description" value="Use ollama for embedding"/>
+    </props>
+    <dependencies>
+        <layer name="ai"/>
+    </dependencies>
+    <packages>
+        <package name="dev.langchain4j.ollama"/>
+    </packages>
+    <feature spec="subsystem.ai">
+        <feature spec="subsystem.ai.ollama-embedding-model">
+            <param name="ollama-embedding-model" value="ollama"/>
+            <param name="base-url" value="${org.wildfly.ai.ollama.embedding.url,env.OLLAMA_EMBEDDING_URL:http://127.0.0.1:11434}"/>
+            <param name="model-name" value="${org.wildfly.ai.ollama.embedding.model.name,env.OLLAMA_EMBEDDING_MODEL_NAME:llama3.1:8b}"/>
+            <param name="log-requests" value="${org.wildfly.ai.ollama.embedding.log.request,env.OLLAMA_EMBEDDING_LOG_REQUEST:true}"/>
+            <param name="log-responses" value="${org.wildfly.ai.ollama.embedding.log.response,env.OLLAMA_EMBEDDING_LOG_RESPONSE:true}"/>
+        </feature>
+    </feature>
+</layer-spec>

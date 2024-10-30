@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright The WildFly Authors
+~ SPDX-License-Identifier: Apache-2.0
+-->
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="in-memory-embedding-store">
+    <props>
+        <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
+        <prop name="org.wildfly.rule.add-on" value="ai-embedding-store,in-memory-embedding-store"/>
+        <prop name="org.wildfly.rule.add-on-description" value="Use an in memory embedding store"/>
+    </props>
+    <dependencies>
+        <layer name="ai"/>
+    </dependencies>
+    <feature spec="subsystem.ai">
+        <feature spec="subsystem.ai.in-memory-embedding-store">
+            <param name="in-memory-embedding-store" value="in-memory"/>
+            <param name="path" value="embeddings.json"/>
+            <param name="relative-to" value="jboss.server.config.dir"/>
+        </feature>
+    </feature>
+</layer-spec>
