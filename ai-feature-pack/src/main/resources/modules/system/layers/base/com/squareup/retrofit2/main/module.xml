@@ -17,6 +17,7 @@
         <artifact name="${org.jetbrains.kotlin:kotlin-stdlib}"/>
         <artifact name="${org.jetbrains.kotlin:kotlin-stdlib-common}"/>
         <artifact name="${com.squareup.okhttp3:okhttp}"/>
+        <artifact name="${com.squareup.okhttp3:okhttp-sse}"/>
         <artifact name="${com.squareup.okio:okio}"/>
         <artifact name="${com.squareup.okio:okio-jvm}"/>
     </resources>

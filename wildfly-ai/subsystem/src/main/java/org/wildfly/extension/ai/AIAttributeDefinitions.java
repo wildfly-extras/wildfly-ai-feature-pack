@@ -40,21 +40,28 @@ public class AIAttributeDefinitions {
     public static final SimpleAttributeDefinition MAX_RETRIES = SimpleAttributeDefinitionBuilder.create("max-retries", ModelType.INT, true)
             .setAllowExpression(true)
             .build();
-    public static final SimpleAttributeDefinition MODEL_NAME = new SimpleAttributeDefinitionBuilder("model-name", ModelType.STRING, false)
+    public static final SimpleAttributeDefinition MAX_TOKEN = new SimpleAttributeDefinitionBuilder("max-token", ModelType.INT, true)
             .setAllowExpression(true)
+            .setDefaultValue(new ModelNode(1000))
             .build();
-    public static final SimpleAttributeDefinition TEMPERATURE = new SimpleAttributeDefinitionBuilder("temperature", ModelType.DOUBLE, true)
+    public static final SimpleAttributeDefinition MODEL_NAME = new SimpleAttributeDefinitionBuilder("model-name", ModelType.STRING, false)
             .setAllowExpression(true)
             .build();
     public static final SimpleAttributeDefinition RESPONSE_FORMAT = new SimpleAttributeDefinitionBuilder("response-format", ModelType.STRING, true)
             .setValidator(EnumValidator.create(ResponseFormat.class))
             .setAllowExpression(true)
             .build();
+    public static final SimpleAttributeDefinition TEMPERATURE = new SimpleAttributeDefinitionBuilder("temperature", ModelType.DOUBLE, true)
+            .setAllowExpression(true)
+            .build();
+    public static final SimpleAttributeDefinition TOP_P = new SimpleAttributeDefinitionBuilder("top-p", ModelType.DOUBLE, true)
+            .setAllowExpression(true)
+            .build();
 
     public static enum ResponseFormat {
         JSON, TEXT;
-        
-        public static boolean isJson(String format){
+
+        public static boolean isJson(String format) {
             return format != null && JSON == valueOf(format);
         }
     }

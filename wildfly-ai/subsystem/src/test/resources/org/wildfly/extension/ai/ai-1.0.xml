@@ -5,6 +5,7 @@
 
 <subsystem xmlns="urn:jboss:domain:ai:1.0">
     <chat-language-models>
+        <mistral-ai-chat-model name="mistral"  api-key="demo" base-url="https://api.mistral.ai/v1" model-name="mistral-small-latest"/>
         <openai-chat-model name="chat" base-url="http://langchain4j.dev/demo/openai/v1" api-key="demo" model-name="gpt-4"/>
         <openai-chat-model name="mychat" api-key="${env.GROQ_API_KEY}" base-url="https://api.groq.com/openai/v1" model-name="llama3-8b-8192"/>
     </chat-language-models>

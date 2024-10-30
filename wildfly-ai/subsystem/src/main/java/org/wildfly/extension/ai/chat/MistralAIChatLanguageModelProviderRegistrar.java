@@ -11,7 +11,9 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_TOKEN;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
 
 import java.util.Collection;
@@ -27,45 +29,35 @@ import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.controller.registry.RuntimePackageDependency;
 import org.jboss.dmr.ModelType;
 
-import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
-import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
-
 import org.wildfly.subsystem.resource.ChildResourceDefinitionRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrationContext;
 import org.wildfly.subsystem.resource.ResourceDescriptor;
 import org.wildfly.subsystem.resource.operation.ResourceOperationRuntimeHandler;
 
-public class OpenAIChatLanguageModelProviderRegistrar implements ChildResourceDefinitionRegistrar {
-    public static final SimpleAttributeDefinition FREQUENCY_PENALTY = new SimpleAttributeDefinitionBuilder("frequency-penalty", ModelType.DOUBLE, true)
-            .setAllowExpression(true)
-            .build();
-    public static final SimpleAttributeDefinition ORGANIZATION_ID = new SimpleAttributeDefinitionBuilder("organization-id", ModelType.STRING, true)
-            .setAllowExpression(true)
-            .build();
-    public static final SimpleAttributeDefinition PRESENCE_PENALTY = new SimpleAttributeDefinitionBuilder("presence-penalty", ModelType.DOUBLE, true)
-            .setAllowExpression(true)
-            .build();
-    public static final SimpleAttributeDefinition SEED = new SimpleAttributeDefinitionBuilder("seed", ModelType.INT, true)
-            .setAllowExpression(true)
-            .build();
+public class MistralAIChatLanguageModelProviderRegistrar implements ChildResourceDefinitionRegistrar {
 
+    public static final SimpleAttributeDefinition RANDOM_SEED = new SimpleAttributeDefinitionBuilder("random-seed", ModelType.INT, true)
+            .setAllowExpression(true)
+            .build();
+    public static final SimpleAttributeDefinition SAFE_PROMPT = SimpleAttributeDefinitionBuilder.create("safe-prompt", ModelType.BOOLEAN, true)
+            .setAllowExpression(true)
+            .build();
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(API_KEY, BASE_URL, CONNECT_TIMEOUT,
-            FREQUENCY_PENALTY, LOG_REQUESTS, LOG_RESPONSES, MAX_TOKEN, MODEL_NAME, ORGANIZATION_ID, PRESENCE_PENALTY, 
-            RESPONSE_FORMAT, SEED, TEMPERATURE, TOP_P);
+            LOG_REQUESTS, LOG_RESPONSES, MAX_TOKEN, MODEL_NAME, RANDOM_SEED, RESPONSE_FORMAT, SAFE_PROMPT, TEMPERATURE, TOP_P);
 
     private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;
-    static final String NAME = "openai-chat-model";
+    static final String NAME = "mistral-ai-chat-model";
     public static final PathElement PATH = PathElement.pathElement(NAME);
 
-    public OpenAIChatLanguageModelProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
+    public MistralAIChatLanguageModelProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
         this.registration = ResourceRegistration.of(PATH);
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(CHAT_MODEL_PROVIDER_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
-                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new OpenAIChatModelProviderServiceConfigurator()))
+                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new MistralAIChatModelProviderServiceConfigurator()))
                 .build();
     }
 
@@ -73,7 +65,7 @@ public class OpenAIChatLanguageModelProviderRegistrar implements ChildResourceDe
     public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext context) {
         ResourceDefinition definition = ResourceDefinition.builder(this.registration, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
-        resourceRegistration.registerAdditionalRuntimePackages(RuntimePackageDependency.required("dev.langchain4j.openai"));
+        resourceRegistration.registerAdditionalRuntimePackages(RuntimePackageDependency.required("dev.langchain4j.mistral-ai"));
         ManagementResourceRegistrar.of(this.descriptor).register(resourceRegistration);
         return resourceRegistration;
     }
