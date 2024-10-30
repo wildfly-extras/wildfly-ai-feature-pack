@@ -10,10 +10,12 @@ import org.jboss.as.controller.PersistentSubsystemSchema;
 import org.jboss.as.controller.SubsystemSchema;
 import org.jboss.as.controller.xml.VersionedNamespace;
 import org.jboss.staxmapper.IntVersion;
+import org.wildfly.extension.ai.chat.MistralAIChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.embedding.model.InMemoryEmbeddingModelProviderRegistrar;
-import org.wildfly.extension.ai.embedding.store.InMemoryEmbeddingStoreProviderRegistrar;
 import org.wildfly.extension.ai.embedding.model.OllamaEmbeddingModelProviderRegistrar;
+import org.wildfly.extension.ai.embedding.store.InMemoryEmbeddingStoreProviderRegistrar;
+
 import org.wildfly.extension.ai.rag.retriever.EmbeddingStoreContentRetrieverProviderRegistrar;
 import org.wildfly.extension.ai.rag.retriever.WebSearchContentContentRetrieverProviderRegistrar;
 import org.wildfly.extension.ai.embedding.store.WeaviateEmbeddingStoreProviderRegistrar;
@@ -41,6 +43,7 @@ enum AISubsystemSchema implements PersistentSubsystemSchema<AISubsystemSchema> {
         PersistentResourceXMLDescription.Factory factory = PersistentResourceXMLDescription.factory(this);
         return factory.builder(AISubsystemRegistrar.PATH)
                 .addChild(PersistentResourceXMLDescription.decorator("chat-language-models")
+                        .addChild(factory.builder(MistralAIChatLanguageModelProviderRegistrar.PATH).addAttributes(MistralAIChatLanguageModelProviderRegistrar.ATTRIBUTES.stream()).build())
                         .addChild(factory.builder(OpenAIChatLanguageModelProviderRegistrar.PATH).addAttributes(OpenAIChatLanguageModelProviderRegistrar.ATTRIBUTES.stream()).build())
                         .addChild(factory.builder(OllamaChatLanguageModelProviderRegistrar.PATH).addAttributes(OllamaChatLanguageModelProviderRegistrar.ATTRIBUTES.stream()).build())
                         .build())

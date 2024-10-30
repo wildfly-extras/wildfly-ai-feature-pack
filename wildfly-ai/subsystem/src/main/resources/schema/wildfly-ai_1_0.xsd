@@ -139,6 +139,13 @@
             </xs:documentation>
         </xs:annotation>
         <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="mistral-ai-chat-model" type="mistralAIChatModelType">
+                <xs:annotation>
+                    <xs:documentation>
+                        A chat model provider element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="openai-chat-model" type="openaiChatModelType">
                 <xs:annotation>
                     <xs:documentation>
@@ -243,6 +250,98 @@
             <xs:annotation>
                 <xs:documentation>
                     The seed of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="temperature" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The temperature of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="top-p" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The top P of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="mistralAIChatModelType">
+        <xs:annotation>
+            <xs:documentation>
+                A provider of an Mistral AI chat model.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of this provider.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="api-key" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    The key to connect to the Mistral AI model.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="base-url" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    The base url to the chat model endpoint
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="connect-timeout" type="xs:long" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The connection timeout of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-requests" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API requests
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-responses" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API responses
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="max-token" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The maximum number of token of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="model-name" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of the model to use
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="random-seed" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The seed of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="safe-prompt" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to inject a safety prompt before all conversations.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
