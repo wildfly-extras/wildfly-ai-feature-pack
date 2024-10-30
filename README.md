@@ -24,12 +24,27 @@ The Maven coordinates to use is: `org.wildfly:wildfly-ai-galleon-pack::<version>
 Supported AI types
 ========================
 
-For each AI type it supports, the feature-pack provides 5 Galleon layers that build upon each other :
- * Support for Ollama: `ollama` layer
- * Support for embedded embeddings model: `embeddings`layer
- * Support for Open AI client API (to connect to AzureAI, ChatGPT or Groq for example):  `openai`layer
- * Support for Weaviate vectord database as an embedding store: `weaviate`layer
- * Support for web search engines as content providers: `web-search-engines` layer
+For each AI type it supports, the feature-pack provides 17 Galleon layers that build upon each other :
+* Support for chat models to interact with a LLM:
+  * `mistral-ai-chat-model`
+  * `ollama-chat-model`
+  * `openai-chat-model` (current configuration target Groq)
+* Support for embedding models: 
+  * `in-memory-embedding-model-all-minilm-l6-v2`
+  * `in-memory-embedding-model-all-minilm-l6-v2-q`
+  * `in-memory-embedding-model-bge-small-en`
+  * `in-memory-embedding-model-bge-small-en-q`
+  * `in-memory-embedding-model-bge-small-en-v15`
+  * `in-memory-embedding-model-bge-small-en-v15-q`
+  * `in-memory-embedding-model-e5-small-v2`
+  * `in-memory-embedding-model-e5-small-v2-q`
+  * `ollama-embedding-model`
+* Support for embedding stores:
+  * `in-memory-embedding-store`
+  * `weaviate-embedding-store`
+* Support for content retriever for RAG:
+  * `default-embedding-content-retriever`: default content retriever using an `in-memory-embedding-store` and `in-memory-embedding-model-all-minilm-l6-v2` for embedding model.
+  * `web-search-engines`
 
 For more details on these you can take a look at [LangChain4J](https://docs.langchain4j.dev/) and [Smallrye-llm](https://github.com/smallrye/smallrye-llm).
 
@@ -47,7 +62,7 @@ You need to define a Galleon provisioning configuration file such as:
 ```
 <?xml version="1.0" ?>
 <installation xmlns="urn:jboss:galleon:provisioning:3.0">
-  <feature-pack location="org.wildfly:wildfly-galleon-pack:33.0.0.Final">
+  <feature-pack location="org.wildfly:wildfly-galleon-pack:34.0.0.Final">
     <default-configs inherit="false"/>
     <packages inherit="false"/>
   </feature-pack>
@@ -59,8 +74,8 @@ You need to define a Galleon provisioning configuration file such as:
     <layers>
       <!-- Base layer -->
       <include name="cloud-server"/>
-      <include name="ollama"/>
-      <include name="embeddings"/>
+      <include name="ollama-chat-model"/>
+      <include name="default-embedding-content-retriever"/>
     </layers>
   </config>
   <options>
@@ -83,17 +98,30 @@ You need to include the datasources feature-pack and layers in the Maven Plugin 
 ...
 <feature-packs>
   <feature-pack>
-    <location>org.wildfly:wildfly-galleon-pack:33.0.0.Final</location>
+    <location>org.wildfly:wildfly-galleon-pack:34.0.0.Final</location>
   </feature-pack>
   <feature-pack>
     <location>org.wildfly:wildfly-ai-galleon-pack:1.0.0-SNAPSHOT</location>
   </feature-pack>
 </feature-packs>
 <layers>
-  <!-- Base layer -->
-  <layer>cloud-server</layer>
-  <layer>ollama</layer>
-  <layer>embeddings</layer>
+    <!-- layers may be used to customize the server to provision-->
+    <layer>cloud-server</layer>
+    <layer>ollama-chat-model</layer>
+    <layer>default-embedding-content-retriever</layer>
+    <!-- providing the following layers -->
+    <!--
+      <layer>in-memory-embedding-model-all-minilm-l6-v2</layer>
+      <layer>in-memory-embedding-store</layer>
+    -->
+    <!-- Exisiting layers thart can be used -->
+    <!--
+      <layer>ollama-embedding-model</layer>
+      <layer>openai-chat-model</layer>
+      <layer>mistral-ai-chat-model</layer>
+      <layer>weaviate-embedding-store</layer>
+      <layer>web-search-engines</layer>
+    -->
 </layers>
 ...
 ```
