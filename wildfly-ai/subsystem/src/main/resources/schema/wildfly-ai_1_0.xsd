@@ -65,7 +65,7 @@
             </xs:documentation>
         </xs:annotation>
         <xs:choice minOccurs="0" maxOccurs="unbounded">
-            <xs:element name="embedding-model" type="embeddingModelType">
+            <xs:element name="in-memory-embedding-model" type="inMemoryEmbeddingModelType">
                 <xs:annotation>
                     <xs:documentation>
                         An embedding-model provider definition element.
@@ -377,7 +377,7 @@
         </xs:attribute>
     </xs:complexType>
 
-    <xs:complexType name="embeddingModelType">
+    <xs:complexType name="inMemoryEmbeddingModelType">
         <xs:annotation>
             <xs:documentation>
                 A provider of embedding model.
@@ -420,10 +420,18 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="file" type="xs:string" use="required">
+        <xs:attribute name="path" use="required">
             <xs:annotation>
-                <xs:documentation>
-                    The module to load the embedding model from.
+                <xs:documentation>The actual filesystem path. Treated as an absolute path, unless the
+                'relative-to' attribute is specified, in which case the value
+                is treated as relative to that path.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="relative-to" type="xs:string" use="optional">
+           <xs:annotation>
+                <xs:documentation>Reference to a filesystem path defined in the "paths" section
+                of the server configuration.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -481,6 +489,13 @@
             <xs:annotation>
                 <xs:documentation>
                     If the connection to the Weaviate store is secured.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="metadata" type="stringList" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The list of metedata fields to get from the weaviate store.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -694,4 +709,14 @@
             </xs:simpleType>
         </xs:attribute>
     </xs:complexType>
+
+    <xs:simpleType name="stringList">
+        <xs:restriction base="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    <![CDATA[ A list of string separated by whitespaces. ]]>
+                </xs:documentation>
+            </xs:annotation>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

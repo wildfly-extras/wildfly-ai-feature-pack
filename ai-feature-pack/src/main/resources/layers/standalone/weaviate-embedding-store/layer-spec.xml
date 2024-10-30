@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright The WildFly Authors
+~ SPDX-License-Identifier: Apache-2.0
+-->
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="weaviate-embedding-store">
+    <props>
+        <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
+        <prop name="org.wildfly.rule.add-on" value="ai-embedding-store,weaviate-embedding-store"/>
+        <prop name="org.wildfly.rule.add-on-description" value="Use Weaviate as an embedding store"/>
+        <prop name="org.wildfly.rule.expect-add-on-family" value="ai-embedding-model"/>
+    </props>
+    <dependencies>
+        <layer name="ai"/>
+    </dependencies>
+    <packages>
+        <package name="dev.langchain4j.weaviate"/>
+    </packages>
+    <feature spec="subsystem.ai">
+        <feature spec="subsystem.ai.weaviate-embedding-store">
+            <param name="weaviate-embedding-store" value="mystore" />
+            <param name="socket-binding" value="${org.wildfly.ai.weaviate.socket-binding,env.WEAVIATE_SOCKET_BINDING:weaviate}"/>
+            <param name="ssl-enabled" value="${org.wildfly.ai.weaviate.ssl-enabled,env.WEAVIATE_SSL_ENABLED:false}"/>
+            <param name="object-class" value="${org.wildfly.ai.weaviate.object-class,env.WEAVIATE_OBJECT_CLASS:Simple}"/>
+            <param name="metadata" value="[url,language,parent_url,file_name,file_path,title,subtitle]"/>
+        </feature>
+    </feature>
+    <feature spec="socket-binding-group.remote-destination-outbound-socket-binding">
+        <param name="socket-binding-group" value="standard-sockets" />
+        <param name="remote-destination-outbound-socket-binding" value="${org.wildfly.ai.weaviate.socket-binding,env.WEAVIATE_SOCKET_BINDING:weaviate}"/>
+        <param name="host" value="${org.wildfly.ai.weaviate.host,env.WEAVIATE_HOST:localhost}"/>
+        <param name="port" value="${org.wildfly.ai.weaviate.port,env.WEAVIATE_PORT:8090}"/>
+    </feature>
+</layer-spec>

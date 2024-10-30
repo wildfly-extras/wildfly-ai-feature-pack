@@ -5,8 +5,10 @@
   -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="ai">
     <props>
-        <prop name="org.wildfly.rule.class" value="dev.langchain4j"/>
-        <prop name="org.wildfly.rule.annotations" value="dev.langchain4j"/>
+        <prop name="org.wildfly.rule.class" value="dev.langchain4j.*,org.eclipse.microprofile.ai.llm.*"/>
+        <prop name="org.wildfly.rule.annotations" value="dev.langchain4j.*,org.eclipse.microprofile.ai.llm.*"/>
+        <prop name="org.wildfly.rule.select-add-on-family-ai-llm" value="-1"/>
+        <prop name="org.wildfly.rule.select-add-on-family-ai-content-retriever" value="-1"/>
     </props>
      <feature spec="subsystem.ai"/>
 </layer-spec>

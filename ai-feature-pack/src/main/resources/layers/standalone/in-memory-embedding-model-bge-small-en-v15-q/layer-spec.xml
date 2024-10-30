@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright The WildFly Authors
+~ SPDX-License-Identifier: Apache-2.0
+-->
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="in-memory-embedding-model-bge-small-en-v15-q">
+    <props>
+        <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
+        <prop name="org.wildfly.rule.add-on" value="ai-embedding-model,in-memory-embedding-model-bge-small-en-v15-q"/>
+        <prop name="org.wildfly.rule.add-on-description" value="Quantized BAAI bge-small-en embedding model that runs within your Java application's process."/>
+    </props>
+    <dependencies>
+        <layer name="ai"/>
+    </dependencies>
+    <packages>
+        <package name="dev.langchain4j.embeddings.bge-small-en-v15-q"/>
+    </packages>
+    <feature spec="subsystem.ai">
+        <feature spec="subsystem.ai.in-memory-embedding-model">
+            <param name="in-memory-embedding-model" value="bge-small-en-v15-q"/>
+            <param name="module" value="dev.langchain4j.embeddings.bge-small-en-v15-q"/>
+            <param name="embedding-class" value="dev.langchain4j.model.embedding.onnx.bgesmallenv15q.BgeSmallEnV15QuantizedEmbeddingModel"/>
+        </feature>
+    </feature>
+</layer-spec>
