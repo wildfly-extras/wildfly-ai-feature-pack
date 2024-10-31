@@ -7,7 +7,6 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>wildfly-ai-galleon-pack</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>AI Galleon pack for WildFly</name>
