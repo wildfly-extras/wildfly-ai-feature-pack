@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.wildfly</groupId>
         <artifactId>wildfly-ai-galleon-pack-parent</artifactId>
-        <version>0.1.0</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>wildfly-ai</artifactId>
     <name>WildFly AI Extension</name>
