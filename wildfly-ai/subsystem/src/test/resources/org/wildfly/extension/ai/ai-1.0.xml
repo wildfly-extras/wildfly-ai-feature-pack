@@ -14,6 +14,9 @@
     </embedding-models>
     <embedding-stores>
         <in-memory-embedding-store name="mystore" path="/home/ehugonne/dev/AI/crawler/crawler/wildfly-admin-embeddings.json"/>
+        <neo4j-embedding-store name="myNeo4jstore" bolt-url="bolt://localhost:7687" username="neo4j" dimension="384">
+            <credential-reference clear-text="passwordOut!"/>
+        </neo4j-embedding-store>
         <weaviate-embedding-store name="myWeaviatestore" socket-binding="weaviate" ssl-enabled="false" object-class="Simple" metadata="url language parent_url file_name file_path title subtitle"/>
     </embedding-stores>
     <content-retrievers>

@@ -41,6 +41,7 @@ For each AI type it supports, the feature-pack provides 17 Galleon layers that b
   * `ollama-embedding-model`
 * Support for embedding stores:
   * `in-memory-embedding-store`
+  * `neo4j-embedding-store`
   * `weaviate-embedding-store`
 * Support for content retriever for RAG:
   * `default-embedding-content-retriever`: default content retriever using an `in-memory-embedding-store` and `in-memory-embedding-model-all-minilm-l6-v2` for embedding model.
@@ -119,6 +120,7 @@ You need to include the datasources feature-pack and layers in the Maven Plugin 
       <layer>ollama-embedding-model</layer>
       <layer>openai-chat-model</layer>
       <layer>mistral-ai-chat-model</layer>
+      <layer>neo4j-embedding-store</layer>
       <layer>weaviate-embedding-store</layer>
       <layer>web-search-engines</layer>
     -->

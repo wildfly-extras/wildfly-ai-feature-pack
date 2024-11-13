@@ -8,10 +8,11 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            targetNamespace="urn:jboss:domain:ai:1.0"
            xmlns="urn:jboss:domain:ai:1.0"
+           xmlns:credential-reference="urn:wildfly:credential-reference:1.1"
            elementFormDefault="qualified"
            attributeFormDefault="unqualified"
            version="1.0">
-
+    <xs:import namespace="urn:wildfly:credential-reference:1.1" schemaLocation="https://www.jboss.org/schema/jbossas/wildfly-credential-reference_1_1.xsd"/>
     <xs:element name="subsystem" type="subsystemType">
         <xs:annotation>
             <xs:documentation>
@@ -93,6 +94,13 @@
                 <xs:annotation>
                     <xs:documentation>
                         An in-memory embedding-store provider definition element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="neo4j-embedding-store" type="neo4jEmbeddingStoreType">
+                <xs:annotation>
+                    <xs:documentation>
+                        A Neo4J embedding-store provider definition element.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -522,15 +530,117 @@
         <xs:attribute name="path" use="required">
             <xs:annotation>
                 <xs:documentation>The actual filesystem path. Treated as an absolute path, unless the
-                'relative-to' attribute is specified, in which case the value
-                is treated as relative to that path.
+                    'relative-to' attribute is specified, in which case the value
+                    is treated as relative to that path.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
         <xs:attribute name="relative-to" type="xs:string" use="optional">
-           <xs:annotation>
+            <xs:annotation>
                 <xs:documentation>Reference to a filesystem path defined in the "paths" section
-                of the server configuration.
+                    of the server configuration.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="neo4jEmbeddingStoreType">
+        <xs:annotation>
+            <xs:documentation>
+                A provider of Neo4J embedding store.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="credential-reference" type="credential-reference:credentialReferenceType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        Credential to be used by the configuration.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of this provider.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="bolt-url" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The bolt url to Neo4J server.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database-name" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of the Neo4J database.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="dimension" type="xs:int" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The dimension of the embedding vector.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="embedding-property" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The optional embeddingProperty name 
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="id-property" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The optional id property name (default: "id").
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="index-name" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The optional index name (default: "vector")
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="label" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The optional label name (default: "Document")
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="metadata-prefix" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The optional metadata prefix (default: "")
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="retrieval-query" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The optional retrieval query 
+                    (default: "RETURN properties(node) AS metadata, node.`idProperty` AS `idProperty`, node.`textProperty` AS `textProperty`, node.`embeddingProperty` AS `embeddingProperty`, score")
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="text-property" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The optional textProperty property name (default: "text")
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The username for connecting to Neo4J server.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>

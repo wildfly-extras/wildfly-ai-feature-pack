@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright The WildFly Authors
+~ SPDX-License-Identifier: Apache-2.0
+-->
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="neo4j-embedding-store">
+    <props>
+        <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
+        <prop name="org.wildfly.rule.add-on" value="ai-embedding-store,neo4j-embedding-store"/>
+        <prop name="org.wildfly.rule.add-on-description" value="Use Neo4J as an embedding store"/>
+        <prop name="org.wildfly.rule.expect-add-on-family" value="ai-embedding-model"/>
+    </props>
+    <dependencies>
+        <layer name="ai"/>
+    </dependencies>
+    <packages>
+        <package name="dev.langchain4j.neo4j"/>
+    </packages>
+    <feature spec="subsystem.ai">
+        <feature spec="subsystem.ai.neo4j-embedding-store">
+            <param name="neo4j-embedding-store" value="neo4j"/>
+            <param name="username" value="${org.wildfly.ai.neo4j.username,env.NEO4J_USER:neo4j}"/>
+            <param name="credential-reference" value="{clear-text=${org.wildfly.ai.neo4j.password,env.NEO4J_PASSWORD:neo4jpassword}}" />
+            <param name="bolt-url" value="${org.wildfly.ai.neo4j.url,env.NEO4J_URL:neo4j://localhost:7687}"/>
+            <param name="dimension" value="${org.wildfly.ai.neo4j.dimension,env.NEO4J_DIMENSION:384}"/>
+        </feature>
+    </feature>
+</layer-spec>

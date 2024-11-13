@@ -15,6 +15,7 @@ import org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.embedding.model.InMemoryEmbeddingModelProviderRegistrar;
 import org.wildfly.extension.ai.embedding.model.OllamaEmbeddingModelProviderRegistrar;
 import org.wildfly.extension.ai.embedding.store.InMemoryEmbeddingStoreProviderRegistrar;
+import org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegistrar;
 
 import org.wildfly.extension.ai.rag.retriever.EmbeddingStoreContentRetrieverProviderRegistrar;
 import org.wildfly.extension.ai.rag.retriever.WebSearchContentContentRetrieverProviderRegistrar;
@@ -53,6 +54,7 @@ enum AISubsystemSchema implements PersistentSubsystemSchema<AISubsystemSchema> {
                         .build())
                 .addChild(PersistentResourceXMLDescription.decorator("embedding-stores")
                         .addChild(factory.builder(InMemoryEmbeddingStoreProviderRegistrar.PATH).addAttributes(InMemoryEmbeddingStoreProviderRegistrar.ATTRIBUTES.stream()).build())
+                        .addChild(factory.builder(Neo4jEmbeddingStoreProviderRegistrar.PATH).addAttributes(Neo4jEmbeddingStoreProviderRegistrar.ATTRIBUTES.stream()).build())
                         .addChild(factory.builder(WeaviateEmbeddingStoreProviderRegistrar.PATH).addAttributes(WeaviateEmbeddingStoreProviderRegistrar.ATTRIBUTES.stream()).build())
                         .build())
                 .addChild(PersistentResourceXMLDescription.decorator("content-retrievers")
