@@ -3,15 +3,15 @@
 
     <parent>
         <groupId>org.wildfly</groupId>
-        <artifactId>wildfly-ai-galleon-pack-parent</artifactId>
+        <artifactId>wildfly-ai-feature-pack-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>wildfly-ai-galleon-pack</artifactId>
+    <artifactId>wildfly-ai-feature-pack</artifactId>
     <packaging>pom</packaging>
 
-    <name>AI Galleon pack for WildFly</name>
+    <name>AI Feature pack for WildFly</name>
   
-    <description>Galleon pack to provide AI integration for WildFly</description>
+    <description>Feature pack to provide AI integration for WildFly</description>
 
     <licenses>
         <license>
