@@ -147,6 +147,11 @@
 
         <dependency>
             <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-neo4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-ollama</artifactId>
         </dependency>
 
@@ -165,9 +170,9 @@
             <artifactId>langchain4j-web-search-engine-google-custom</artifactId>
         </dependency>
 
-            <dependency>
-                <groupId>dev.langchain4j</groupId>
-                <artifactId>langchain4j-web-search-engine-tavily</artifactId>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-web-search-engine-tavily</artifactId>
         </dependency>
 
         <dependency>
@@ -197,6 +202,19 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-cypher-dsl-schema-name-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams</artifactId>
         </dependency>
     </dependencies>
     

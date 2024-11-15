@@ -26,8 +26,8 @@
         <connection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</connection>
         <developerConnection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</developerConnection>
         <url>https://github.com/wildfly-extras/wildfly-ai-feature-pack</url>
-      <tag>0.1.0</tag>
-  </scm>
+        <tag>0.1.0</tag>
+    </scm>
 
     <properties>
         <!-- Require Java 11 -->
@@ -52,6 +52,10 @@
         <version.io.weaviate.client>4.9.0</version.io.weaviate.client>
         <version.net.java.dev.jna>5.13.0</version.net.java.dev.jna>
         <version.org.jetbrains.kotlin>1.9.10</version.org.jetbrains.kotlin>
+        <version.org.neo4j.cypher>2024.2.0</version.org.neo4j.cypher>
+        <version.org.neo4j.driver>5.26.0</version.org.neo4j.driver>
+        <version.org.reactivestreams.reactive-streams>1.0.4</version.org.reactivestreams.reactive-streams>
+
     </properties>
 
     <dependencyManagement>
@@ -323,6 +327,17 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-neo4j</artifactId>
+                <version>${version.dev.langchain4j}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
             <dependency>
                 <groupId>dev.langchain4j</groupId>
@@ -464,6 +479,43 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            
+            <dependency>
+                <groupId>org.neo4j.driver</groupId>
+                <artifactId>neo4j-java-driver</artifactId>
+                <version>${version.org.neo4j.driver}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.neo4j</groupId>
+                <artifactId>neo4j-cypher-dsl-schema-name-support</artifactId>
+                <version>${version.org.neo4j.cypher}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.reactivestreams</groupId>
+                <artifactId>reactive-streams</artifactId>
+                <version>${version.org.reactivestreams.reactive-streams}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
     <build>

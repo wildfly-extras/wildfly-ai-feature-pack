@@ -18,6 +18,7 @@
     <dependencies>
         <module name="dev.langchain4j"/>
         <module name="dev.langchain4j.mistral-ai" optional="true"/>
+        <module name="dev.langchain4j.neo4j" optional="true"/>
         <module name="dev.langchain4j.openai" optional="true"/>
         <module name="dev.langchain4j.ollama" optional="true"/>
         <module name="dev.langchain4j.weaviate" optional="true"/>
@@ -35,6 +36,7 @@
         <module name="org.jboss.staxmapper"/>
         <module name="org.wildfly.common"/>
         <module name="org.wildfly.extension.ai.injection"/>
+        <module name="org.wildfly.security.elytron-private"/>
         <module name="org.wildfly.service"/>
         <module name="org.wildfly.subsystem"/>
     </dependencies>

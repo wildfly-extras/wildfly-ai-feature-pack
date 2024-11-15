@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright The WildFly Authors
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+<module name="dev.langchain4j.neo4j" xmlns="urn:jboss:module:1.9">
+
+    <properties>
+        <property name="jboss.api" value="private"/>
+    </properties>
+
+    <resources>
+        <artifact name="${dev.langchain4j:langchain4j-neo4j}"/>
+        <artifact name="${org.neo4j.driver:neo4j-java-driver}"/>
+        <artifact name="${org.neo4j:neo4j-cypher-dsl-schema-name-support}"/>
+        <artifact name="${org.reactivestreams:reactive-streams}"/>
+    </resources>
+
+    <dependencies>
+        <module name="com.fasterxml.jackson.core.jackson-annotations"/>
+        <module name="com.fasterxml.jackson.core.jackson-core"/>
+        <module name="com.fasterxml.jackson.core.jackson-databind"/>
+        <module name="dev.langchain4j"/>
+        <module name="io.netty.netty-buffer"/>
+        <module name="io.netty.netty-codec"/>
+        <module name="io.netty.netty-common"/>
+        <module name="io.netty.netty-handler"/>
+        <module name="io.netty.netty-resolver"/>
+        <module name="io.netty.netty-transport"/>
+        <module name="java.logging"/>
+        <module name="org.apache.commons.compress"/>
+        <module name="org.apache.commons.codec"/>
+        <module name="org.slf4j"/>
+        <module name="org.wildfly.security.elytron-private"/>
+    </dependencies>
+</module> 

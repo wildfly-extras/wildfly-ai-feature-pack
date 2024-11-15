@@ -18,7 +18,7 @@
     </packages>
     <feature spec="subsystem.ai">
         <feature spec="subsystem.ai.weaviate-embedding-store">
-            <param name="weaviate-embedding-store" value="mystore" />
+            <param name="weaviate-embedding-store" value="weaviate" />
             <param name="socket-binding" value="${org.wildfly.ai.weaviate.socket-binding,env.WEAVIATE_SOCKET_BINDING:weaviate}"/>
             <param name="ssl-enabled" value="${org.wildfly.ai.weaviate.ssl-enabled,env.WEAVIATE_SSL_ENABLED:false}"/>
             <param name="object-class" value="${org.wildfly.ai.weaviate.object-class,env.WEAVIATE_OBJECT_CLASS:Simple}"/>
