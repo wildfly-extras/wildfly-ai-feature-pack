@@ -38,20 +38,20 @@
         <version.org.wildfly.common>1.6.0.Final</version.org.wildfly.common>    
         <version.org.wildfly.galleon-plugins>7.0.0.Final</version.org.wildfly.galleon-plugins>
 
-        <version.ai.djl>0.28.0</version.ai.djl>
+        <version.ai.djl>0.30.0</version.ai.djl>
         <version.com.google.apis>v1-rev20240417-2.0.0</version.com.google.apis>
         <version.com.knuddels.jtokkit>1.0.0</version.com.knuddels.jtokkit>
-        <version.com.microsoft.onnxruntime>1.17.1</version.com.microsoft.onnxruntime>
+        <version.com.microsoft.onnxruntime>1.20.0</version.com.microsoft.onnxruntime>
         <version.com.squareup.okhttp>4.12.0</version.com.squareup.okhttp>
         <version.com.squareup.okio-jvm>3.6.0</version.com.squareup.okio-jvm>
         <version.com.squareup.retrofit2>2.9.0</version.com.squareup.retrofit2>
         <version.commons-compress>1.26.1</version.commons-compress>
         <version.dev.ai4j.openai4j>0.23.0</version.dev.ai4j.openai4j>
-        <version.dev.langchain4j>0.36.0</version.dev.langchain4j>
+        <version.dev.langchain4j>0.36.1</version.dev.langchain4j>
         <version.io.smallrye.llm>0.0.1</version.io.smallrye.llm>
         <version.io.weaviate.client>4.9.0</version.io.weaviate.client>
         <version.net.java.dev.jna>5.13.0</version.net.java.dev.jna>
-        <version.org.jetbrains.kotlin>1.9.10</version.org.jetbrains.kotlin>
+        <version.org.jetbrains.kotlin>1.9.25</version.org.jetbrains.kotlin>
         <version.org.neo4j.cypher>2024.2.0</version.org.neo4j.cypher>
         <version.org.neo4j.driver>5.26.0</version.org.neo4j.driver>
         <version.org.reactivestreams.reactive-streams>1.0.4</version.org.reactivestreams.reactive-streams>
