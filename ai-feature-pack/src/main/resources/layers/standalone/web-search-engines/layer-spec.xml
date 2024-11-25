@@ -5,10 +5,10 @@
   -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="web-search-engines">
     <props>
-        <prop name="org.wildfly.rule.class" value="dev.langchain4j.rag.content.retriever.ContentRetriever"/>
         <prop name="org.wildfly.rule.add-on-depends-on" value="ai"/>
         <prop name="org.wildfly.rule.add-on" value="ai-content-retriever,web-search-engines"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use Web search engines as content retrievers"/>
+        <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.rag.content.retriever.ContentRetriever,jakarta.inject.Named[value=web-search-retriever]"/>
     </props>
     <dependencies>
         <layer name="ai"/>
