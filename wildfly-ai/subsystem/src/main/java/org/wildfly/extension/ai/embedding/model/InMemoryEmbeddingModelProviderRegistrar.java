@@ -29,6 +29,7 @@ public class InMemoryEmbeddingModelProviderRegistrar implements ChildResourceDef
 
     public static final SimpleAttributeDefinition EMBEDDING_MODULE = new SimpleAttributeDefinitionBuilder(MODULE, ModelType.STRING, false)
             .setAllowExpression(true)
+            .setValidator(new ModuleIdentifierValidator(false, true))
             .build();
     public static final SimpleAttributeDefinition EMBEDDING_MODEL_CLASS = new SimpleAttributeDefinitionBuilder("embedding-class", ModelType.STRING, false)
             .setAllowExpression(true)
