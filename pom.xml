@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>46</version>
+        <version>47</version>
     </parent>
     <groupId>org.wildfly</groupId>
     <artifactId>wildfly-ai-feature-pack-parent</artifactId>
@@ -26,17 +26,17 @@
         <connection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</connection>
         <developerConnection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</developerConnection>
         <url>https://github.com/wildfly-extras/wildfly-ai-feature-pack</url>
-        <tag>0.1.0</tag>
+        <tag>0.2.1</tag>
     </scm>
 
     <properties>
         <!-- Require Java 11 -->
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
-        <version.org.wildfly>34.0.0.Final</version.org.wildfly>
-        <version.org.wildfly.core>26.0.0.Final</version.org.wildfly.core>
-        <version.org.wildfly.common>1.6.0.Final</version.org.wildfly.common>    
-        <version.org.wildfly.galleon-plugins>7.0.0.Final</version.org.wildfly.galleon-plugins>
+        <version.org.wildfly>34.0.1.Final</version.org.wildfly>
+        <version.org.wildfly.core>26.0.1.Final</version.org.wildfly.core>
+        <version.org.wildfly.common>1.7.0.Final</version.org.wildfly.common>    
+        <version.org.wildfly.galleon-plugins>7.3.1.Final</version.org.wildfly.galleon-plugins>
 
         <version.ai.djl>0.30.0</version.ai.djl>
         <version.com.google.apis>v1-rev20240417-2.0.0</version.com.google.apis>
@@ -46,14 +46,14 @@
         <version.com.squareup.okio-jvm>3.6.0</version.com.squareup.okio-jvm>
         <version.com.squareup.retrofit2>2.9.0</version.com.squareup.retrofit2>
         <version.commons-compress>1.26.1</version.commons-compress>
-        <version.dev.ai4j.openai4j>0.23.0</version.dev.ai4j.openai4j>
+        <version.dev.ai4j.openai4j>0.24.0</version.dev.ai4j.openai4j>
         <version.dev.langchain4j>0.36.1</version.dev.langchain4j>
         <version.io.smallrye.llm>0.0.1</version.io.smallrye.llm>
         <version.io.weaviate.client>4.9.0</version.io.weaviate.client>
         <version.net.java.dev.jna>5.13.0</version.net.java.dev.jna>
         <version.org.jetbrains.kotlin>1.9.25</version.org.jetbrains.kotlin>
         <version.org.neo4j.cypher>2024.2.0</version.org.neo4j.cypher>
-        <version.org.neo4j.driver>5.26.0</version.org.neo4j.driver>
+        <version.org.neo4j.driver>5.26.3</version.org.neo4j.driver>
         <version.org.reactivestreams.reactive-streams>1.0.4</version.org.reactivestreams.reactive-streams>
 
     </properties>
