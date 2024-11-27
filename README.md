@@ -28,7 +28,7 @@ For each AI type it supports, the feature-pack provides 17 Galleon layers that b
 * Support for chat models to interact with a LLM:
   * `mistral-ai-chat-model`
   * `ollama-chat-model`
-  * `openai-chat-model` (current configuration target Groq)
+  * `openai-chat-model` (current configuration targets Groq)
 * Support for embedding models: 
   * `in-memory-embedding-model-all-minilm-l6-v2`
   * `in-memory-embedding-model-all-minilm-l6-v2-q`
