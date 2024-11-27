@@ -4,30 +4,11 @@
 -->
 
 <build xmlns="urn:wildfly:feature-pack-build:3.1" producer="org.wildfly:wildfly-ai-feature-pack">
-    <transitive>
+    <dependencies>
         <dependency group-id="org.wildfly" artifact-id="wildfly-ee-galleon-pack">
             <name>org.wildfly:wildfly-ee-galleon-pack</name>
-            <packages inherit="false">
-                <exclude name="product.conf"/>
-            </packages>
+             <packages inherit="true"/>
             <default-configs inherit="false"/>
-        </dependency>
-    </transitive>
-    <dependencies>
-        <dependency group-id="org.wildfly" artifact-id="wildfly-galleon-pack">
-            <name>org.wildfly:wildfly-galleon-pack</name>
-            <packages inherit="false">
-                <exclude name="docs.licenses.merge"/>
-                <include name="docs"/>
-                <!-- appclient is not referenced from standalone nor domain configuration models.-->
-                <include name="appclient"/>
-                <include name="bin"/>
-                <include name="product.conf"/>
-                <exclude name="org.jboss.as.product"/>
-            </packages>
-            <default-configs inherit="false">
-                <include name="standalone.xml" model="standalone"/>
-            </default-configs>
         </dependency>
     </dependencies>
     <default-packages>
