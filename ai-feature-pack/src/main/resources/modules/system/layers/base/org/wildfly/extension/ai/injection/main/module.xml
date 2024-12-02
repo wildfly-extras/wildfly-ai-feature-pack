@@ -22,7 +22,6 @@
 
     <dependencies>
         <module name="dev.langchain4j"/>
-        <module name="dev.langchain4j.openai"/>
         <module name="io.smallrye.llm"/>
         <module name="jakarta.enterprise.api" />
         <module name="jakarta.servlet.api"/>

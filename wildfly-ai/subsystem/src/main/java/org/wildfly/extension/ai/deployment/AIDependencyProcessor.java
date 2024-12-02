@@ -30,15 +30,13 @@ import org.jboss.modules.Module;
 import org.jboss.modules.ModuleLoader;
 import org.wildfly.extension.ai.Capabilities;
 
-/**
- *
- * @author Emmanuel Hugonnet (c) 2024 Red Hat, Inc.
- */
 public class AIDependencyProcessor implements DeploymentUnitProcessor {
 
     public static final String[] OPTIONAL_MODULES = {
-        "dev.langchain4j.openai",
         "dev.langchain4j.ollama",
+        "dev.langchain4j.openai",
+        "dev.langchain4j.mistral-ai",
+        "dev.langchain4j.neo4j",
         "dev.langchain4j.weaviate",
         "dev.langchain4j.web-search-engines"
     };
