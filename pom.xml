@@ -40,7 +40,7 @@
 
         <version.ai.djl>0.30.0</version.ai.djl>
         <version.com.google.apis>v1-rev20240417-2.0.0</version.com.google.apis>
-        <version.com.knuddels.jtokkit>1.0.0</version.com.knuddels.jtokkit>
+        <version.com.knuddels.jtokkit>1.1.0</version.com.knuddels.jtokkit>
         <version.com.microsoft.onnxruntime>1.20.0</version.com.microsoft.onnxruntime>
         <version.com.squareup.okhttp>4.12.0</version.com.squareup.okhttp>
         <version.com.squareup.okio-jvm>3.6.0</version.com.squareup.okio-jvm>
