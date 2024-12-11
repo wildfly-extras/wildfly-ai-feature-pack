@@ -8,6 +8,7 @@ package org.wildfly.extension.ai;
 import static org.jboss.logging.Logger.Level.WARN;
 
 import java.lang.invoke.MethodHandles;
+
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
@@ -18,7 +19,7 @@ import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageLogger;
 
 /**
- * @author <a href="mailto:david.lloyd@redhat.com">David M. Lloyd</a>
+ * @author Emmanuel Hugonnet
  */
 @MessageLogger(projectCode = "WFAI", length = 5)
 public interface AILogger extends BasicLogger {
