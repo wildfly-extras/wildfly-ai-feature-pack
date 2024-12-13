@@ -19,14 +19,13 @@ import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegis
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.PRESENCE_PENALTY;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.SEED;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.openai.OpenAiChatModel;
-import java.time.Duration;
 import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.dmr.ModelNode;
 import org.wildfly.extension.ai.AIAttributeDefinitions;
+import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
+import org.wildfly.extension.ai.injection.chat.WildFlyOpenAiChatModelConfig;
 import org.wildfly.service.capture.ValueRegistry;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
 
@@ -35,7 +34,7 @@ import org.wildfly.subsystem.service.ResourceServiceInstaller;
  */
 public class OpenAIChatModelProviderServiceConfigurator extends AbstractChatModelProviderServiceConfigurator {
 
-    public OpenAIChatModelProviderServiceConfigurator(ValueRegistry<String, ChatLanguageModel> registry) {
+    public OpenAIChatModelProviderServiceConfigurator(ValueRegistry<String, WildFlyChatModelConfig> registry) {
         super(registry);
     }
 
@@ -55,28 +54,24 @@ public class OpenAIChatModelProviderServiceConfigurator extends AbstractChatMode
         Double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDoubleOrNull();
         Double topP = TOP_P.resolveModelAttribute(context, model).asDoubleOrNull();
         boolean isJson = AIAttributeDefinitions.ResponseFormat.isJson(RESPONSE_FORMAT.resolveModelAttribute(context, model).asStringOrNull());
-        Supplier<ChatLanguageModel> factory = new Supplier<>() {
+        Supplier<WildFlyChatModelConfig> factory = new Supplier<>() {
             @Override
-            public ChatLanguageModel get() {
-                OpenAiChatModel.OpenAiChatModelBuilder builder = OpenAiChatModel.builder()
+            public WildFlyChatModelConfig get() {
+                return new WildFlyOpenAiChatModelConfig()
                         .apiKey(key)
                         .baseUrl(baseUrl)
                         .frequencyPenalty(frequencyPenalty)
+                        .setJson(isJson)
                         .logRequests(logRequests)
                         .logResponses(logResponses)
-                        .maxRetries(5)
                         .maxTokens(maxToken)
                         .modelName(modelName)
                         .organizationId(organizationId)
                         .presencePenalty(presencePenalty)
                         .seed(seed)
                         .temperature(temperature)
-                        .timeout(Duration.ofMillis(connectTimeOut))
+                        .timeout(connectTimeOut)
                         .topP(topP);
-                if (isJson) {
-                    builder.responseFormat("json_object");
-                }
-                return builder.build();
             }
         };
         return installService(context.getCurrentAddressValue(), factory);

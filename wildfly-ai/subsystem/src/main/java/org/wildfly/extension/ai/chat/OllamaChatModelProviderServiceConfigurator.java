@@ -12,9 +12,6 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_RETRIES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.ollama.OllamaChatModel;
-import java.time.Duration;
 import java.util.function.Supplier;
 
 import org.jboss.as.controller.OperationContext;
@@ -24,6 +21,8 @@ import org.wildfly.extension.ai.AIAttributeDefinitions;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 
+import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
+import org.wildfly.extension.ai.injection.chat.WildFlyOllamaChatModelConfig;
 import org.wildfly.service.capture.ValueRegistry;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
 
@@ -32,7 +31,7 @@ import org.wildfly.subsystem.service.ResourceServiceInstaller;
  */
 public class OllamaChatModelProviderServiceConfigurator extends AbstractChatModelProviderServiceConfigurator {
 
-    public OllamaChatModelProviderServiceConfigurator(ValueRegistry<String, ChatLanguageModel> registry) {
+    public OllamaChatModelProviderServiceConfigurator(ValueRegistry<String, WildFlyChatModelConfig> registry) {
         super(registry);
     }
 
@@ -46,21 +45,18 @@ public class OllamaChatModelProviderServiceConfigurator extends AbstractChatMode
         Integer maxRetries = MAX_RETRIES.resolveModelAttribute(context, model).asIntOrNull();
         String modelName = MODEL_NAME.resolveModelAttribute(context, model).asString();
         boolean isJson = AIAttributeDefinitions.ResponseFormat.isJson(RESPONSE_FORMAT.resolveModelAttribute(context, model).asStringOrNull());
-        Supplier<ChatLanguageModel> factory = new Supplier<>() {
+        Supplier<WildFlyChatModelConfig> factory = new Supplier<>() {
             @Override
-            public ChatLanguageModel get() {
-                OllamaChatModel.OllamaChatModelBuilder builder = OllamaChatModel.builder()
+            public WildFlyChatModelConfig get() {
+                return new WildFlyOllamaChatModelConfig()
                         .baseUrl(baseUrl)
+                        .setJson(isJson)
                         .logRequests(logRequests)
                         .logResponses(logResponses)
                         .maxRetries(maxRetries)
                         .temperature(temperature)
-                        .timeout(Duration.ofMillis(connectTimeOut))
+                        .timeout(connectTimeOut)
                         .modelName(modelName);
-                if (isJson) {
-                    builder.format("json");
-                }
-                return builder.build();
             }
         };
         return installService(context.getCurrentAddressValue(), factory);

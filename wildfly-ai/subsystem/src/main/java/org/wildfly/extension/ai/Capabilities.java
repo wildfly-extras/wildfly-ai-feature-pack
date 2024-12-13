@@ -4,19 +4,15 @@
  */
 package org.wildfly.extension.ai;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import org.jboss.as.controller.capability.RuntimeCapability;
+import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.service.descriptor.UnaryServiceDescriptor;
 
-/**
- *
- * @author Emmanuel Hugonnet (c) 2024 Red Hat, Inc.
- */
 public interface Capabilities {
-    UnaryServiceDescriptor<ChatLanguageModel> CHAT_MODEL_PROVIDER_DESCRIPTOR = UnaryServiceDescriptor.of("org.wildfly.ai.chatmodel", ChatLanguageModel.class);
+    UnaryServiceDescriptor<WildFlyChatModelConfig> CHAT_MODEL_PROVIDER_DESCRIPTOR = UnaryServiceDescriptor.of("org.wildfly.ai.chatmodel", WildFlyChatModelConfig.class);
     RuntimeCapability<Void> CHAT_MODEL_PROVIDER_CAPABILITY = RuntimeCapability.Builder.of(CHAT_MODEL_PROVIDER_DESCRIPTOR).setAllowMultipleRegistrations(true).build();
 
     UnaryServiceDescriptor<EmbeddingModel> EMBEDDING_MODEL_PROVIDER_DESCRIPTOR = UnaryServiceDescriptor.of("org.wildfly.ai.embedding.model", EmbeddingModel.class);

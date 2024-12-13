@@ -7,7 +7,6 @@ package org.wildfly.extension.ai.deployment;
 import static org.jboss.as.weld.Capabilities.WELD_CAPABILITY_NAME;
 import static org.wildfly.extension.ai.AILogger.ROOT_LOGGER;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
@@ -21,6 +20,7 @@ import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.as.weld.WeldCapability;
 import org.wildfly.extension.ai.injection.WildFlyBeanRegistry;
+import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 
 /**
  *
@@ -37,7 +37,7 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
             if (weldCapability != null && !weldCapability.isPartOfWeldDeployment(deploymentUnit)) {
                 ROOT_LOGGER.cdiRequired();
             }
-            List<ChatLanguageModel> requiredChatModels = deploymentUnit.getAttachmentList(AIAttachements.CHAT_MODELS);
+            List<WildFlyChatModelConfig> requiredChatModels = deploymentUnit.getAttachmentList(AIAttachements.CHAT_MODELS);
             List<String> chatLanguageModelNames = deploymentUnit.getAttachmentList(AIAttachements.CHAT_MODEL_KEYS);
             List<EmbeddingModel> requiredEmbeddingModels = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_MODELS);
             List<String> requiredEmbeddingModelNames = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_MODEL_KEYS);

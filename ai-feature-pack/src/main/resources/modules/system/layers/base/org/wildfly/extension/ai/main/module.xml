@@ -17,10 +17,8 @@
 
     <dependencies>
         <module name="dev.langchain4j"/>
-        <module name="dev.langchain4j.mistral-ai" optional="true"/>
         <module name="dev.langchain4j.neo4j" optional="true"/>
         <module name="dev.langchain4j.ollama" optional="true"/>
-        <module name="dev.langchain4j.openai" optional="true"/>
         <module name="dev.langchain4j.weaviate" optional="true"/>
         <module name="dev.langchain4j.web-search-engines" optional="true"/>
         <module name="io.smallrye.jandex"/>
