@@ -25,7 +25,7 @@ import org.jboss.as.controller.registry.RuntimePackageDependency;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.service.capture.ValueExecutorRegistry;
 import org.wildfly.subsystem.resource.ChildResourceDefinitionRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
@@ -42,7 +42,7 @@ public class OllamaChatLanguageModelProviderRegistrar implements ChildResourceDe
     private final ResourceDescriptor descriptor;
     static final String NAME = "ollama-chat-model";
     public static final PathElement PATH = PathElement.pathElement(NAME);
-    private final ValueExecutorRegistry<String, ChatLanguageModel> registry = ValueExecutorRegistry.newInstance();
+    private final ValueExecutorRegistry<String, WildFlyChatModelConfig> registry = ValueExecutorRegistry.newInstance();
 
     public OllamaChatLanguageModelProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
         this.registration = ResourceRegistration.of(PATH);

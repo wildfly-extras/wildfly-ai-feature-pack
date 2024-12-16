@@ -30,7 +30,7 @@ import org.jboss.dmr.ModelType;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.service.capture.ValueExecutorRegistry;
 import org.wildfly.subsystem.resource.ChildResourceDefinitionRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
@@ -61,7 +61,7 @@ public class OpenAIChatLanguageModelProviderRegistrar implements ChildResourceDe
     private final ResourceDescriptor descriptor;
     static final String NAME = "openai-chat-model";
     public static final PathElement PATH = PathElement.pathElement(NAME);
-    private final ValueExecutorRegistry<String, ChatLanguageModel> registry = ValueExecutorRegistry.newInstance();
+    private final ValueExecutorRegistry<String, WildFlyChatModelConfig> registry = ValueExecutorRegistry.newInstance();
 
     public OpenAIChatLanguageModelProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
         this.registration = ResourceRegistration.of(PATH);

@@ -6,29 +6,25 @@ package org.wildfly.extension.ai.chat;
 
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
+import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.service.capture.ValueRegistry;
 import org.wildfly.subsystem.service.ResourceServiceConfigurator;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
 import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
 
-/**
- *
- * @author Emmanuel Hugonnet (c) 2024 Red Hat, Inc.
- */
 public abstract class AbstractChatModelProviderServiceConfigurator implements ResourceServiceConfigurator {
 
-    private final ValueRegistry<String, ChatLanguageModel> registry;
+    private final ValueRegistry<String, WildFlyChatModelConfig> registry;
 
-    AbstractChatModelProviderServiceConfigurator(ValueRegistry<String, ChatLanguageModel> registry) {
+    AbstractChatModelProviderServiceConfigurator(ValueRegistry<String, WildFlyChatModelConfig> registry) {
         this.registry = registry;
     }
 
-    ResourceServiceInstaller installService(final String name, Supplier<ChatLanguageModel> factory) {
-        Consumer<ChatLanguageModel> captor = registry.add(name);
+    ResourceServiceInstaller installService(final String name, Supplier<WildFlyChatModelConfig> factory) {
+        Consumer<WildFlyChatModelConfig> captor = registry.add(name);
         ResourceServiceInstaller installer = CapabilityServiceInstaller.builder(CHAT_MODEL_PROVIDER_CAPABILITY, factory)
                 .withCaptor(captor)
                 .asActive()
