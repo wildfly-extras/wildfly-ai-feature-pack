@@ -15,7 +15,6 @@
         <artifact name="${com.squareup.retrofit2:converter-jackson}"/>
         <artifact name="${com.squareup.retrofit2:retrofit}"/>
         <artifact name="${org.jetbrains.kotlin:kotlin-stdlib}"/>
-        <artifact name="${org.jetbrains.kotlin:kotlin-stdlib-common}"/>
         <artifact name="${com.squareup.okhttp3:okhttp}"/>
         <artifact name="${com.squareup.okhttp3:okhttp-sse}"/>
         <artifact name="${com.squareup.okio:okio}"/>
