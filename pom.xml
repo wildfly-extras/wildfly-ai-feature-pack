@@ -44,7 +44,7 @@
         <version.com.microsoft.onnxruntime>1.20.0</version.com.microsoft.onnxruntime>
         <version.com.squareup.okhttp>4.12.0</version.com.squareup.okhttp>
         <version.com.squareup.okio-jvm>3.6.0</version.com.squareup.okio-jvm>
-        <version.com.squareup.retrofit2>2.9.0</version.com.squareup.retrofit2>
+        <version.com.squareup.retrofit2>2.11.0</version.com.squareup.retrofit2>
         <version.commons-compress>1.27.1</version.commons-compress>
         <version.dev.ai4j.openai4j>0.25.0</version.dev.ai4j.openai4j>
         <version.dev.langchain4j>1.0.0-alpha1</version.dev.langchain4j>
