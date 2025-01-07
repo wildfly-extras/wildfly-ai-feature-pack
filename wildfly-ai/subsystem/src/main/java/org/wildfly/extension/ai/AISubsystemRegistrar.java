@@ -37,6 +37,8 @@ class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
     static final String NAME = "ai";
     static final PathElement PATH = SubsystemResourceDefinitionRegistrar.pathElement(NAME);
     static final ParentResourceDescriptionResolver RESOLVER = new SubsystemResourceDescriptionResolver(NAME, AISubsystemRegistrar.class);
+    private static final int PHASE_DEPENDENCIES_AI = 0x1930;
+    private static final int PHASE_POST_MODULE_AI = 0x3840;
 
     @Override
     public ManagementResourceRegistration register(SubsystemRegistration parent, ManagementResourceRegistrationContext context) {
@@ -45,8 +47,8 @@ class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
         ResourceDescriptor descriptor = ResourceDescriptor
                 .builder(RESOLVER)
                 .withDeploymentChainContributor(target -> {
-                    target.addDeploymentProcessor(NAME, Phase.DEPENDENCIES, Phase.DEPENDENCIES_MICROPROFILE_OPENTRACING, new AIDependencyProcessor());
-                    target.addDeploymentProcessor(NAME, Phase.POST_MODULE, Phase.POST_MODULE_MICROPROFILE_OPENTRACING, new AIDeploymentProcessor());
+                    target.addDeploymentProcessor(NAME, Phase.DEPENDENCIES, PHASE_DEPENDENCIES_AI, new AIDependencyProcessor());
+                    target.addDeploymentProcessor(NAME, Phase.POST_MODULE, PHASE_POST_MODULE_AI, new AIDeploymentProcessor());
                 })
                 .build();
         ManagementResourceRegistrar.of(descriptor).register(registration);

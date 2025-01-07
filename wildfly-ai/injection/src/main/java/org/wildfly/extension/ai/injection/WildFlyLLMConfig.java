@@ -61,7 +61,7 @@ public class WildFlyLLMConfig implements LLMConfig {
                 return (T) new ProducerFunction<Object>() {
                     @Override
                     public Object produce(Instance<Object> lookup, String beanName) {
-                        List<ChatModelListener> listeners = lookup.select(ChatModelListener.class).handlesStream().map(Handle<ChatModelListener>::get).collect(Collectors.toList() );
+                        List<ChatModelListener> listeners = lookup.select(ChatModelListener.class).handlesStream().map(Handle<ChatModelListener>::get).collect(Collectors.toList());
                         WildFlyChatModelConfig config = (WildFlyChatModelConfig) beanData.get(getBeanPropertyName(beanName, BEAN_VALUE));
                         if (ChatLanguageModel.class.isAssignableFrom(expectedType) && !config.isStreaming()) {
                             return (T) config.createLanguageModel(listeners);

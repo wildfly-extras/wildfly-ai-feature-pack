@@ -14,6 +14,7 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
+import static org.wildfly.extension.ai.Capabilities.OPENTELEMETRY_CAPABILITY_NAME;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.FREQUENCY_PENALTY;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.ORGANIZATION_ID;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.PRESENCE_PENALTY;
@@ -24,8 +25,10 @@ import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.dmr.ModelNode;
 import org.wildfly.extension.ai.AIAttributeDefinitions;
+
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.extension.ai.injection.chat.WildFlyOpenAiChatModelConfig;
+
 import org.wildfly.service.capture.ValueRegistry;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
 
@@ -54,6 +57,7 @@ public class OpenAIChatModelProviderServiceConfigurator extends AbstractChatMode
         Double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDoubleOrNull();
         Double topP = TOP_P.resolveModelAttribute(context, model).asDoubleOrNull();
         boolean isJson = AIAttributeDefinitions.ResponseFormat.isJson(RESPONSE_FORMAT.resolveModelAttribute(context, model).asStringOrNull());
+        boolean isObservable= context.getCapabilityServiceSupport().hasCapability(OPENTELEMETRY_CAPABILITY_NAME);
         Supplier<WildFlyChatModelConfig> factory = new Supplier<>() {
             @Override
             public WildFlyChatModelConfig get() {
@@ -61,7 +65,6 @@ public class OpenAIChatModelProviderServiceConfigurator extends AbstractChatMode
                         .apiKey(key)
                         .baseUrl(baseUrl)
                         .frequencyPenalty(frequencyPenalty)
-                        .setJson(isJson)
                         .logRequests(logRequests)
                         .logResponses(logResponses)
                         .maxTokens(maxToken)
@@ -69,6 +72,9 @@ public class OpenAIChatModelProviderServiceConfigurator extends AbstractChatMode
                         .organizationId(organizationId)
                         .presencePenalty(presencePenalty)
                         .seed(seed)
+                        .setJson(isJson)
+                        .setObservable(isObservable)
+                        .setStreaming(false)
                         .temperature(temperature)
                         .timeout(connectTimeOut)
                         .topP(topP);

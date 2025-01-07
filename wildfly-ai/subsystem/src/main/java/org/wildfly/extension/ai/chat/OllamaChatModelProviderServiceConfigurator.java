@@ -20,11 +20,15 @@ import org.jboss.dmr.ModelNode;
 import org.wildfly.extension.ai.AIAttributeDefinitions;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
+import static org.wildfly.extension.ai.Capabilities.OPENTELEMETRY_CAPABILITY_NAME;
 
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.extension.ai.injection.chat.WildFlyOllamaChatModelConfig;
+import org.wildfly.extension.opentelemetry.api.WildFlyOpenTelemetryConfig;
+
 import org.wildfly.service.capture.ValueRegistry;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
+import org.wildfly.subsystem.service.ServiceDependency;
 
 /**
  * Configures an aggregate ChatModel provider service.
@@ -45,20 +49,32 @@ public class OllamaChatModelProviderServiceConfigurator extends AbstractChatMode
         Integer maxRetries = MAX_RETRIES.resolveModelAttribute(context, model).asIntOrNull();
         String modelName = MODEL_NAME.resolveModelAttribute(context, model).asString();
         boolean isJson = AIAttributeDefinitions.ResponseFormat.isJson(RESPONSE_FORMAT.resolveModelAttribute(context, model).asStringOrNull());
+        boolean isObservable= context.getCapabilityServiceSupport().hasCapability(OPENTELEMETRY_CAPABILITY_NAME);
+        final ServiceDependency<WildFlyOpenTelemetryConfig> openTelemetryConfig;
+        if(isObservable) {
+            openTelemetryConfig = ServiceDependency.on(WildFlyOpenTelemetryConfig.SERVICE_DESCRIPTOR);
+        } else {
+            openTelemetryConfig = null;
+        }
         Supplier<WildFlyChatModelConfig> factory = new Supplier<>() {
             @Override
             public WildFlyChatModelConfig get() {
                 return new WildFlyOllamaChatModelConfig()
                         .baseUrl(baseUrl)
-                        .setJson(isJson)
                         .logRequests(logRequests)
                         .logResponses(logResponses)
                         .maxRetries(maxRetries)
+                        .setJson(isJson)
+                        .setObservable(isObservable)
+                        .setStreaming(false)
                         .temperature(temperature)
                         .timeout(connectTimeOut)
                         .modelName(modelName);
             }
         };
+        if(isObservable) {
+            return installService(context.getCurrentAddressValue(), factory, openTelemetryConfig);
+        }
         return installService(context.getCurrentAddressValue(), factory);
     }
 }

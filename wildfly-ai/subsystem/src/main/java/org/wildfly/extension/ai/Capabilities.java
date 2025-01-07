@@ -23,4 +23,7 @@ public interface Capabilities {
 
     UnaryServiceDescriptor<ContentRetriever> CONTENT_RETRIEVER_PROVIDER_DESCRIPTOR = UnaryServiceDescriptor.of("org.wildfly.ai.rag.retriever", ContentRetriever.class);
     RuntimeCapability<Void> CONTENT_RETRIEVER_PROVIDER_CAPABILITY = RuntimeCapability.Builder.of(CONTENT_RETRIEVER_PROVIDER_DESCRIPTOR).setAllowMultipleRegistrations(true).build();
+
+    String OPENTELEMETRY_CAPABILITY_NAME = "org.wildfly.extension.opentelemetry";
+    String OPENTELEMETRY_CONFIG_CAPABILITY_NAME = "org.wildfly.extension.opentelemetry.config";
 }

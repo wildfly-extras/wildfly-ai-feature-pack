@@ -40,7 +40,6 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         "dev.langchain4j.weaviate",
         "dev.langchain4j.web-search-engines"
     };
-
     public static final String[] EXPORTED_MODULES = {
         "dev.langchain4j",
         "io.smallrye.llm",
@@ -93,7 +92,7 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                             String embeddingStoreName = annotation.value().asString();
                             ROOT_LOGGER.debug("We need the EmbeddingStore called " + embeddingStoreName);
                             requiredEmbeddingStores.add(embeddingStoreName);
-                        }else if (dev.langchain4j.rag.content.retriever.ContentRetriever.class.isAssignableFrom(fieldClass)) {
+                        } else if (dev.langchain4j.rag.content.retriever.ContentRetriever.class.isAssignableFrom(fieldClass)) {
                             ROOT_LOGGER.debug("We need the ContentRetriever in the class " + field.declaringClass());
                             String contentRetrieverName = annotation.value().asString();
                             ROOT_LOGGER.debug("We need the ContentRetriever called " + contentRetrieverName);
