@@ -27,6 +27,7 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
     private Double topP;
     private boolean isJson;
     private boolean streaming;
+    private boolean observable;
 
     @Override
     public ChatLanguageModel createLanguageModel(List<ChatModelListener> listeners) {
@@ -45,6 +46,9 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
                 .topP(topP);
         if (isJson) {
             builder.responseFormat("json_object");
+        }
+        if (observable) {
+//            builder.listeners(Collections.singletonList(new OpenTelemetryChatModelListener()));
         }
         return builder.build();
     }

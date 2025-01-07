@@ -23,6 +23,7 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
     private long connectTimeOut;
     private String modelName;
     private boolean streaming;
+    private boolean observable;
 
     @Override
     public ChatLanguageModel createLanguageModel(List<ChatModelListener> listeners) {
@@ -37,6 +38,9 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
         if (isJson) {
             builder.format("json");
         }
+        if (observable) {
+            builder.listeners(listeners);
+        }
         return builder.build();
     }
 
@@ -44,7 +48,6 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
     public StreamingChatLanguageModel createStreamingLanguageModel(List<ChatModelListener> listeners) {
         OllamaStreamingChatModel.OllamaStreamingChatModelBuilder builder = OllamaStreamingChatModel.builder()
                 .baseUrl(baseUrl)
-                .listeners(listeners)
                 .logRequests(logRequests)
                 .logResponses(logResponses)
                 .temperature(temperature)
@@ -52,6 +55,9 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
                 .modelName(modelName);
         if (isJson) {
             builder.format("json");
+        }
+        if (observable) {
+            builder.listeners(listeners);
         }
         return builder.build();
     }
@@ -96,8 +102,14 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
         return this;
     }
 
-    public WildFlyOllamaChatModelConfig streaming(boolean streaming) {
+
+    public WildFlyOllamaChatModelConfig setStreaming(boolean streaming) {
         this.streaming = streaming;
+        return this;
+    }
+
+    public WildFlyOllamaChatModelConfig setObservable(boolean observable) {
+        this.observable = observable;
         return this;
     }
 

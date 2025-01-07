@@ -29,6 +29,7 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
     private Double topP;
     private boolean isJson;
     private boolean streaming;
+    private boolean observable;
 
     @Override
     public ChatLanguageModel createLanguageModel(List<ChatModelListener> listeners) {
@@ -50,6 +51,9 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
         if (isJson) {
             builder.responseFormat("json_object");
         }
+        if (observable) {
+            builder.listeners(listeners);
+        }
         return builder.build();
     }
 
@@ -61,7 +65,6 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
                 .frequencyPenalty(frequencyPenalty)
                 .logRequests(logRequests)
                 .logResponses(logResponses)
-                .listeners(listeners)
                 .maxTokens(maxToken)
                 .modelName(modelName)
                 .organizationId(organizationId)
@@ -72,6 +75,9 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
                 .topP(topP);
         if (isJson) {
             builder.responseFormat("json_object");
+        }
+        if (observable) {
+            builder.listeners(listeners);
         }
         return builder.build();
     }
@@ -146,8 +152,13 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
         return this;
     }
 
-    public WildFlyOpenAiChatModelConfig streaming(boolean streaming) {
+    public WildFlyOpenAiChatModelConfig setStreaming(boolean streaming) {
         this.streaming = streaming;
+        return this;
+    }
+
+    public WildFlyOpenAiChatModelConfig setObservable(boolean observable) {
+        this.observable = observable;
         return this;
     }
 
