@@ -18,6 +18,7 @@ import io.opentelemetry.api.metrics.LongHistogram;
 import io.opentelemetry.api.metrics.Meter;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -38,10 +39,14 @@ public class OpenTelemetryMetricsChatModelListener implements ChatModelListener 
     private DoubleHistogram clientOperationDuration;
 
     @Inject
-    private Meter meter;
+    private Instance<Meter> meterInstance;
 
     @PostConstruct
     private void init() {
+        if (!meterInstance.isResolvable()) {
+            return;
+        }
+        Meter meter = meterInstance.get();
         clientTokenUsage = meter.histogramBuilder(METRIC_CLIENT_TOKEN_USAGE_NAME)
                 .ofLongs()
                 .setDescription("Measures number of input and output tokens used")

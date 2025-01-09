@@ -18,6 +18,7 @@ import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
 import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.wildfly.extension.ai.injection.AILogger;
 
@@ -35,13 +36,14 @@ public class OpenTelemetryTracesChatModelListener implements ChatModelListener {
     private static final String OTEL_SPAN_KEY_NAME = "OTelSpan";
 
     @Inject
-    private Tracer tracer;
+    private Instance<Tracer> tracerInstance;
 
     @Override
     public void onRequest(ChatModelRequestContext requestContext) {
-        if (tracer == null) {
+        if (!tracerInstance.isResolvable()) {
             return;
         }
+        Tracer tracer = tracerInstance.get();
         final ChatModelRequest request = requestContext.request();
         SpanBuilder spanBuilder = tracer.spanBuilder("chat " + request.model())
                 .setSpanKind(SpanKind.SERVER)
@@ -90,7 +92,7 @@ public class OpenTelemetryTracesChatModelListener implements ChatModelListener {
             span.end();
         }
         Scope scope = (Scope) responseContext.attributes().get(OTEL_SCOPE_KEY_NAME);
-        AILogger.ROOT_LOGGER.debug("OpenTelemetryChatModelListener.onResponse with context " + span.getSpanContext() + " and tracer " + tracer + " in thread " + Thread.currentThread() + " with scope " + scope);
+        AILogger.ROOT_LOGGER.debug("OpenTelemetryChatModelListener.onResponse with context " + span.getSpanContext() + " with scope " + scope);
         closeScope(scope);
     }
 
@@ -106,7 +108,7 @@ public class OpenTelemetryTracesChatModelListener implements ChatModelListener {
 
     private void closeScope(Scope scope) {
         if (scope != null) {
-            AILogger.ROOT_LOGGER.debug("OpenTelemetryChatModelListener.closeScope tracer " + tracer + " in thread " + Thread.currentThread() + " with scope " + scope);
+            AILogger.ROOT_LOGGER.debug("OpenTelemetryChatModelListener.closeScope with scope " + scope);
             scope.close();
         }
     }

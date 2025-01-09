@@ -8,5 +8,8 @@
         <prop name="org.wildfly.rule.class" value="dev.langchain4j.*,org.eclipse.microprofile.ai.llm.*"/>
         <prop name="org.wildfly.rule.annotations" value="dev.langchain4j.*,org.eclipse.microprofile.ai.llm.*"/>
     </props>
+    <dependencies>
+        <layer name="opentelemetry"/>
+    </dependencies>
      <feature spec="subsystem.ai"/>
 </layer-spec>
