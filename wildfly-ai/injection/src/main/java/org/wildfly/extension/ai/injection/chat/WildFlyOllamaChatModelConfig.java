@@ -118,4 +118,8 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
         return streaming;
     }
 
+    @Override
+    public boolean isObservable() {
+        return observable;
+    }
 }

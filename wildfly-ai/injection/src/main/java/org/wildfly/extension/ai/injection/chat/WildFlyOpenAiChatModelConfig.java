@@ -166,4 +166,9 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
     public boolean isStreaming() {
         return streaming;
     }
+
+    @Override
+    public boolean isObservable() {
+        return observable;
+    }
 }

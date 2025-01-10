@@ -36,14 +36,14 @@
         <module name="org.jboss.weld.core"/>
         <module name="org.wildfly.common"/>
         <!-- OpenTelemetry -->
-        <module name="org.wildfly.extension.opentelemetry-api"/>
-        <module name="io.opentelemetry.api"/>
-        <module name="io.opentelemetry.api.events"/>
-        <module name="io.opentelemetry.context"/>
-        <module name="io.opentelemetry.exporter"/>
-        <module name="io.opentelemetry.otlp"/>
-        <module name="io.opentelemetry.sdk"/>
-        <module name="io.opentelemetry.semconv"/>
-        <module name="io.smallrye.opentelemetry" services="import"/>
+        <module name="org.wildfly.extension.opentelemetry-api" optional="true"/>
+        <module name="io.opentelemetry.api" optional="true"/>
+        <module name="io.opentelemetry.api.events" optional="true"/>
+        <module name="io.opentelemetry.context" optional="true"/>
+        <module name="io.opentelemetry.exporter" optional="true"/>
+        <module name="io.opentelemetry.otlp" optional="true"/>
+        <module name="io.opentelemetry.sdk" optional="true"/>
+        <module name="io.opentelemetry.semconv" optional="true"/>
+        <module name="io.smallrye.opentelemetry" optional="true" services="import"/>
     </dependencies>
 </module>

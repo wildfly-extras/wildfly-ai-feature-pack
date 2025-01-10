@@ -142,4 +142,9 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
     public boolean isStreaming() {
         return streaming;
     }
+
+    @Override
+    public boolean isObservable() {
+        return false;
+    }
 }
