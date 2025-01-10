@@ -16,4 +16,6 @@ public interface WildFlyChatModelConfig {
     StreamingChatLanguageModel createStreamingLanguageModel(List<ChatModelListener> listeners);
 
     boolean isStreaming();
+
+    boolean isObservable();
 }
