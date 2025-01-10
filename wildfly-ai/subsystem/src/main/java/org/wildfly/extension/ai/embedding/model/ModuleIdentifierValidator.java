@@ -4,6 +4,7 @@
  */
 package org.wildfly.extension.ai.embedding.model;
 
+import org.jboss.as.controller.ModuleIdentifierUtil;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.operations.validation.ModelTypeValidator;
 import org.jboss.dmr.ModelNode;
@@ -22,7 +23,7 @@ public class ModuleIdentifierValidator extends ModelTypeValidator {
         if (value.isDefined()) {
             String module = value.asString();
             try {
-                org.jboss.modules.ModuleIdentifier.fromString(module);
+                ModuleIdentifierUtil.canonicalModuleIdentifier(module);
             } catch (IllegalArgumentException e) {
                 throw new OperationFailedException(e.getMessage() + ": " + module, e);
             }

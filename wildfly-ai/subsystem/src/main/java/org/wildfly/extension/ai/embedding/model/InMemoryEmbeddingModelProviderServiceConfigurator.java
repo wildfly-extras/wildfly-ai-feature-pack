@@ -10,6 +10,7 @@ import static org.wildfly.extension.ai.embedding.model.InMemoryEmbeddingModelPro
 
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import java.util.function.Supplier;
+import org.jboss.as.controller.ModuleIdentifierUtil;
 
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
@@ -26,7 +27,7 @@ public class InMemoryEmbeddingModelProviderServiceConfigurator implements Resour
 
     @Override
     public ResourceServiceInstaller configure(OperationContext context, ModelNode model) throws OperationFailedException {
-        String moduleName = EMBEDDING_MODULE.resolveModelAttribute(context, model).asStringOrNull();
+        String moduleName = ModuleIdentifierUtil.canonicalModuleIdentifier(EMBEDDING_MODULE.resolveModelAttribute(context, model).asStringOrNull());
         String embeddingModelClassName = EMBEDDING_MODEL_CLASS.resolveModelAttribute(context, model).asStringOrNull();
         Supplier<EmbeddingModel> factory = new Supplier<>() {
             @Override

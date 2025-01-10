@@ -52,10 +52,10 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         ModuleSpecification moduleSpecification = deploymentUnit.getAttachment(Attachments.MODULE_SPECIFICATION);
         ModuleLoader moduleLoader = Module.getBootModuleLoader();
         for (String module : OPTIONAL_MODULES) {
-            moduleSpecification.addSystemDependency(new ModuleDependency(moduleLoader, module, true, false, true, false));
+            moduleSpecification.addSystemDependency(ModuleDependency.Builder.of(moduleLoader, module).setOptional(true).setImportServices(true).build());
         }
         for (String module : EXPORTED_MODULES) {
-            ModuleDependency modDep = new ModuleDependency(moduleLoader, module, false, true, true, false);
+            ModuleDependency modDep = ModuleDependency.Builder.of(moduleLoader, module).setExport(true).setImportServices(true).build();
             modDep.addImportFilter(s -> s.equals("META-INF"), true);
             moduleSpecification.addSystemDependency(modDep);
         }
