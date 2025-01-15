@@ -261,6 +261,13 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="streaming" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Wether to create a token streaming chat language model or not
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="temperature" type="xs:double" use="optional">
             <xs:annotation>
                 <xs:documentation>
@@ -353,6 +360,13 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="streaming" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Wether to create a token streaming chat language model or not
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="temperature" type="xs:double" use="optional">
             <xs:annotation>
                 <xs:documentation>
@@ -421,6 +435,13 @@
             <xs:annotation>
                 <xs:documentation>
                     The model used on Ollama.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="streaming" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Wether to create a token streaming chat language model or not
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>

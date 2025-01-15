@@ -12,6 +12,7 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_TOKEN;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
 import static org.wildfly.extension.ai.chat.MistralAIChatLanguageModelProviderRegistrar.RANDOM_SEED;
@@ -48,7 +49,8 @@ public class MistralAIChatModelProviderServiceConfigurator extends AbstractChatM
         Boolean logRequests = LOG_REQUESTS.resolveModelAttribute(context, model).asBooleanOrNull();
         Boolean logResponses = LOG_RESPONSES.resolveModelAttribute(context, model).asBooleanOrNull();
         Integer randomSeed = RANDOM_SEED.resolveModelAttribute(context, model).asIntOrNull();
-        Boolean safePrompt = SAFE_PROMPT.resolveModelAttribute(context, model).asBooleanOrNull();
+        Boolean safePrompt = SAFE_PROMPT.resolveModelAttribute(context, model).asBooleanOrNull();        
+        Boolean streaming = STREAMING.resolveModelAttribute(context, model).asBooleanOrNull();
         Double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDoubleOrNull();
         Double topP = TOP_P.resolveModelAttribute(context, model).asDoubleOrNull();
         boolean isJson = AIAttributeDefinitions.ResponseFormat.isJson(RESPONSE_FORMAT.resolveModelAttribute(context, model).asStringOrNull());
@@ -65,6 +67,7 @@ public class MistralAIChatModelProviderServiceConfigurator extends AbstractChatM
                         .modelName(modelName)
                         .randomSeed(randomSeed)
                         .safePrompt(safePrompt)
+                        .streaming(streaming)
                         .temperature(temperature)
                         .timeout(connectTimeOut)
                         .topP(topP);

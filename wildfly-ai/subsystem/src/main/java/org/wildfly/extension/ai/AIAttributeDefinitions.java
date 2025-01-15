@@ -51,6 +51,10 @@ public class AIAttributeDefinitions {
             .setValidator(EnumValidator.create(ResponseFormat.class))
             .setAllowExpression(true)
             .build();
+    public static final SimpleAttributeDefinition STREAMING = new SimpleAttributeDefinitionBuilder("streaming", ModelType.BOOLEAN, true)
+            .setAllowExpression(true)
+            .setDefaultValue(ModelNode.FALSE)
+            .build();
     public static final SimpleAttributeDefinition TEMPERATURE = new SimpleAttributeDefinitionBuilder("temperature", ModelType.DOUBLE, true)
             .setAllowExpression(true)
             .build();

@@ -25,5 +25,14 @@
             <param name="log-requests" value="${org.wildfly.ai.mistral.chat.log.request,env.MISTRAL_CHAT_LOG_REQUEST:true}"/>
             <param name="log-responses" value="${org.wildfly.ai.mistral.chat.log.response,env.MISTRAL_CHAT_LOG_RESPONSE:true}"/>
         </feature>
+        <feature spec="subsystem.ai.mistral-ai-chat-model">
+            <param name="mistral-ai-chat-model" value="streaming-mistral"/>
+            <param name="base-url" value="${org.wildfly.ai.mistral.chat.url,env.MISTRAL_CHAT_URL:https://api.mistral.ai/v1}"/>
+            <param name="api-key" value="${env.MISTRAL_API_KEY}"/>
+            <param name="model-name" value="${org.wildfly.ai.mistral.chat.model.name,env.MISTRAL_CHAT_MODEL_NAME:mistral-small-latest}"/>
+            <param name="log-requests" value="${org.wildfly.ai.mistral.chat.log.request,env.MISTRAL_CHAT_LOG_REQUEST:true}"/>
+            <param name="log-responses" value="${org.wildfly.ai.mistral.chat.log.response,env.MISTRAL_CHAT_LOG_RESPONSE:true}"/>
+            <param name="streaming" value="true"/>
+        </feature>
     </feature>
 </layer-spec>

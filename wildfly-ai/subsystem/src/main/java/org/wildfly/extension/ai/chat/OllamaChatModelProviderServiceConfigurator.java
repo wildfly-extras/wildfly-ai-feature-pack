@@ -20,6 +20,7 @@ import org.jboss.dmr.ModelNode;
 import org.wildfly.extension.ai.AIAttributeDefinitions;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.Capabilities.OPENTELEMETRY_CAPABILITY_NAME;
 
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
@@ -41,14 +42,15 @@ public class OllamaChatModelProviderServiceConfigurator extends AbstractChatMode
 
     @Override
     public ResourceServiceInstaller configure(OperationContext context, ModelNode model) throws OperationFailedException {
-        Double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDoubleOrNull();
+        String baseUrl = BASE_URL.resolveModelAttribute(context, model).asString();
         Long connectTimeOut = CONNECT_TIMEOUT.resolveModelAttribute(context, model).asLong();
         Boolean logRequests = LOG_REQUESTS.resolveModelAttribute(context, model).asBooleanOrNull();
         Boolean logResponses = LOG_RESPONSES.resolveModelAttribute(context, model).asBooleanOrNull();
-        String baseUrl = BASE_URL.resolveModelAttribute(context, model).asString();
         Integer maxRetries = MAX_RETRIES.resolveModelAttribute(context, model).asIntOrNull();
         String modelName = MODEL_NAME.resolveModelAttribute(context, model).asString();
         boolean isJson = AIAttributeDefinitions.ResponseFormat.isJson(RESPONSE_FORMAT.resolveModelAttribute(context, model).asStringOrNull());
+        Boolean streaming = STREAMING.resolveModelAttribute(context, model).asBooleanOrNull();
+        Double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDoubleOrNull();
         boolean isObservable= context.getCapabilityServiceSupport().hasCapability(OPENTELEMETRY_CAPABILITY_NAME);
         final ServiceDependency<WildFlyOpenTelemetryConfig> openTelemetryConfig;
         if(isObservable) {
@@ -66,7 +68,7 @@ public class OllamaChatModelProviderServiceConfigurator extends AbstractChatMode
                         .maxRetries(maxRetries)
                         .setJson(isJson)
                         .setObservable(isObservable)
-                        .setStreaming(false)
+                        .setStreaming(streaming)
                         .temperature(temperature)
                         .timeout(connectTimeOut)
                         .modelName(modelName);

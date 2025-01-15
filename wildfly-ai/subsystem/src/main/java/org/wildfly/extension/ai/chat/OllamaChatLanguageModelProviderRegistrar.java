@@ -24,6 +24,7 @@ import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.controller.registry.RuntimePackageDependency;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.service.capture.ValueExecutorRegistry;
@@ -36,7 +37,7 @@ import org.wildfly.subsystem.resource.operation.ResourceOperationRuntimeHandler;
 public class OllamaChatLanguageModelProviderRegistrar implements ChildResourceDefinitionRegistrar {
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(BASE_URL, CONNECT_TIMEOUT,
-            LOG_REQUESTS, LOG_RESPONSES, MAX_RETRIES, MODEL_NAME, RESPONSE_FORMAT, TEMPERATURE);
+            LOG_REQUESTS, LOG_RESPONSES, MAX_RETRIES, MODEL_NAME, RESPONSE_FORMAT, STREAMING, TEMPERATURE);
 
     private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;

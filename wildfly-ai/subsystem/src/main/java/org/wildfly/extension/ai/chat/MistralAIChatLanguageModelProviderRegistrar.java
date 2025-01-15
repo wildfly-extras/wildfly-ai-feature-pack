@@ -12,6 +12,7 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_TOKEN;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
@@ -47,7 +48,7 @@ public class MistralAIChatLanguageModelProviderRegistrar implements ChildResourc
             .build();
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(API_KEY, BASE_URL, CONNECT_TIMEOUT,
-            LOG_REQUESTS, LOG_RESPONSES, MAX_TOKEN, MODEL_NAME, RANDOM_SEED, RESPONSE_FORMAT, SAFE_PROMPT, TEMPERATURE, TOP_P);
+            LOG_REQUESTS, LOG_RESPONSES, MAX_TOKEN, MODEL_NAME, RANDOM_SEED, RESPONSE_FORMAT, SAFE_PROMPT, STREAMING, TEMPERATURE, TOP_P);
 
     private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;
