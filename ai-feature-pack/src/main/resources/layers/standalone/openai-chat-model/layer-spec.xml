@@ -25,5 +25,14 @@
             <param name="log-requests" value="${org.wildfly.ai.openai.chat.log.request,env.OPENAI_CHAT_LOG_REQUEST:true}"/>
             <param name="log-responses" value="${org.wildfly.ai.openai.chat.log.response,env.OPENAI_CHAT_LOG_RESPONSE:true}"/>
         </feature>
+        <feature spec="subsystem.ai.openai-chat-model">
+            <param name="openai-chat-model" value="straming-openai"/>
+            <param name="base-url" value="${org.wildfly.ai.openai.chat.url,env.OPENAI_CHAT_URL:https://api.groq.com/openai/v1}"/>
+            <param name="api-key" value="${env.GROQ_API_KEY}"/>
+            <param name="model-name" value="${org.wildfly.ai.openai.chat.model.name,env.OPENAI_CHAT_MODEL_NAME:llama3-8b-8192}"/>
+            <param name="log-requests" value="${org.wildfly.ai.openai.chat.log.request,env.OPENAI_CHAT_LOG_REQUEST:true}"/>
+            <param name="log-responses" value="${org.wildfly.ai.openai.chat.log.response,env.OPENAI_CHAT_LOG_RESPONSE:true}"/>
+            <param name="streaming" value="true"/>
+        </feature>
     </feature>
 </layer-spec>

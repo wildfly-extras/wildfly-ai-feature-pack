@@ -77,7 +77,7 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                 if (field.type().kind() == Type.Kind.CLASS) {
                     try {
                         Class fieldClass = Class.forName(field.type().asClassType().name().toString());
-                        if (dev.langchain4j.model.chat.ChatLanguageModel.class.isAssignableFrom(fieldClass)) {
+                        if (dev.langchain4j.model.chat.ChatLanguageModel.class.isAssignableFrom(fieldClass) || dev.langchain4j.model.chat.StreamingChatLanguageModel.class.isAssignableFrom(fieldClass)) {
                             ROOT_LOGGER.debug("We need the ChatLanguageModel in the class " + field.declaringClass());
                             String chatLanguageModelName = annotation.value().asString();
                             ROOT_LOGGER.debug("We need the ChatLanguageModel called " + chatLanguageModelName);

@@ -25,5 +25,14 @@
             <param name="log-requests" value="${org.wildfly.ai.ollama.chat.log.request,env.OLLAMA_CHAT_LOG_REQUEST:true}"/>
             <param name="log-responses" value="${org.wildfly.ai.ollama.chat.log.response,env.OLLAMA_CHAT_LOG_RESPONSE:true}"/>
         </feature>
+        <feature spec="subsystem.ai.ollama-chat-model">
+            <param name="ollama-chat-model" value="streaming-ollama"/>
+            <param name="base-url" value="${org.wildfly.ai.ollama.chat.url,env.OLLAMA_CHAT_URL:http://127.0.0.1:11434}"/>
+            <param name="model-name" value="${org.wildfly.ai.ollama.chat.model.name,env.OLLAMA_CHAT_MODEL_NAME:llama3.1:8b}"/>
+            <param name="temperature" value="${org.wildfly.ai.ollama.chat.temperature,env.OLLAMA_CHAT_TEMPERATURE:0.9}"/>
+            <param name="log-requests" value="${org.wildfly.ai.ollama.chat.log.request,env.OLLAMA_CHAT_LOG_REQUEST:true}"/>
+            <param name="log-responses" value="${org.wildfly.ai.ollama.chat.log.response,env.OLLAMA_CHAT_LOG_RESPONSE:true}"/>
+            <param name="streaming" value="true"/>
+        </feature>
     </feature>
 </layer-spec>

@@ -39,7 +39,7 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
             if (! support.hasCapability(OPENTELEMETRY_CAPABILITY_NAME)) {
                 ROOT_LOGGER.info("No opentelemetry support available");
             } else {
-                ROOT_LOGGER.debug("Time to instrument our LLM !!!!!");
+                ROOT_LOGGER.debug("OpenTelemetry is active for AI");
             }
             List<String> chatLanguageModelNames = deploymentUnit.getAttachmentList(AIAttachements.CHAT_MODEL_KEYS);
             List<EmbeddingModel> requiredEmbeddingModels = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_MODELS);
