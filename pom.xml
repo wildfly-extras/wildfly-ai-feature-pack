@@ -46,7 +46,7 @@
         <version.com.squareup.okio-jvm>3.6.0</version.com.squareup.okio-jvm>
         <version.com.squareup.retrofit2>2.9.0</version.com.squareup.retrofit2>
         <version.commons-compress>1.27.1</version.commons-compress>
-        <version.dev.ai4j.openai4j>0.25.0</version.dev.ai4j.openai4j>
+        <version.dev.ai4j.openai4j>0.26.0</version.dev.ai4j.openai4j>
         <version.dev.langchain4j>1.0.0-alpha1</version.dev.langchain4j>
         <version.io.smallrye.llm>0.0.2</version.io.smallrye.llm>
         <version.io.weaviate.client>4.9.0</version.io.weaviate.client>
