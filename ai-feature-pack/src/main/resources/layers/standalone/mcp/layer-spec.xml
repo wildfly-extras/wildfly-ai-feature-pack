@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright The WildFly Authors
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="mcp-server">
+    <props>
+        <prop name="org.wildfly.rule.class" value="org.wildfly.mcp.api.*"/>
+        <prop name="org.wildfly.rule.annotations" value="org.wildfly.mcp.api.*"/>
+    </props>
+    <feature spec="subsystem.mcp" />
+</layer-spec>

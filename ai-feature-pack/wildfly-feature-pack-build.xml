@@ -23,6 +23,7 @@
         <extensions>
             <standalone>
                 <extension>org.wildfly.extension.ai</extension>
+                <extension>org.wildfly.extension.mcp</extension>
             </standalone>
         </extensions>
     </generate-feature-specs>

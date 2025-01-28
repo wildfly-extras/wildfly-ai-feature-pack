@@ -33,12 +33,12 @@
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
         <version.org.wildfly>35.0.1.Final</version.org.wildfly>
-
         <version.org.wildfly.core>27.0.1.Final</version.org.wildfly.core>
         <version.org.wildfly.common>1.7.0.Final</version.org.wildfly.common>    
         <version.org.wildfly.galleon-plugins>7.3.1.Final</version.org.wildfly.galleon-plugins>
 
         <version.ai.djl>0.31.1</version.ai.djl>
+        <version.com.github.victools.jsonschema-generator>4.37.0</version.com.github.victools.jsonschema-generator>
         <version.com.google.apis>v1-rev20240821-2.0.0</version.com.google.apis>
         <version.com.knuddels.jtokkit>1.1.0</version.com.knuddels.jtokkit>
         <version.com.microsoft.onnxruntime>1.20.0</version.com.microsoft.onnxruntime>
@@ -93,6 +93,39 @@
             <dependency>
                 <groupId>org.wildfly</groupId>
                 <artifactId>wildfly-ai-subsystem</artifactId>
+                <version>${project.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-mcp-api</artifactId>
+                <version>${project.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-mcp-injection</artifactId>
+                <version>${project.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-mcp-subsystem</artifactId>
                 <version>${project.version}</version>
                 <exclusions>
                     <exclusion>
@@ -525,6 +558,50 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>com.github.victools</groupId>
+                <artifactId>jsonschema-generator</artifactId>
+                <version>${version.com.github.victools.jsonschema-generator}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml</groupId>
+                <artifactId>classmate</artifactId>
+                <version>1.5.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>2.18.2</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.18.2</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -603,6 +680,7 @@
     </repositories>
     <modules>
         <module>wildfly-ai</module>
+        <module>wildfly-mcp</module>
         <module>ai-feature-pack</module>
     </modules>
 </project>

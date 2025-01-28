@@ -35,6 +35,18 @@
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-ai-subsystem</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-mcp-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-mcp-injection</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-mcp-subsystem</artifactId>
+        </dependency>
         <!-- CDI -->
         <dependency>
             <groupId>io.smallrye.llm</groupId>
@@ -57,6 +69,10 @@
             <groupId>ai.djl.huggingface</groupId>
             <artifactId>tokenizers</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.victools</groupId>
+            <artifactId>jsonschema-generator</artifactId>
+        </dependency> 
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-customsearch</artifactId>

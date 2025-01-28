@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright The WildFly Authors
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="mcp">
+    <props>
+        <prop name="org.wildfly.rule.class" value="org.wildfly.mcp.api.*"/>
+        <prop name="org.wildfly.rule.annotations" value="org.wildfly.mcp.api.*"/>
+    </props>
+    <dependencies>
+        <layer name="ai"/>
+    </dependencies>
+    <feature spec="subsystem.mcp">
+        <feature spec="subsystem.mcp.mcp-server">
+            <param name="mcp-server" value="server"/>
+            <param name="sse-path" value="sse"/>
+            <param name="messages-path" value="messages"/>
+        </feature>
+    </feature>
+</layer-spec>
