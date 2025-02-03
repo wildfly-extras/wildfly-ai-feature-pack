@@ -264,7 +264,7 @@
         <xs:attribute name="streaming" type="xs:boolean" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    Wether to create a token streaming chat language model or not
+                    Whether to create a token streaming chat language model or not
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -363,7 +363,7 @@
         <xs:attribute name="streaming" type="xs:boolean" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    Wether to create a token streaming chat language model or not
+                    Whether to create a token streaming chat language model or not
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -441,7 +441,7 @@
         <xs:attribute name="streaming" type="xs:boolean" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    Wether to create a token streaming chat language model or not
+                    Whether to create a token streaming chat language model or not
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
