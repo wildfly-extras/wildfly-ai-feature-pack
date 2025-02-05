@@ -53,7 +53,7 @@
         <version.net.java.dev.jna>5.13.0</version.net.java.dev.jna>
         <version.org.jetbrains.kotlin>2.1.0</version.org.jetbrains.kotlin>
         <version.org.neo4j.cypher>2024.2.0</version.org.neo4j.cypher>
-        <version.org.neo4j.driver>5.26.3</version.org.neo4j.driver>
+        <version.org.neo4j.driver>5.28.0</version.org.neo4j.driver>
         <version.org.reactivestreams.reactive-streams>1.0.4</version.org.reactivestreams.reactive-streams>
 
     </properties>
