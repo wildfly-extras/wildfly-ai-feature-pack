@@ -23,7 +23,7 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
     private Integer randomSeed;
     private Boolean safePrompt;
     private Double temperature;
-    private long connectTimeOut;
+    private Duration connectTimeOut;
     private Double topP;
     private boolean isJson;
     private boolean streaming;
@@ -42,7 +42,7 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
                 .randomSeed(randomSeed)
                 .safePrompt(safePrompt)
                 .temperature(temperature)
-                .timeout(Duration.ofMillis(connectTimeOut))
+                .timeout(connectTimeOut)
                 .topP(topP);
         if (isJson) {
             builder.responseFormat("json_object");
@@ -65,7 +65,7 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
                 .randomSeed(randomSeed)
                 .safePrompt(safePrompt)
                 .temperature(temperature)
-                .timeout(Duration.ofMillis(connectTimeOut))
+                .timeout(connectTimeOut)
                 .topP(topP);
         if (isJson) {
             builder.responseFormat("json_object");
@@ -124,7 +124,11 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
     }
 
     public WildFlyMistralAiChatModelLanguage timeout(long timeOut) {
-        this.connectTimeOut = timeOut;
+        if (timeOut <= 0L) {
+            this.connectTimeOut = null;
+            return this;
+        }
+        this.connectTimeOut = Duration.ofMillis(timeOut);
         return this;
     }
 
