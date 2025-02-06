@@ -25,7 +25,7 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
     private Double presencePenalty;
     private Integer seed;
     private Double temperature;
-    private long connectTimeOut;
+    private Duration connectTimeOut;
     private Double topP;
     private boolean isJson;
     private boolean streaming;
@@ -46,7 +46,7 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
                 .presencePenalty(presencePenalty)
                 .seed(seed)
                 .temperature(temperature)
-                .timeout(Duration.ofMillis(connectTimeOut))
+                .timeout(connectTimeOut)
                 .topP(topP);
         if (isJson) {
             builder.responseFormat("json_object");
@@ -71,7 +71,7 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
                 .presencePenalty(presencePenalty)
                 .seed(seed)
                 .temperature(temperature)
-                .timeout(Duration.ofMillis(connectTimeOut))
+                .timeout(connectTimeOut)
                 .topP(topP);
         if (isJson) {
             builder.responseFormat("json_object");
@@ -137,8 +137,12 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
         return this;
     }
 
-    public WildFlyOpenAiChatModelConfig timeout(long connectTimeOut) {
-        this.connectTimeOut = connectTimeOut;
+    public WildFlyOpenAiChatModelConfig timeout(long timeOut) {
+        if (timeOut <= 0L) {
+            this.connectTimeOut = null;
+            return this;
+        }
+        this.connectTimeOut = Duration.ofMillis(timeOut);
         return this;
     }
 

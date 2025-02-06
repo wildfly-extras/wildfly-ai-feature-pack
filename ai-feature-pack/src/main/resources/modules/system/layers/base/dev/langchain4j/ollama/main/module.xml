@@ -20,6 +20,5 @@
         <module name="org.slf4j"/>
         <module name="java.logging"/>
         <module name="dev.langchain4j"/>
-        <module name="com.squareup.retrofit2"/>
     </dependencies>
 </module> 

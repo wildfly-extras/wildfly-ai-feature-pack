@@ -7,6 +7,7 @@ package org.wildfly.extension.ai.injection.chat;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
+import dev.langchain4j.model.chat.request.ResponseFormat;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import java.time.Duration;
@@ -20,7 +21,7 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
     private boolean isJson;
     private Integer maxRetries;
     private Double temperature;
-    private long connectTimeOut;
+    private Duration connectTimeOut;
     private String modelName;
     private boolean streaming;
     private boolean observable;
@@ -33,10 +34,10 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
                 .logResponses(logResponses)
                 .maxRetries(maxRetries)
                 .temperature(temperature)
-                .timeout(Duration.ofMillis(connectTimeOut))
+                .timeout(connectTimeOut)
                 .modelName(modelName);
         if (isJson) {
-            builder.format("json");
+            builder.responseFormat(ResponseFormat.JSON);
         }
         if (observable) {
             builder.listeners(listeners);
@@ -51,10 +52,10 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
                 .logRequests(logRequests)
                 .logResponses(logResponses)
                 .temperature(temperature)
-                .timeout(Duration.ofMillis(connectTimeOut))
+                .timeout(connectTimeOut)
                 .modelName(modelName);
         if (isJson) {
-            builder.format("json");
+            builder.responseFormat(ResponseFormat.JSON);
         }
         if (observable) {
             builder.listeners(listeners);
@@ -92,8 +93,12 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
         return this;
     }
 
-    public WildFlyOllamaChatModelConfig timeout(long connectTimeOut) {
-        this.connectTimeOut = connectTimeOut;
+    public WildFlyOllamaChatModelConfig timeout(long timeOut) {
+        if (timeOut <= 0L) {
+            this.connectTimeOut = null;
+            return this;
+        }
+        this.connectTimeOut = Duration.ofMillis(timeOut);
         return this;
     }
 
@@ -101,7 +106,6 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
         this.modelName = modelName;
         return this;
     }
-
 
     public WildFlyOllamaChatModelConfig setStreaming(boolean streaming) {
         this.streaming = streaming;
