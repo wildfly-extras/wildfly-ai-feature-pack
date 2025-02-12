@@ -3,12 +3,12 @@
 ~ Copyright The WildFly Authors
 ~ SPDX-License-Identifier: Apache-2.0
 -->
-<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="ollama-chat-model">
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="ollama-streaming-chat-model">
     <props>
         <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
         <prop name="org.wildfly.rule.add-on" value="ai-llm,ollama-chat-model"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use ollama for LLM interactions and embeddings"/>
-        <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.model.chat.ChatLanguageModel,jakarta.inject.Named[value=ollama]"/>
+        <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.model.chat.StreamingChatLanguageModel,jakarta.inject.Named[value=streaming-ollama]"/>
     </props>
     <dependencies>
         <layer name="ai"/>
@@ -18,12 +18,13 @@
     </packages>
     <feature spec="subsystem.ai">
         <feature spec="subsystem.ai.ollama-chat-model">
-            <param name="ollama-chat-model" value="ollama"/>
+            <param name="ollama-chat-model" value="streaming-ollama"/>
             <param name="base-url" value="${org.wildfly.ai.ollama.chat.url,env.OLLAMA_CHAT_URL:http://127.0.0.1:11434}"/>
             <param name="model-name" value="${org.wildfly.ai.ollama.chat.model.name,env.OLLAMA_CHAT_MODEL_NAME:llama3.1:8b}"/>
             <param name="temperature" value="${org.wildfly.ai.ollama.chat.temperature,env.OLLAMA_CHAT_TEMPERATURE:0.9}"/>
             <param name="log-requests" value="${org.wildfly.ai.ollama.chat.log.request,env.OLLAMA_CHAT_LOG_REQUEST:true}"/>
             <param name="log-responses" value="${org.wildfly.ai.ollama.chat.log.response,env.OLLAMA_CHAT_LOG_RESPONSE:true}"/>
+            <param name="streaming" value="true"/>
         </feature>
     </feature>
 </layer-spec>

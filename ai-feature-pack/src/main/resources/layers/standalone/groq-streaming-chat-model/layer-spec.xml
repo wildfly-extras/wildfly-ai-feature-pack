@@ -3,12 +3,12 @@
 ~ Copyright The WildFly Authors
 ~ SPDX-License-Identifier: Apache-2.0
 -->
-<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="groq-chat-model">
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="groq-streaming-chat-model">
     <props>
         <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
         <prop name="org.wildfly.rule.add-on" value="ai-llm,groq-chat-model"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use OpenAI API for GROQ LLM interactions"/>
-        <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.model.chat.ChatLanguageModel,jakarta.inject.Named[value=groq]"/>
+        <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.model.chat.StreamingChatLanguageModel,jakarta.inject.Named[value=streaming-groq]"/>
     </props>
     <dependencies>
         <layer name="ai"/>
@@ -18,12 +18,13 @@
     </packages>
     <feature spec="subsystem.ai">
         <feature spec="subsystem.ai.openai-chat-model">
-            <param name="openai-chat-model" value="groq"/>
-            <param name="base-url" value="${org.wildfly.ai.openai.chat.url,env.GROQ_CHAT_URL:https://api.groq.com/openai/v1}"/>
+            <param name="openai-chat-model" value="streaming-groq"/>
+            <param name="base-url" value="${org.wildfly.ai.groq.chat.url,env.GROQ_CHAT_URL:https://api.groq.com/openai/v1}"/>
             <param name="api-key" value="${env.GROQ_API_KEY:YOUR_KEY_VALUE}"/>
             <param name="model-name" value="${org.wildfly.ai.groq.chat.model.name,env.GROQ_CHAT_MODEL_NAME:llama3-8b-8192}"/>
             <param name="log-requests" value="${org.wildfly.ai.groq.chat.log.request,env.GROQ_CHAT_LOG_REQUEST:true}"/>
             <param name="log-responses" value="${org.wildfly.ai.groq.chat.log.response,env.GROQ_CHAT_LOG_RESPONSE:true}"/>
+            <param name="streaming" value="true"/>
         </feature>
     </feature>
 </layer-spec>
