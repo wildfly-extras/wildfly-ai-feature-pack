@@ -44,6 +44,10 @@
             <groupId>io.smallrye.llm</groupId>
             <artifactId>smallrye-llm-langchain4j-portable-extension</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.smallrye.llm</groupId>
+            <artifactId>smallrye-llm-langchain4j-telemetry</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>ai.djl</groupId>
