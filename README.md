@@ -24,12 +24,17 @@ The Maven coordinates to use is: `org.wildfly:wildfly-ai-galleon-pack::<version>
 Supported AI types
 ========================
 
-For each AI type it supports, the feature-pack provides 17 Galleon layers that build upon each other :
+For each AI type it supports, the feature-pack provides 21 Galleon layers that build upon each other :
 * Support for chat models to interact with a LLM:
   * `mistral-ai-chat-model`
   * `ollama-chat-model`
   * `groq-chat-model` (same as openai-chat-model but targeting Groq)
   * `openai-chat-model` 
+* Support for streaming chat models to interact with a LLM:
+  * `mistral-ai-streaming-chat-model`
+  * `ollama-streaming-chat-model`
+  * `groq-streaming-chat-model` (same as openai-chat-model but targeting Groq)
+  * `openai-streaming-chat-model` 
 * Support for embedding models: 
   * `in-memory-embedding-model-all-minilm-l6-v2`
   * `in-memory-embedding-model-all-minilm-l6-v2-q`
@@ -130,3 +135,14 @@ You need to include the datasources feature-pack and layers in the Maven Plugin 
 ```
 
 This [example](https://github.com/ehsavoie/webchat/) contains a complete WildFly Maven Plugin configuration.
+
+
+[EXPERIMENTAL] Model Context Protocol Server
+==========================
+
+The feature pack supports also in a very experimental way the expose of your JakartaEE application as a [Model Context Protocol Server](https://spec.modelcontextprotocol.io/specification/2024-11-05/).
+What you need to do in that case is to use the `org.wildfly:wildfly-mcp-api` aterfact as a provided dependencies and annotation the code you want to expose with the several annotations provided.
+You may want to take a look at [wildfly-weather](https://github.com/ehsavoie/wildfly-weather) example.
+
+You can then use [widldfly-mcp-chatbot] from the [wildfly-mcp](https://github.com/wildfly-extras/wildfly-mcp) project to connect via Server-Sent-Event to it and play with your tools.
+
