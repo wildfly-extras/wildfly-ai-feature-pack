@@ -26,7 +26,7 @@
         <connection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</connection>
         <developerConnection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</developerConnection>
         <url>https://github.com/wildfly-extras/wildfly-ai-feature-pack</url>
-        <tag>0.3.1</tag>
+        <tag>0.3.4</tag>
     </scm>
 
     <properties>
@@ -48,7 +48,7 @@
         <version.commons-compress>1.27.1</version.commons-compress>
         <version.dev.ai4j.openai4j>0.27.0</version.dev.ai4j.openai4j>
         <version.dev.langchain4j>1.0.0-beta1</version.dev.langchain4j>
-        <version.io.smallrye.llm>0.0.2</version.io.smallrye.llm>
+        <version.io.smallrye.llm>0.0.3</version.io.smallrye.llm>
         <version.io.weaviate.client>4.9.0</version.io.weaviate.client>
         <version.net.java.dev.jna>5.13.0</version.net.java.dev.jna>
         <version.org.jetbrains.kotlin>2.1.0</version.org.jetbrains.kotlin>
@@ -63,7 +63,7 @@
             <dependency>
                 <groupId>org.wildfly</groupId>
                 <artifactId>wildfly-ai-feature-pack</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
                 <type>pom</type>
             </dependency>
             <dependency>
@@ -82,7 +82,7 @@
             <dependency>
                 <groupId>org.wildfly</groupId>
                 <artifactId>wildfly-ai-injection</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -93,7 +93,7 @@
             <dependency>
                 <groupId>org.wildfly</groupId>
                 <artifactId>wildfly-ai-subsystem</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -423,6 +423,17 @@
             <dependency>
                 <groupId>io.smallrye.llm</groupId>
                 <artifactId>smallrye-llm-langchain4j-portable-extension</artifactId>
+                <version>${version.io.smallrye.llm}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.smallrye.llm</groupId>
+                <artifactId>smallrye-llm-langchain4j-telemetry</artifactId>
                 <version>${version.io.smallrye.llm}</version>
                 <exclusions>
                     <exclusion>

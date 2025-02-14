@@ -13,6 +13,7 @@
 
     <resources>
         <artifact name="${org.wildfly:wildfly-ai-injection}"/>
+        <artifact name="${io.smallrye.llm:smallrye-llm-langchain4j-telemetry}"/>
     </resources>
     <provides>
         <service name="io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig">
