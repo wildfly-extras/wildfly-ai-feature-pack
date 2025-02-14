@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright The WildFly Authors
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+
+<module xmlns="urn:jboss:module:1.9" name="org.wildfly.extension.mcp">
+
+    <properties>
+        <property name="jboss.api" value="private"/>
+    </properties>
+
+    <resources>
+        <artifact name="${org.wildfly:wildfly-mcp-subsystem}"/>
+    </resources>
+
+    <dependencies>
+        <module name="com.fasterxml.jackson.core.jackson-core"/>
+        <module name="com.fasterxml.jackson.core.jackson-databind"/>
+        <module name="com.github.victools.jsonschema-generator"/>
+        <module name="io.smallrye.jandex"/>
+        <module name="io.undertow.core" services="import"/>
+        <module name="jakarta.enterprise.api"/>
+        <module name="jakarta.enterprise.concurrent.api"/>
+        <module name="jakarta.json.api"/>
+        <module name="java.naming"/>
+        <module name="org.jboss.as.controller"/>
+        <module name="org.jboss.as.ee"/>
+        <module name="org.jboss.as.network"/>
+        <module name="org.jboss.as.server"/>
+        <module name="org.jboss.as.weld.common"/>
+        <module name="org.jboss.logging"/>
+        <module name="org.jboss.modules"/>
+        <module name="org.jboss.staxmapper"/>
+        <module name="org.wildfly.common"/>
+        <module name="org.wildfly.extension.mcp.injection"/>
+        <module name="org.wildfly.extension.undertow"/>
+        <module name="org.wildfly.security.elytron-private"/>
+        <module name="org.wildfly.service"/>
+        <module name="org.wildfly.subsystem"/>
+    </dependencies>
+</module>
