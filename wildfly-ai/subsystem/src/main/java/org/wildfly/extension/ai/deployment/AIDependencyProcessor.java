@@ -9,6 +9,7 @@ import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILI
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_MODEL_PROVIDER_CAPABILITY;
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAPABILITY;
 
+import io.smallrye.llm.spi.RegisterAIService;
 import jakarta.inject.Named;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.jboss.as.server.deployment.module.ModuleDependency;
 import org.jboss.as.server.deployment.module.ModuleSpecification;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
+import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.FieldInfo;
 import org.jboss.jandex.Type;
@@ -64,7 +66,8 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
             throw ROOT_LOGGER.unableToResolveAnnotationIndex(deploymentUnit);
         }
         List<AnnotationInstance> annotations = index.getAnnotations(DotName.createSimple(Named.class));
-        if (annotations == null || annotations.isEmpty()) {
+        List<AnnotationInstance> serviceAnnotations = index.getAnnotations(DotName.createSimple(RegisterAIService.class));
+        if ((annotations == null || annotations.isEmpty()) && (serviceAnnotations == null || serviceAnnotations.isEmpty())) {
             return;
         }
         Set<String> requiredChatModels = new HashSet<>();
@@ -104,6 +107,26 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                 }
             }
         }
+        for (AnnotationInstance annotation : serviceAnnotations) {
+            String chatLanguageModelName = getAnnotationValue(annotation, "chatLanguageModelName");
+            if (!chatLanguageModelName.isBlank()) {
+                ROOT_LOGGER.debug("We need the ChatLanguageModel in the class " + annotation.target());
+                ROOT_LOGGER.debug("We need the ChatLanguageModel called " + chatLanguageModelName);
+                requiredChatModels.add(chatLanguageModelName);
+            }
+            chatLanguageModelName = getAnnotationValue(annotation, "streamingChatLanguageModelName");
+            if (!chatLanguageModelName.isBlank()) {
+                ROOT_LOGGER.debug("We need the StreamingChatLanguageModel in the class " + annotation.target());
+                ROOT_LOGGER.debug("We need the StreamingChatLanguageModel called " + chatLanguageModelName);
+                requiredChatModels.add(chatLanguageModelName);
+            }
+            String contentRetrieverName = getAnnotationValue(annotation, "contentRetrieverName");
+            if (!contentRetrieverName.isBlank()) {
+                ROOT_LOGGER.debug("We need the ContentRetriever in the class " + annotation.target());
+                ROOT_LOGGER.debug("We need the ContentRetriever called " + contentRetrieverName);
+                requiredContentRetrievers.add(contentRetrieverName);
+            }
+        }
         if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty()) {
             if (!requiredChatModels.isEmpty()) {
                 for (String chatLanguageModelName : requiredChatModels) {
@@ -130,5 +153,13 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                 }
             }
         }
+    }
+
+    private String getAnnotationValue(AnnotationInstance annotation, String name) {
+        AnnotationValue value = annotation.value(name);
+        if (value == null) {
+            return "";
+        }
+        return value.asString();
     }
 }
