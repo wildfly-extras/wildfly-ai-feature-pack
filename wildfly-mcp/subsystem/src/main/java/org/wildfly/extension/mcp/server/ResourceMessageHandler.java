@@ -7,8 +7,8 @@ package org.wildfly.extension.mcp.server;
 import static org.wildfly.extension.mcp.api.JsonRPC.INTERNAL_ERROR;
 import static org.wildfly.extension.mcp.api.JsonRPC.INVALID_PARAMS;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JavaType;
+import static org.wildfly.extension.mcp.server.ToolMessageHandler.prepareArguments;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.victools.jsonschema.generator.OptionPreset;
 import com.github.victools.jsonschema.generator.SchemaGenerator;
@@ -22,7 +22,6 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
-import jakarta.json.JsonValue.ValueType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -35,12 +34,10 @@ import java.util.Map;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.wildfly.mcp.api.ContentMapper;
-import org.wildfly.extension.mcp.api.JsonRPC;
 import org.wildfly.extension.mcp.api.McpConnection;
 import org.wildfly.extension.mcp.api.Responder;
 import org.wildfly.extension.mcp.injection.MCPLogger;
 import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
-import org.wildfly.extension.mcp.injection.tool.ArgumentMetadata;
 import org.wildfly.extension.mcp.injection.tool.McpFeatureMetadata;
 import org.wildfly.extension.mcp.injection.tool.McpResource;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
@@ -193,68 +190,4 @@ public class ResourceMessageHandler {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    protected static Object[] prepareArguments(McpFeatureMetadata metadata, Map<String, JsonValue> args, ObjectMapper mapper) throws McpException {
-        if (metadata.arguments().isEmpty()) {
-            return new Object[0];
-        }
-        Object[] ret = new Object[metadata.arguments().size()];
-        int idx = 0;
-        for (ArgumentMetadata arg : metadata.arguments()) {
-            JsonValue val = args.get(arg.name());
-            if (val == null && arg.required()) {
-                throw new McpException("Missing required argument: " + arg.name(), JsonRPC.INVALID_PARAMS);
-            }
-            if (val.getValueType() == ValueType.OBJECT) {
-                // json object
-                JavaType javaType = mapper.getTypeFactory().constructType(arg.type());
-                try {
-                    ret[idx] = mapper.readValue(val.toString(), javaType);
-                } catch (JsonProcessingException e) {
-                    throw new IllegalStateException(e);
-                }
-            } else if (val.getValueType() == ValueType.ARRAY) {
-                // json array
-                JavaType javaType = mapper.getTypeFactory().constructType(arg.type());
-                try {
-                    ret[idx] = mapper.readValue(val.toString(), javaType);
-                } catch (JsonProcessingException e) {
-                    throw new IllegalStateException(e);
-                }
-            } else {
-                if (arg.type() instanceof Class) {
-                    Class clazz = (Class) arg.type();
-                    if (clazz.isEnum()) {
-                        ret[idx] = Enum.valueOf(clazz, val.toString());
-                    } else {
-                        try {
-                            ret[idx] = mapper.readValue(val.toString(), clazz);
-                        } catch (JsonProcessingException e) {
-                            throw new IllegalStateException(e);
-                        }
-                    }
-                } else {
-                    if (arg.type().isPrimitive()) {
-                        if (val.getValueType() == ValueType.NUMBER) {
-                            if (Integer.TYPE.equals(arg.type())) {
-                                ret[idx] = Integer.valueOf(val.toString());
-                            } else if (Float.TYPE.equals(arg.type())) {
-                                ret[idx] = Float.valueOf(val.toString());
-                            } else if (Double.TYPE.equals(arg.type())) {
-                                ret[idx] = Double.valueOf(val.toString());
-                            } else if (Long.TYPE.equals(arg.type())) {
-                                ret[idx] = Long.valueOf(val.toString());
-                            } else if (Character.TYPE.equals(arg.type())) {
-                                ret[idx] = (val.toString().charAt(0));
-                            }
-                        }
-                    } else {
-                        ret[idx] = val.toString();
-                    }
-                }
-            }
-            idx++;
-        }
-        return ret;
-    }
 }
