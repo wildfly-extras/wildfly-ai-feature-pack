@@ -2,6 +2,7 @@ package org.wildfly.extension.mcp.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.wildfly.mcp.api.ToolResponse;
 
 public class McpMetadata {
 
