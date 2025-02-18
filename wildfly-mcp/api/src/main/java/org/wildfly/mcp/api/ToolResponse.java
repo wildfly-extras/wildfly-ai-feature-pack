@@ -1,7 +1,5 @@
-package org.wildfly.extension.mcp.api;
+package org.wildfly.mcp.api;
 
-import org.wildfly.mcp.api.Content;
-import org.wildfly.mcp.api.TextContent;
 import java.util.Arrays;
 import java.util.List;
 
