@@ -210,51 +210,55 @@ public class ToolMessageHandler {
             if (val == null && arg.required()) {
                 throw new McpException("Missing required argument: " + arg.name(), JsonRPC.INVALID_PARAMS);
             }
-            if (val.getValueType() == ValueType.OBJECT) {
-                // json object
-                JavaType javaType = mapper.getTypeFactory().constructType(arg.type());
-                try {
-                    ret[idx] = mapper.readValue(val.toString(), javaType);
-                } catch (JsonProcessingException e) {
-                    throw new IllegalStateException(e);
-                }
-            } else if (val.getValueType() == ValueType.ARRAY) {
-                // json array
-                JavaType javaType = mapper.getTypeFactory().constructType(arg.type());
-                try {
-                    ret[idx] = mapper.readValue(val.toString(), javaType);
-                } catch (JsonProcessingException e) {
-                    throw new IllegalStateException(e);
-                }
+            if (val == null) {
+                ret[idx] = null;
             } else {
-                if (arg.type() instanceof Class) {
-                    Class clazz = (Class) arg.type();
-                    if (clazz.isEnum()) {
-                        ret[idx] = Enum.valueOf(clazz, val.toString());
-                    } else {
-                        try {
-                            ret[idx] = mapper.readValue(val.toString(), clazz);
-                        } catch (JsonProcessingException e) {
-                            throw new IllegalStateException(e);
-                        }
+                if (val.getValueType() == ValueType.OBJECT) {
+                    // json object
+                    JavaType javaType = mapper.getTypeFactory().constructType(arg.type());
+                    try {
+                        ret[idx] = mapper.readValue(val.toString(), javaType);
+                    } catch (JsonProcessingException e) {
+                        throw new IllegalStateException(e);
+                    }
+                } else if (val.getValueType() == ValueType.ARRAY) {
+                    // json array
+                    JavaType javaType = mapper.getTypeFactory().constructType(arg.type());
+                    try {
+                        ret[idx] = mapper.readValue(val.toString(), javaType);
+                    } catch (JsonProcessingException e) {
+                        throw new IllegalStateException(e);
                     }
                 } else {
-                    if (arg.type().isPrimitive()) {
-                        if (val.getValueType() == ValueType.NUMBER) {
-                            if (Integer.TYPE.equals(arg.type())) {
-                                ret[idx] = Integer.valueOf(val.toString());
-                            } else if (Float.TYPE.equals(arg.type())) {
-                                ret[idx] = Float.valueOf(val.toString());
-                            } else if (Double.TYPE.equals(arg.type())) {
-                                ret[idx] = Double.valueOf(val.toString());
-                            } else if (Long.TYPE.equals(arg.type())) {
-                                ret[idx] = Long.valueOf(val.toString());
-                            } else if (Character.TYPE.equals(arg.type())) {
-                                ret[idx] = (val.toString().charAt(0));
+                    if (arg.type() instanceof Class) {
+                        Class clazz = (Class) arg.type();
+                        if (clazz.isEnum()) {
+                            ret[idx] = Enum.valueOf(clazz, val.toString());
+                        } else {
+                            try {
+                                ret[idx] = mapper.readValue(val.toString(), clazz);
+                            } catch (JsonProcessingException e) {
+                                throw new IllegalStateException(e);
                             }
                         }
                     } else {
-                        ret[idx] = val.toString();
+                        if (arg.type().isPrimitive()) {
+                            if (val.getValueType() == ValueType.NUMBER) {
+                                if (Integer.TYPE.equals(arg.type())) {
+                                    ret[idx] = Integer.valueOf(val.toString());
+                                } else if (Float.TYPE.equals(arg.type())) {
+                                    ret[idx] = Float.valueOf(val.toString());
+                                } else if (Double.TYPE.equals(arg.type())) {
+                                    ret[idx] = Double.valueOf(val.toString());
+                                } else if (Long.TYPE.equals(arg.type())) {
+                                    ret[idx] = Long.valueOf(val.toString());
+                                } else if (Character.TYPE.equals(arg.type())) {
+                                    ret[idx] = (val.toString().charAt(0));
+                                }
+                            }
+                        } else {
+                            ret[idx] = val.toString();
+                        }
                     }
                 }
             }
