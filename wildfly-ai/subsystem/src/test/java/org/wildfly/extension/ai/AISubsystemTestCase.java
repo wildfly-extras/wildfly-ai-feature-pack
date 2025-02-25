@@ -14,10 +14,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-/**
- * @author <a href="mailto:tomaz.cerar@redhat.com">Tomaz Cerar</a>
- * @author <a href="mailto:paul.ferraro@redhat.com">Paul Ferraro</a>
- */
 @RunWith(Parameterized.class)
 public class AISubsystemTestCase extends AbstractSubsystemSchemaTest<AISubsystemSchema> {
 

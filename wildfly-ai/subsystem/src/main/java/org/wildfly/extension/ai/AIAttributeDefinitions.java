@@ -51,6 +51,11 @@ public class AIAttributeDefinitions {
             .setValidator(EnumValidator.create(ResponseFormat.class))
             .setAllowExpression(true)
             .build();
+    public static final SimpleAttributeDefinition SSL_ENABLED = SimpleAttributeDefinitionBuilder.create("ssl-enabled", ModelType.BOOLEAN, true)
+            .setAllowExpression(true)
+            .setDefaultValue(ModelNode.FALSE)
+            .setRestartAllServices()
+            .build();
     public static final SimpleAttributeDefinition STREAMING = new SimpleAttributeDefinitionBuilder("streaming", ModelType.BOOLEAN, true)
             .setAllowExpression(true)
             .setDefaultValue(ModelNode.FALSE)
