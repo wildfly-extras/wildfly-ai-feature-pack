@@ -37,6 +37,7 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
     public static final String[] OPTIONAL_MODULES = {
         "dev.langchain4j.ollama",
         "dev.langchain4j.openai",
+        "dev.langchain4j.mcp-client",
         "dev.langchain4j.mistral-ai",
         "dev.langchain4j.neo4j",
         "dev.langchain4j.weaviate",
@@ -74,6 +75,7 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         Set<String> requiredEmbeddingModels = new HashSet<>();
         Set<String> requiredEmbeddingStores = new HashSet<>();
         Set<String> requiredContentRetrievers = new HashSet<>();
+        Set<String> requiredToolProviders = new HashSet<>();
         for (AnnotationInstance annotation : annotations) {
             if (annotation.target().kind() == AnnotationTarget.Kind.FIELD) {
                 FieldInfo field = annotation.target().asField();
@@ -100,6 +102,11 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                             String contentRetrieverName = annotation.value().asString();
                             ROOT_LOGGER.debug("We need the ContentRetriever called " + contentRetrieverName);
                             requiredContentRetrievers.add(contentRetrieverName);
+                        } else if ( dev.langchain4j.service.tool.ToolProvider.class.isAssignableFrom(fieldClass)) {
+                            ROOT_LOGGER.debug("We need the ToolProvider in the class " + field.declaringClass());
+                            String toolProviderName = annotation.value().asString();
+                            ROOT_LOGGER.debug("We need the ToolProvider called " + toolProviderName);
+                            requiredToolProviders.add(toolProviderName);
                         }
                     } catch (ClassNotFoundException ex) {
                         ROOT_LOGGER.error("Coudln't get the class type for " + field.type().asClassType().name().toString() + " to be able to check what to inject", ex);
@@ -126,6 +133,12 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                 ROOT_LOGGER.debug("We need the ContentRetriever called " + contentRetrieverName);
                 requiredContentRetrievers.add(contentRetrieverName);
             }
+            String toolProviderName = getAnnotationValue(annotation, "toolProviderName");
+            if (!toolProviderName.isBlank()) {
+                ROOT_LOGGER.debug("We need the ToolProvider in the class " + annotation.target());
+                ROOT_LOGGER.debug("We need the ToolProvider called " + toolProviderName);
+                requiredToolProviders.add(toolProviderName);
+            }
         }
         if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty()) {
             if (!requiredChatModels.isEmpty()) {
@@ -150,6 +163,18 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                 for (String contentRetrieverName : requiredContentRetrievers) {
                     deploymentUnit.addToAttachmentList(AIAttachements.CONTENT_RETRIEVER_KEYS, contentRetrieverName);
                     deploymentPhaseContext.addDeploymentDependency(Capabilities.CONTENT_RETRIEVER_PROVIDER_CAPABILITY.getCapabilityServiceName(contentRetrieverName), AIAttachements.CONTENT_RETRIEVERS);
+                }
+            }
+            if (!requiredContentRetrievers.isEmpty()) {
+                for (String contentRetrieverName : requiredContentRetrievers) {
+                    deploymentUnit.addToAttachmentList(AIAttachements.CONTENT_RETRIEVER_KEYS, contentRetrieverName);
+                    deploymentPhaseContext.addDeploymentDependency(Capabilities.CONTENT_RETRIEVER_PROVIDER_CAPABILITY.getCapabilityServiceName(contentRetrieverName), AIAttachements.CONTENT_RETRIEVERS);
+                }
+            }
+            if (!requiredToolProviders.isEmpty()) {
+                for (String toolProviderName : requiredToolProviders) {
+                    deploymentUnit.addToAttachmentList(AIAttachements.TOOL_PROVIDER_KEYS, toolProviderName);
+                    deploymentPhaseContext.addDeploymentDependency(Capabilities.TOOL_PROVIDER_CAPABILITY.getCapabilityServiceName(toolProviderName), AIAttachements.TOOL_PROVIDERS);
                 }
             }
         }

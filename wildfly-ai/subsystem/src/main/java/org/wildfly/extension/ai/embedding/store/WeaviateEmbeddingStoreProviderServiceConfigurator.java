@@ -4,12 +4,12 @@
  */
 package org.wildfly.extension.ai.embedding.store;
 
+import static org.wildfly.extension.ai.AIAttributeDefinitions.SSL_ENABLED;
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAPABILITY;
 import static org.wildfly.extension.ai.embedding.store.WeaviateEmbeddingStoreProviderRegistrar.AVOID_DUPS;
 import static org.wildfly.extension.ai.embedding.store.WeaviateEmbeddingStoreProviderRegistrar.CONSISTENCY_LEVEL;
 import static org.wildfly.extension.ai.embedding.store.WeaviateEmbeddingStoreProviderRegistrar.METADATA;
 import static org.wildfly.extension.ai.embedding.store.WeaviateEmbeddingStoreProviderRegistrar.OBJECT_CLASS;
-import static org.wildfly.extension.ai.embedding.store.WeaviateEmbeddingStoreProviderRegistrar.SSL_ENABLED;
 import static org.wildfly.extension.ai.embedding.store.WeaviateEmbeddingStoreProviderRegistrar.STORE_BINDING;
 
 import dev.langchain4j.data.segment.TextSegment;

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright The WildFly Authors
+~ SPDX-License-Identifier: Apache-2.0
+-->
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="mcp-sse-client">
+    <dependencies>
+        <layer name="ai"/>
+    </dependencies>
+    <packages>
+        <package name="dev.langchain4j.mcp-client"/>
+    </packages>
+    <feature spec="subsystem.ai">
+        <feature spec="subsystem.ai.mcp-tool-provider">
+            <param name="mcp-tool-provider" value="mcp"/>
+            <param name="mcp-clients" value="mcp-sse"/>
+        </feature>
+        <feature spec="subsystem.ai.mcp-sse-client">
+            <param name="mcp-sse-client" value="mcp-sse"/>
+            <param name="connect-timeout" value="600000"/>
+            <param name="log-requests" value="${org.wildfly.ai.mcp.client.log.request,env.MCP_CLIENT_LOG_REQUEST:true}"/>
+            <param name="log-responses" value="${org.wildfly.ai.mcp.client.log.response,env.MCP_CLIENT_LOG_RESPONSE:true}"/>
+            <param name="socket-binding" value="${org.wildfly.ai.mcp.client.socket-binding,env.MCP_CLIENT_BINDING:mcp-sse}"/>
+            <param name="sse-path" value="${org.wildfly.ai.mcp.client.sse.path,env.MCP_CLIENT_SSE_PATH:/sse}"/>
+        </feature>
+    </feature>
+    <feature spec="socket-binding-group.remote-destination-outbound-socket-binding">
+        <param name="socket-binding-group" value="standard-sockets" />
+        <param name="remote-destination-outbound-socket-binding" value="${org.wildfly.ai.mcp.client.socket-binding,env.MCP_CLIENT_SOCKET_BINDING:mcp-sse}"/>
+        <param name="host" value="${org.wildfly.ai.mcp.client.host,env.MCP_CLIENT_HOST:localhost}"/>
+        <param name="port" value="${org.wildfly.ai.mcp.client.port,env.MCP_CLIENT_PORT:8090}"/>
+    </feature>
+</layer-spec>
