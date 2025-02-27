@@ -3,10 +3,13 @@
   ~ Copyright The WildFly Authors
   ~ SPDX-License-Identifier: Apache-2.0
   -->
-<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="mcp-server">
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="mcp">
     <props>
         <prop name="org.wildfly.rule.class" value="org.wildfly.mcp.api.*"/>
         <prop name="org.wildfly.rule.annotations" value="org.wildfly.mcp.api.*"/>
     </props>
+    <dependencies>
+        <layer name="ee-concurrency"/>
+    </dependencies>
     <feature spec="subsystem.mcp" />
 </layer-spec>

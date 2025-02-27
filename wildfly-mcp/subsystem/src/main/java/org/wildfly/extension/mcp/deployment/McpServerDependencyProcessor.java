@@ -90,7 +90,7 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
                             null,
                             arguments, 
                             info.declaringClass().toString(),
-                            annotation.target().asMethod().returnType().asClassType().toString())
+                            annotation.target().asMethod().returnType().name().toString())
             );
             registry.addPrompt(name, metadata);
         }
@@ -125,7 +125,7 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
                             null,
                             arguments, 
                             info.declaringClass().toString(),
-                            annotation.target().asMethod().returnType().asClassType().toString())
+                            annotation.target().asMethod().returnType().name().toString())
             );
             registry.addTool(name, metadata);
         }
@@ -162,7 +162,7 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
                             mimeType,
                             arguments, 
                             info.declaringClass().toString(),
-                            annotation.target().asMethod().returnType().asClassType().toString())
+                            annotation.target().asMethod().returnType().name().toString())
             );
             registry.addResource(uri, metadata);
         }
