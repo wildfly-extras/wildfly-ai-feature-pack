@@ -30,5 +30,8 @@
             <tavily api-key="key" base-url="https://api.tavily.com" connect-timeout="20000" exclude-domains="example.org" include-answer="true" include-domains="example.com" include-raw-content="true" search-depth="basic"/>
         </web-search-content-retriever>
     </content-retrievers>
-
+    <mcp>
+        <mcp-tool-provider name="mcp-tools" mcp-clients="mcp-sse" fail-if-one-server-fails="true"/>
+        <mcp-client-sse name="mcp-sse" socket-binding="mcp" ssl-enabled="false" log-requests="${org.wildfly.ai.mcp.sse.log.request:true}" log-responses="${org.wildfly.ai.mcp.sse.log.response:true}" sse-path="/sse" connect-timeout="20000"/>
+    </mcp>
 </subsystem>

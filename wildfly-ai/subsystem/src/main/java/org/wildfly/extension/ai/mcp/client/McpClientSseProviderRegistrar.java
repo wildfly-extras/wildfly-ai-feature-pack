@@ -2,11 +2,14 @@
  * Copyright The WildFly Authors
  * SPDX-License-Identifier: Apache-2.0
  */
-package org.wildfly.extension.ai.embedding.store;
+package org.wildfly.extension.ai.mcp.client;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SOCKET_BINDING;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.SSL_ENABLED;
-import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAPABILITY;
+import static org.wildfly.extension.ai.Capabilities.MCP_CLIENT_CAPABILITY;
 import static org.wildfly.extension.ai.Capabilities.OUTBOUND_SOCKET_BINDING_CAPABILITY_NAME;
 
 import java.util.Collection;
@@ -17,12 +20,9 @@ import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.ResourceRegistration;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.controller.StringListAttributeDefinition;
 import org.jboss.as.controller.access.management.SensitiveTargetAccessConstraintDefinition;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
-import org.jboss.as.controller.registry.RuntimePackageDependency;
-import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.wildfly.subsystem.resource.ChildResourceDefinitionRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
@@ -30,58 +30,45 @@ import org.wildfly.subsystem.resource.ManagementResourceRegistrationContext;
 import org.wildfly.subsystem.resource.ResourceDescriptor;
 import org.wildfly.subsystem.resource.operation.ResourceOperationRuntimeHandler;
 
-public class WeaviateEmbeddingStoreProviderRegistrar implements ChildResourceDefinitionRegistrar {
+public class McpClientSseProviderRegistrar implements ChildResourceDefinitionRegistrar {
 
-    public static final SimpleAttributeDefinition AVOID_DUPS = SimpleAttributeDefinitionBuilder.create("avoid-dups", ModelType.BOOLEAN, true)
-            .setAllowExpression(true)
-            .setRestartAllServices()
-            .build();
-    public static final SimpleAttributeDefinition CONSISTENCY_LEVEL = SimpleAttributeDefinitionBuilder.create("consistency-level", ModelType.STRING, true)
-            .setAllowExpression(true)
-            .setDefaultValue(new ModelNode("ALL"))
-            .setAllowedValues("ONE", "QUORUM", "ALL")
-            .setRestartAllServices()
-            .build();
-    public static final SimpleAttributeDefinition OBJECT_CLASS = SimpleAttributeDefinitionBuilder.create("object-class", ModelType.STRING, false)
-            .setAllowExpression(true)
-            .setRestartAllServices()
-            .build();
-    public static final SimpleAttributeDefinition STORE_BINDING = SimpleAttributeDefinitionBuilder.create(SOCKET_BINDING, ModelType.STRING, false)
+    public static final SimpleAttributeDefinition SSE_SOCKET_BINDING = SimpleAttributeDefinitionBuilder.create(SOCKET_BINDING, ModelType.STRING, false)
             .setAllowExpression(true)
             .setCapabilityReference(OUTBOUND_SOCKET_BINDING_CAPABILITY_NAME)
             .addAccessConstraint(SensitiveTargetAccessConstraintDefinition.SOCKET_BINDING_REF)
             .setRestartAllServices()
             .build();
-    public static final StringListAttributeDefinition METADATA = StringListAttributeDefinition.Builder.of("metadata")
-            .setRequired(false)
-            .setMinSize(0)
+    public static final SimpleAttributeDefinition SSE_PATH = SimpleAttributeDefinitionBuilder.create("sse-path", ModelType.STRING, false)
             .setAllowExpression(true)
             .setRestartAllServices()
             .build();
 
-    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(AVOID_DUPS, CONSISTENCY_LEVEL, METADATA, OBJECT_CLASS, SSL_ENABLED, STORE_BINDING);
+    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(CONNECT_TIMEOUT, LOG_REQUESTS, LOG_RESPONSES, SSE_PATH, SSL_ENABLED, SSE_SOCKET_BINDING);
 
     private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;
-    static final String NAME = "weaviate-embedding-store";
+    static final String NAME = "mcp-client-sse";
     public static final PathElement PATH = PathElement.pathElement(NAME);
 
-    public WeaviateEmbeddingStoreProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
+    public McpClientSseProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
         this.registration = ResourceRegistration.of(PATH);
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
-                .addCapability(EMBEDDING_STORE_PROVIDER_CAPABILITY)
+                .addCapability(MCP_CLIENT_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
-                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new WeaviateEmbeddingStoreProviderServiceConfigurator()))
+                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new McpClientSseServiceConfigurator()))
                 .build();
     }
 
     @Override
-    public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext context) {
+    public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext mrrc) {
         ResourceDefinition definition = ResourceDefinition.builder(this.registration, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
-        resourceRegistration.registerAdditionalRuntimePackages(RuntimePackageDependency.required("dev.langchain4j.weaviate"));
         ManagementResourceRegistrar.of(this.descriptor).register(resourceRegistration);
         return resourceRegistration;
+    }
+
+    private enum SseScheme {
+        http, https;
     }
 
 }

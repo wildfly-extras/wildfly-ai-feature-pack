@@ -10,6 +10,7 @@ import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.service.tool.ToolProvider;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import io.smallrye.llm.core.langchain4j.portableextension.LangChain4JAIServicePortableExtension;
 import io.smallrye.llm.core.langchain4j.portableextension.LangChain4JPluginsPortableExtension;
@@ -25,6 +26,7 @@ public class WildFlyBeanRegistry {
     private static final Map<String, EmbeddingModel> embeddingModels = new HashMap<>();
     private static final Map<String, EmbeddingStore> embeddingStores = new HashMap<>();
     private static final Map<String, ContentRetriever> contentRetrievers = new HashMap<>();
+    private static final Map<String, ToolProvider> toolProviders = new HashMap<>();
 
     public static final void registerChatLanguageModel(String id, WildFlyChatModelConfig chatModel) {
         chatModels.put(id, chatModel);
@@ -48,6 +50,10 @@ public class WildFlyBeanRegistry {
     public static void registerContentRetriever(String id, ContentRetriever contentRetriever) {
         contentRetrievers.put(id, contentRetriever);
         registerBean(id, contentRetriever, ContentRetriever.class);
+    }
+    public static void registerToolProvider(String id, ToolProvider toolProvider) {
+        toolProviders.put(id, toolProvider);
+        registerBean(id, toolProvider, ToolProvider.class);
     }
 
     public static final List<Extension> getCDIExtensions() {

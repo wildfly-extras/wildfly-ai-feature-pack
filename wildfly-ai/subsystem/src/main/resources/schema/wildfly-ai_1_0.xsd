@@ -56,6 +56,13 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="mcp" type="mcpType">
+                <xs:annotation>
+                    <xs:documentation>
+                        The MCP client integration configuration.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
         </xs:choice>
     </xs:complexType>
 
@@ -130,6 +137,39 @@
                 </xs:annotation>
             </xs:element>
             <xs:element name="web-search-content-retriever" type="webSearchContentRetrieverType">
+                <xs:annotation>
+                    <xs:documentation>
+                        A content retriever retriving content from a web search definition element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+    
+    
+
+    <xs:complexType name="mcpType">
+        <xs:annotation>
+            <xs:documentation>
+                The MCP client integration configuration.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="mcp-tool-provider" type="mcpToolProviderType">
+                <xs:annotation>
+                    <xs:documentation>
+                        A content retriever retriving content from an embedding store definition element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="mcp-client-sse" type="mcpClientSseType">
+                <xs:annotation>
+                    <xs:documentation>
+                        A content retriever retriving content from a web search definition element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="mcp-client-stdio" type="mcpClientStdioType">
                 <xs:annotation>
                     <xs:documentation>
                         A content retriever retriving content from a web search definition element.
@@ -279,6 +319,122 @@
             <xs:annotation>
                 <xs:documentation>
                     The top P of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="mcpToolProviderType">
+        <xs:annotation>
+            <xs:documentation>
+                A tool provider using several MCP servers.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of this provider.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="fail-if-one-server-fails" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    If this is true, then the tool provider will throw an exception if it fails to list tools from any of the servers.
+                    If this is false (default), then the tool provider will ignore the error and continue with the next server.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="mcp-clients" type="stringList">
+            <xs:annotation>
+                <xs:documentation>
+                    A comma separated list of the names of the MCP clients to use to get the list of tools.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="mcpClientSseType">
+        <xs:annotation>
+            <xs:documentation>
+                The configuration of a client to a SSE MCP server.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of this MCP client.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="connect-timeout" type="xs:long" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The connection timeout of the SSE client.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-requests" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API requests
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-responses" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API responses
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="socket-binding" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of outbound the socket-binding to use to connect to the MCP server.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="sse-path" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    The URL path elements.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="ssl-enabled" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    If the connection to thhe MCP server is secured.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="mcpClientStdioType">
+        <xs:annotation>
+            <xs:documentation>
+                The configuration of a client to a stdio MCP server.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of this MCP client
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="cmd" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    The command to execute to srtart the MCP server process.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="args" type="stringList" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The list of arguments to pass to the command.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -711,7 +867,7 @@
         <xs:attribute name="socket-binding" type="xs:string">
             <xs:annotation>
                 <xs:documentation>
-                    The name of outbound the socket-binding to use to connect ot the Weaviate store.
+                    The name of outbound the socket-binding to use to connect to the Weaviate store.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -725,7 +881,7 @@
         <xs:attribute name="metadata" type="stringList" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    The list of metedata fields to get from the weaviate store.
+                    The list of metadata fields to get from the weaviate store.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>

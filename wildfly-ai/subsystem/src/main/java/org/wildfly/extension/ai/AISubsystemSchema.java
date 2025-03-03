@@ -20,6 +20,9 @@ import org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegis
 import org.wildfly.extension.ai.rag.retriever.EmbeddingStoreContentRetrieverProviderRegistrar;
 import org.wildfly.extension.ai.rag.retriever.WebSearchContentContentRetrieverProviderRegistrar;
 import org.wildfly.extension.ai.embedding.store.WeaviateEmbeddingStoreProviderRegistrar;
+import org.wildfly.extension.ai.mcp.client.McpToolProviderProviderRegistrar;
+import org.wildfly.extension.ai.mcp.client.McpClientSseProviderRegistrar;
+import org.wildfly.extension.ai.mcp.client.McpClientStdioProviderRegistrar;
 
 /**
  * Enumeration of AI subsystem schema versions.
@@ -60,6 +63,11 @@ enum AISubsystemSchema implements PersistentSubsystemSchema<AISubsystemSchema> {
                 .addChild(PersistentResourceXMLDescription.decorator("content-retrievers")
                         .addChild(factory.builder(EmbeddingStoreContentRetrieverProviderRegistrar.PATH).addAttributes(EmbeddingStoreContentRetrieverProviderRegistrar.ATTRIBUTES.stream()).build())
                         .addChild(factory.builder(WebSearchContentContentRetrieverProviderRegistrar.PATH).addAttributes(WebSearchContentContentRetrieverProviderRegistrar.ATTRIBUTES.stream()).build())
+                        .build())
+                .addChild(PersistentResourceXMLDescription.decorator("mcp")
+                        .addChild(factory.builder(McpToolProviderProviderRegistrar.PATH).addAttributes(McpToolProviderProviderRegistrar.ATTRIBUTES.stream()).build())
+                        .addChild(factory.builder(McpClientSseProviderRegistrar.PATH).addAttributes(McpClientSseProviderRegistrar.ATTRIBUTES.stream()).build())
+                        .addChild(factory.builder(McpClientStdioProviderRegistrar.PATH).addAttributes(McpClientStdioProviderRegistrar.ATTRIBUTES.stream()).build())
                         .build())
                 .build();
     }
