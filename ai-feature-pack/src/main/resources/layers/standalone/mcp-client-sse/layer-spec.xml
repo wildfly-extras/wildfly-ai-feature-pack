@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright The WildFly Authors
+~ SPDX-License-Identifier: Apache-2.0
+-->
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="mcp-client-sse">
+    <props>
+        <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
+        <prop name="org.wildfly.rule.add-on" value="ai-mcp-client,mcp-client-sse"/>
+        <prop name="org.wildfly.rule.add-on-description" value="Use MCP SSE client as tool provider LLM interactions"/>
+        <prop name="org.wildfly.rule.annotation.field.value" value="io.smallrye.llm.spi.RegisterAIService,toolProviderName=mcp"/>
+    </props>
+    <dependencies>
+        <layer name="ai"/>
+    </dependencies>
+    <packages>
+        <package name="dev.langchain4j.mcp-client"/>
+    </packages>
+    <feature spec="subsystem.ai">
+        <feature spec="subsystem.ai.mcp-tool-provider">
+            <param name="mcp-tool-provider" value="mcp"/>
+            <param name="mcp-clients" value="[mcp-sse]"/>
+        </feature>
+        <feature spec="subsystem.ai.mcp-client-sse">
+            <param name="mcp-client-sse" value="mcp-sse"/>
+            <param name="connect-timeout" value="6000000"/>
+            <param name="log-requests" value="${org.wildfly.ai.mcp.client.log.request,env.MCP_CLIENT_LOG_REQUEST:true}"/>
+            <param name="log-responses" value="${org.wildfly.ai.mcp.client.log.response,env.MCP_CLIENT_LOG_RESPONSE:true}"/>
+            <param name="socket-binding" value="mcp-sse"/>
+            <param name="sse-path" value="${org.wildfly.ai.mcp.client.sse.path,env.MCP_CLIENT_SSE_PATH:/sse}"/>
+        </feature>
+    </feature>
+    <feature spec="socket-binding-group.remote-destination-outbound-socket-binding">
+        <param name="socket-binding-group" value="standard-sockets" />
+        <param name="remote-destination-outbound-socket-binding" value="mcp-sse"/>
+        <param name="host" value="${org.wildfly.ai.mcp.client.host,env.MCP_CLIENT_HOST:localhost}"/>
+        <param name="port" value="${org.wildfly.ai.mcp.client.port,env.MCP_CLIENT_PORT:8090}"/>
+    </feature>
+</layer-spec>

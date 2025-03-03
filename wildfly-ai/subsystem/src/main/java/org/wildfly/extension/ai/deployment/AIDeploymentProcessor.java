@@ -10,6 +10,7 @@ import static org.wildfly.extension.ai.Capabilities.OPENTELEMETRY_CAPABILITY_NAM
 
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.service.tool.ToolProvider;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import jakarta.enterprise.inject.spi.Extension;
 import java.util.List;
@@ -48,6 +49,8 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
             List<String> requiredEmbeddingStoreNames = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_STORE_KEYS);
             List<ContentRetriever> requiredContentRetrievers = deploymentUnit.getAttachmentList(AIAttachements.CONTENT_RETRIEVERS);
             List<String> requiredContentRetrieverNames = deploymentUnit.getAttachmentList(AIAttachements.CONTENT_RETRIEVER_KEYS);
+            List<ToolProvider> requiredToolProviders = deploymentUnit.getAttachmentList(AIAttachements.TOOL_PROVIDERS);
+            List<String> requiredToolProviderNames = deploymentUnit.getAttachmentList(AIAttachements.TOOL_PROVIDER_KEYS);
             if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty()) {
                 if (!requiredChatModels.isEmpty()) {
                     for (int i = 0; i < requiredChatModels.size(); i++) {
@@ -67,6 +70,11 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
                 if (!requiredContentRetrievers.isEmpty()) {
                     for (int i = 0; i < requiredContentRetrievers.size(); i++) {
                         WildFlyBeanRegistry.registerContentRetriever(requiredContentRetrieverNames.get(i), requiredContentRetrievers.get(i));
+                    }
+                }
+                if (!requiredToolProviders.isEmpty()) {
+                    for (int i = 0; i < requiredToolProviders.size(); i++) {
+                        WildFlyBeanRegistry.registerToolProvider(requiredToolProviderNames.get(i), requiredToolProviders.get(i));
                     }
                 }
                 for (Extension extension : WildFlyBeanRegistry.getCDIExtensions()) {
