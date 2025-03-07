@@ -5,11 +5,9 @@
 package org.wildfly.extension.ai.chat;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.API_KEY;
-import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.FREQUENCY_PENALTY;
-import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
-import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_RETRIES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_TOKEN;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.PRESENCE_PENALTY;
@@ -18,9 +16,14 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
 import static org.wildfly.extension.ai.Capabilities.OPENTELEMETRY_CAPABILITY_NAME;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.ORGANIZATION_ID;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.SEED;
+import static org.wildfly.extension.ai.chat.GithubModelChatLanguageModelProviderRegistrar.CUSTOM_HEADERS;
+import static org.wildfly.extension.ai.chat.GithubModelChatLanguageModelProviderRegistrar.ENDPOINT;
+import static org.wildfly.extension.ai.chat.GithubModelChatLanguageModelProviderRegistrar.LOG_REQUESTS_RESPONSES;
+import static org.wildfly.extension.ai.chat.GithubModelChatLanguageModelProviderRegistrar.SEED;
+import static org.wildfly.extension.ai.chat.GithubModelChatLanguageModelProviderRegistrar.SERVICE_VERSION;
+import static org.wildfly.extension.ai.chat.GithubModelChatLanguageModelProviderRegistrar.USER_AGENT_SUFFIX;
 
+import java.util.Map;
 import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
@@ -28,58 +31,59 @@ import org.jboss.dmr.ModelNode;
 import org.wildfly.extension.ai.AIAttributeDefinitions;
 
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
-import org.wildfly.extension.ai.injection.chat.WildFlyOpenAiChatModelConfig;
+import org.wildfly.extension.ai.injection.chat.WildFlyGithubModelChatModelConfig;
 
 import org.wildfly.service.capture.ValueRegistry;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
 
-/**
- * Configures an aggregate ChatModel provider service.
- */
-public class OpenAIChatModelProviderServiceConfigurator extends AbstractChatModelProviderServiceConfigurator {
+public class GithubModelChatModelProviderServiceConfigurator extends AbstractChatModelProviderServiceConfigurator {
 
-    public OpenAIChatModelProviderServiceConfigurator(ValueRegistry<String, WildFlyChatModelConfig> registry) {
+    public GithubModelChatModelProviderServiceConfigurator(ValueRegistry<String, WildFlyChatModelConfig> registry) {
         super(registry);
     }
 
     @Override
     public ResourceServiceInstaller configure(OperationContext context, ModelNode model) throws OperationFailedException {
-        String baseUrl = BASE_URL.resolveModelAttribute(context, model).asString();
+        String endpoint = ENDPOINT.resolveModelAttribute(context, model).asString();
+        Map<String, String> customHeaders = CUSTOM_HEADERS.unwrap(context, model);
         Long connectTimeOut = CONNECT_TIMEOUT.resolveModelAttribute(context, model).asLong();
         Double frequencyPenalty = FREQUENCY_PENALTY.resolveModelAttribute(context, model).asDoubleOrNull();
         String key = API_KEY.resolveModelAttribute(context, model).asString();
-        String organizationId = ORGANIZATION_ID.resolveModelAttribute(context, model).asString();
         String modelName = MODEL_NAME.resolveModelAttribute(context, model).asString();
+        Integer maxRetries = MAX_RETRIES.resolveModelAttribute(context, model).asIntOrNull();
         Integer maxToken = MAX_TOKEN.resolveModelAttribute(context, model).asIntOrNull();
         Double presencePenalty = PRESENCE_PENALTY.resolveModelAttribute(context, model).asDoubleOrNull();
-        Boolean logRequests = LOG_REQUESTS.resolveModelAttribute(context, model).asBooleanOrNull();
-        Boolean logResponses = LOG_RESPONSES.resolveModelAttribute(context, model).asBooleanOrNull();
+        Boolean logRequestsAndResponses = LOG_REQUESTS_RESPONSES.resolveModelAttribute(context, model).asBooleanOrNull();
         boolean isJson = AIAttributeDefinitions.ResponseFormat.isJson(RESPONSE_FORMAT.resolveModelAttribute(context, model).asStringOrNull());
-        Integer seed = SEED.resolveModelAttribute(context, model).asIntOrNull();
+        Long seed = SEED.resolveModelAttribute(context, model).asLongOrNull();
+        String serviceVersion = SERVICE_VERSION.resolveModelAttribute(context, model).asStringOrNull();
         Boolean streaming = STREAMING.resolveModelAttribute(context, model).asBooleanOrNull();
         Double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDoubleOrNull();
         Double topP = TOP_P.resolveModelAttribute(context, model).asDoubleOrNull();
+        String userAgentSuffix = USER_AGENT_SUFFIX.resolveModelAttribute(context, model).asStringOrNull();
         boolean isObservable= context.getCapabilityServiceSupport().hasCapability(OPENTELEMETRY_CAPABILITY_NAME);
         Supplier<WildFlyChatModelConfig> factory = new Supplier<>() {
             @Override
             public WildFlyChatModelConfig get() {
-                return new WildFlyOpenAiChatModelConfig()
-                        .apiKey(key)
-                        .baseUrl(baseUrl)
+                return new WildFlyGithubModelChatModelConfig()
+                        .customHeaders(customHeaders)
+                        .endpoint(endpoint)
                         .frequencyPenalty(frequencyPenalty)
-                        .logRequests(logRequests)
-                        .logResponses(logResponses)
+                        .gitHubToken(key)
+                        .logRequestsAndResponses(logRequestsAndResponses)
+                        .maxRetries(maxRetries)
                         .maxTokens(maxToken)
                         .modelName(modelName)
-                        .organizationId(organizationId)
                         .presencePenalty(presencePenalty)
                         .seed(seed)
+                        .serviceVersion(serviceVersion)
                         .setJson(isJson)
                         .setObservable(isObservable)
                         .setStreaming(streaming)
                         .temperature(temperature)
                         .timeout(connectTimeOut)
-                        .topP(topP);
+                        .topP(topP)
+                        .userAgentSuffix(userAgentSuffix);
             }
         };
         return installService(context.getCurrentAddressValue(), factory);

@@ -10,6 +10,7 @@ import org.jboss.as.controller.PersistentSubsystemSchema;
 import org.jboss.as.controller.SubsystemSchema;
 import org.jboss.as.controller.xml.VersionedNamespace;
 import org.jboss.staxmapper.IntVersion;
+import org.wildfly.extension.ai.chat.GithubModelChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.chat.MistralAIChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.embedding.model.InMemoryEmbeddingModelProviderRegistrar;
@@ -47,9 +48,10 @@ enum AISubsystemSchema implements PersistentSubsystemSchema<AISubsystemSchema> {
         PersistentResourceXMLDescription.Factory factory = PersistentResourceXMLDescription.factory(this);
         return factory.builder(AISubsystemRegistrar.PATH)
                 .addChild(PersistentResourceXMLDescription.decorator("chat-language-models")
-                        .addChild(factory.builder(MistralAIChatLanguageModelProviderRegistrar.PATH).addAttributes(MistralAIChatLanguageModelProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .addChild(factory.builder(OpenAIChatLanguageModelProviderRegistrar.PATH).addAttributes(OpenAIChatLanguageModelProviderRegistrar.ATTRIBUTES.stream()).build())
+                        .addChild(factory.builder(GithubModelChatLanguageModelProviderRegistrar.PATH).addAttributes(GithubModelChatLanguageModelProviderRegistrar.ATTRIBUTES.stream()).build())
                         .addChild(factory.builder(OllamaChatLanguageModelProviderRegistrar.PATH).addAttributes(OllamaChatLanguageModelProviderRegistrar.ATTRIBUTES.stream()).build())
+                        .addChild(factory.builder(OpenAIChatLanguageModelProviderRegistrar.PATH).addAttributes(OpenAIChatLanguageModelProviderRegistrar.ATTRIBUTES.stream()).build())
+                        .addChild(factory.builder(MistralAIChatLanguageModelProviderRegistrar.PATH).addAttributes(MistralAIChatLanguageModelProviderRegistrar.ATTRIBUTES.stream()).build())
                         .build())
                 .addChild(PersistentResourceXMLDescription.decorator("embedding-models")
                         .addChild(factory.builder(OllamaEmbeddingModelProviderRegistrar.PATH).addAttributes(OllamaEmbeddingModelProviderRegistrar.ATTRIBUTES.stream()).build())
