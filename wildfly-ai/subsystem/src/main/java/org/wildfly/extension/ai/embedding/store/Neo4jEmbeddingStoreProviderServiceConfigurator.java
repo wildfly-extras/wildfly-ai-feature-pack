@@ -4,8 +4,10 @@
  */
 package org.wildfly.extension.ai.embedding.store;
 
+import static org.wildfly.extension.ai.AIAttributeDefinitions.BOLT_URL;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.CREDENTIAL_REFERENCE;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.USERNAME;
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAPABILITY;
-import static org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegistrar.BOLT_URL;
 import static org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegistrar.DATABASE_NAME;
 import static org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegistrar.DIMENSION;
 import static org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegistrar.EMBEDDING_PROPERTY;
@@ -15,7 +17,6 @@ import static org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProvid
 import static org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegistrar.METADATA_PREFIX;
 import static org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegistrar.RETRIEVAL_QUERY;
 import static org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegistrar.TEXT_PROPERTY;
-import static org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegistrar.USERNAME;
 
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
@@ -49,7 +50,7 @@ public class Neo4jEmbeddingStoreProviderServiceConfigurator implements ResourceS
         String retrievalQuery = RETRIEVAL_QUERY.resolveModelAttribute(context, model).asStringOrNull();
         String textProperty = TEXT_PROPERTY.resolveModelAttribute(context, model).asStringOrNull();
         String userName = USERNAME.resolveModelAttribute(context, model).asString();
-        ServiceDependency<CredentialSource> credentialRef = ServiceDependency.from(CredentialReference.getCredentialSourceDependency(context, Neo4jEmbeddingStoreProviderRegistrar.CREDENTIAL_REFERENCE, model));
+        ServiceDependency<CredentialSource> credentialRef = ServiceDependency.from(CredentialReference.getCredentialSourceDependency(context, CREDENTIAL_REFERENCE, model));
         Supplier<EmbeddingStore<TextSegment>> factory = new Supplier<>() {
             @Override
             public EmbeddingStore<TextSegment> get() {

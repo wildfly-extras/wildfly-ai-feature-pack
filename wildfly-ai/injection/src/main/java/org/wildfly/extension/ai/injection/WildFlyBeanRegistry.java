@@ -19,37 +19,46 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
+import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
 
 public class WildFlyBeanRegistry {
 
     private static final Map<String, WildFlyChatModelConfig> chatModels = new HashMap<>();
     private static final Map<String, EmbeddingModel> embeddingModels = new HashMap<>();
     private static final Map<String, EmbeddingStore> embeddingStores = new HashMap<>();
-    private static final Map<String, ContentRetriever> contentRetrievers = new HashMap<>();
+    private static final Map<String, WildFlyContentRetrieverConfig> contentRetrievers = new HashMap<>();
     private static final Map<String, ToolProvider> toolProviders = new HashMap<>();
 
     public static final void registerChatLanguageModel(String id, WildFlyChatModelConfig chatModel) {
-        chatModels.put(id, chatModel);
-        if (chatModel.isStreaming()) {
-            registerBean(id, chatModel, StreamingChatLanguageModel.class);
-        } else {
-            registerBean(id, chatModel, ChatLanguageModel.class);
+        if (!chatModels.containsKey(id)) {
+            chatModels.put(id, chatModel);
+            if (chatModel.isStreaming()) {
+                registerBean(id, chatModel, StreamingChatLanguageModel.class);
+            } else {
+                registerBean(id, chatModel, ChatLanguageModel.class);
+            }
         }
     }
 
     public static void registerEmbeddingModel(String id, EmbeddingModel embeddingModel) {
-        embeddingModels.put(id, embeddingModel);
-        registerBean(id, embeddingModel, EmbeddingModel.class);
+        if (!embeddingModels.containsKey(id)) {
+            embeddingModels.put(id, embeddingModel);
+            registerBean(id, embeddingModel, EmbeddingModel.class);
+        }
     }
 
     public static void registerEmbeddingStore(String id, EmbeddingStore embeddingStore) {
-        embeddingStores.put(id, embeddingStore);
-        registerBean(id, embeddingStore, EmbeddingStore.class);
+        if (!embeddingStores.containsKey(id)) {
+            embeddingStores.put(id, embeddingStore);
+            registerBean(id, embeddingStore, EmbeddingStore.class);
+        }
     }
 
-    public static void registerContentRetriever(String id, ContentRetriever contentRetriever) {
-        contentRetrievers.put(id, contentRetriever);
-        registerBean(id, contentRetriever, ContentRetriever.class);
+    public static void registerContentRetriever(String id, WildFlyContentRetrieverConfig contentRetriever) {
+        if (!contentRetrievers.containsKey(id)) {
+            contentRetrievers.put(id, contentRetriever);
+            registerBean(id, contentRetriever, ContentRetriever.class);
+        }
     }
     public static void registerToolProvider(String id, ToolProvider toolProvider) {
         toolProviders.put(id, toolProvider);

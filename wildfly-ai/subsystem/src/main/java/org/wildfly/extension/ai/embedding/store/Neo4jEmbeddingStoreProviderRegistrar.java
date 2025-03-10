@@ -4,23 +4,23 @@
  */
 package org.wildfly.extension.ai.embedding.store;
 
+import static org.wildfly.extension.ai.AIAttributeDefinitions.BOLT_URL;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.CREDENTIAL_REFERENCE;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.USERNAME;
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAPABILITY;
 
 import java.util.Collection;
 import java.util.List;
 import org.jboss.as.controller.AttributeDefinition;
-import org.jboss.as.controller.ObjectTypeAttributeDefinition;
 import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.ResourceRegistration;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.controller.access.management.SensitiveTargetAccessConstraintDefinition;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.operations.validation.IntRangeValidator;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.controller.registry.RuntimePackageDependency;
-import org.jboss.as.controller.security.CredentialReference;
 import org.jboss.dmr.ModelType;
 import org.wildfly.subsystem.resource.ChildResourceDefinitionRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
@@ -30,14 +30,6 @@ import org.wildfly.subsystem.resource.operation.ResourceOperationRuntimeHandler;
 
 public class Neo4jEmbeddingStoreProviderRegistrar implements ChildResourceDefinitionRegistrar {
 
-    protected static final SimpleAttributeDefinition BOLT_URL
-            = new SimpleAttributeDefinitionBuilder("bolt-url", ModelType.STRING, true)
-                    .setAllowExpression(true)
-                    .build();
-    protected static final ObjectTypeAttributeDefinition CREDENTIAL_REFERENCE
-            = CredentialReference.getAttributeBuilder(true, true)
-                    .addAccessConstraint(SensitiveTargetAccessConstraintDefinition.CREDENTIAL)
-                    .build();
     protected static final SimpleAttributeDefinition DATABASE_NAME
             = new SimpleAttributeDefinitionBuilder("database-name", ModelType.STRING, true)
                     .setAllowExpression(true)
@@ -73,10 +65,6 @@ public class Neo4jEmbeddingStoreProviderRegistrar implements ChildResourceDefini
                     .build();
     protected static final SimpleAttributeDefinition TEXT_PROPERTY
             = new SimpleAttributeDefinitionBuilder("text-property", ModelType.STRING, true)
-                    .setAllowExpression(true)
-                    .build();
-    protected static final SimpleAttributeDefinition USERNAME
-            = new SimpleAttributeDefinitionBuilder("username", ModelType.STRING, false)
                     .setAllowExpression(true)
                     .build();
 

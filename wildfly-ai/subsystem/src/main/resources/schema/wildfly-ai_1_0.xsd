@@ -136,6 +136,13 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="neo4j-content-retriever" type="neo4jContentRetrieverType">
+                <xs:annotation>
+                    <xs:documentation>
+                        A content retriever retriving content from a Neo4J Graph database.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="web-search-content-retriever" type="webSearchContentRetrieverType">
                 <xs:annotation>
                     <xs:documentation>
@@ -1049,6 +1056,58 @@
             <xs:annotation>
                 <xs:documentation>
                     The list of metadata fields to get from the weaviate store.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="neo4jContentRetrieverType">
+        <xs:annotation>
+            <xs:documentation>
+                A content retriever retriving content from a Neo4J graph database.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="credential-reference" type="credential-reference:credentialReferenceType" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        Credential to be used by the configuration.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of this provider.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="bolt-url" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The bolt url to Neo4J server.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="chat-language-model" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The chat language model to use to create cypher queries.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="prompt-template" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The prompte template to use to create the cypher queries.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="username" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The username for connecting to Neo4J server.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>

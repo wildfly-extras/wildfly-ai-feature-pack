@@ -10,7 +10,6 @@ import dev.langchain4j.model.chat.listener.ChatModelListener;
 import java.util.List;
 
 public interface WildFlyChatModelConfig {
-
     ChatLanguageModel createLanguageModel(List<ChatModelListener> listeners);
 
     StreamingChatLanguageModel createStreamingLanguageModel(List<ChatModelListener> listeners);

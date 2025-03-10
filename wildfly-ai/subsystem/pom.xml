@@ -203,10 +203,6 @@
             <artifactId>openai4j</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-        </dependency>
-        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
@@ -222,6 +218,10 @@
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-opentelemetry-api</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
         </dependency>
     </dependencies>
 </project>
