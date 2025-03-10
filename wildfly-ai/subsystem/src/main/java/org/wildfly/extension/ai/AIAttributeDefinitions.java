@@ -31,6 +31,9 @@ public class AIAttributeDefinitions {
             .setDefaultValue(ModelNode.ZERO)
             .setMeasurementUnit(MeasurementUnit.MILLISECONDS)
             .build();
+    public static final SimpleAttributeDefinition FREQUENCY_PENALTY = new SimpleAttributeDefinitionBuilder("frequency-penalty", ModelType.DOUBLE, true)
+            .setAllowExpression(true)
+            .build();
     public static final SimpleAttributeDefinition LOG_REQUESTS = SimpleAttributeDefinitionBuilder.create("log-requests", ModelType.BOOLEAN, true)
             .setAllowExpression(true)
             .build();
@@ -45,6 +48,9 @@ public class AIAttributeDefinitions {
             .setDefaultValue(new ModelNode(1000))
             .build();
     public static final SimpleAttributeDefinition MODEL_NAME = new SimpleAttributeDefinitionBuilder("model-name", ModelType.STRING, false)
+            .setAllowExpression(true)
+            .build();
+    public static final SimpleAttributeDefinition PRESENCE_PENALTY = new SimpleAttributeDefinitionBuilder("presence-penalty", ModelType.DOUBLE, true)
             .setAllowExpression(true)
             .build();
     public static final SimpleAttributeDefinition RESPONSE_FORMAT = new SimpleAttributeDefinitionBuilder("response-format", ModelType.STRING, true)
