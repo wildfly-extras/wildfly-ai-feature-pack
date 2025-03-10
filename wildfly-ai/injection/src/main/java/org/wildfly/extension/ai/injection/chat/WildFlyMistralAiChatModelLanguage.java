@@ -28,49 +28,56 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
     private boolean isJson;
     private boolean streaming;
     private boolean observable;
+    private Object instance = null;
 
     @Override
     public ChatLanguageModel createLanguageModel(List<ChatModelListener> listeners) {
-        MistralAiChatModel.MistralAiChatModelBuilder builder = MistralAiChatModel.builder()
-                .apiKey(key)
-                .baseUrl(baseUrl)
-                .logRequests(logRequests)
-                .logResponses(logResponses)
-                .maxRetries(5)
-                .maxTokens(maxTokens)
-                .modelName(modelName)
-                .randomSeed(randomSeed)
-                .safePrompt(safePrompt)
-                .temperature(temperature)
-                .timeout(connectTimeOut)
-                .topP(topP);
-        if (isJson) {
-            builder.responseFormat("json_object");
-        }
-        if (observable) {
+        if (instance == null) {
+            MistralAiChatModel.MistralAiChatModelBuilder builder = MistralAiChatModel.builder()
+                    .apiKey(key)
+                    .baseUrl(baseUrl)
+                    .logRequests(logRequests)
+                    .logResponses(logResponses)
+                    .maxRetries(5)
+                    .maxTokens(maxTokens)
+                    .modelName(modelName)
+                    .randomSeed(randomSeed)
+                    .safePrompt(safePrompt)
+                    .temperature(temperature)
+                    .timeout(connectTimeOut)
+                    .topP(topP);
+            if (isJson) {
+                builder.responseFormat("json_object");
+            }
+            if (observable) {
 //            builder.listeners(Collections.singletonList(new OpenTelemetryChatModelListener()));
+            }
+            instance = builder.build();
         }
-        return builder.build();
+        return (ChatLanguageModel) instance;
     }
 
     @Override
     public StreamingChatLanguageModel createStreamingLanguageModel(List<ChatModelListener> listeners) {
-        MistralAiStreamingChatModel.MistralAiStreamingChatModelBuilder builder = MistralAiStreamingChatModel.builder()
-                .apiKey(key)
-                .baseUrl(baseUrl)
-                .logRequests(logRequests)
-                .logResponses(logResponses)
-                .maxTokens(maxTokens)
-                .modelName(modelName)
-                .randomSeed(randomSeed)
-                .safePrompt(safePrompt)
-                .temperature(temperature)
-                .timeout(connectTimeOut)
-                .topP(topP);
-        if (isJson) {
-            builder.responseFormat("json_object");
+        if (instance == null) {
+            MistralAiStreamingChatModel.MistralAiStreamingChatModelBuilder builder = MistralAiStreamingChatModel.builder()
+                    .apiKey(key)
+                    .baseUrl(baseUrl)
+                    .logRequests(logRequests)
+                    .logResponses(logResponses)
+                    .maxTokens(maxTokens)
+                    .modelName(modelName)
+                    .randomSeed(randomSeed)
+                    .safePrompt(safePrompt)
+                    .temperature(temperature)
+                    .timeout(connectTimeOut)
+                    .topP(topP);
+            if (isJson) {
+                builder.responseFormat("json_object");
+            }
+            instance = builder.build();
         }
-        return builder.build();
+        return (StreamingChatLanguageModel) instance;
     }
 
     public WildFlyMistralAiChatModelLanguage apiKey(String key) {

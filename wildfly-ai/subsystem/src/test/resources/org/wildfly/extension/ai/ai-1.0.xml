@@ -24,6 +24,9 @@
     </embedding-stores>
     <content-retrievers>
         <embedding-store-content-retriever name="myretriever" embedding-store="mystore" embedding-model="myembedding"/>
+        <neo4j-content-retriever name="myNeo4jstore" bolt-url="bolt://localhost:7687" username="neo4j" chat-language-model="ollama" prompt-template="template">
+            <credential-reference clear-text="passwordOut!"/>
+        </neo4j-content-retriever>
         <web-search-content-retriever name="google-test">
             <google api-key="key" connect-timeout="10000" custom-search-id="id" log-requests="true" log-responses="true"/>
         </web-search-content-retriever>
