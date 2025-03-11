@@ -5,13 +5,13 @@
 package org.wildfly.extension.ai;
 
 import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.service.tool.ToolProvider;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import org.jboss.as.controller.capability.RuntimeCapability;
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.extension.ai.mcp.client.WildFlyMcpClient;
 import org.wildfly.service.descriptor.UnaryServiceDescriptor;
+import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
 
 public interface Capabilities {
     UnaryServiceDescriptor<WildFlyChatModelConfig> CHAT_MODEL_PROVIDER_DESCRIPTOR = UnaryServiceDescriptor.of("org.wildfly.ai.chatmodel", WildFlyChatModelConfig.class);
@@ -26,7 +26,7 @@ public interface Capabilities {
     UnaryServiceDescriptor<ToolProvider> TOOL_PROVIDER_DESCRIPTOR = UnaryServiceDescriptor.of("org.wildfly.ai.tool-provider", ToolProvider.class);
     RuntimeCapability<Void> TOOL_PROVIDER_CAPABILITY = RuntimeCapability.Builder.of(TOOL_PROVIDER_DESCRIPTOR).setAllowMultipleRegistrations(true).build();
 
-    UnaryServiceDescriptor<ContentRetriever> CONTENT_RETRIEVER_PROVIDER_DESCRIPTOR = UnaryServiceDescriptor.of("org.wildfly.ai.rag.retriever", ContentRetriever.class);
+    UnaryServiceDescriptor<WildFlyContentRetrieverConfig> CONTENT_RETRIEVER_PROVIDER_DESCRIPTOR = UnaryServiceDescriptor.of("org.wildfly.ai.rag.retriever", WildFlyContentRetrieverConfig.class);
     RuntimeCapability<Void> CONTENT_RETRIEVER_PROVIDER_CAPABILITY = RuntimeCapability.Builder.of(CONTENT_RETRIEVER_PROVIDER_DESCRIPTOR).setAllowMultipleRegistrations(true).build();
 
     UnaryServiceDescriptor<WildFlyMcpClient> MCP_CLIENT_DESCRIPTOR = UnaryServiceDescriptor.of("org.wildfly.ai.mcp.client", WildFlyMcpClient.class);

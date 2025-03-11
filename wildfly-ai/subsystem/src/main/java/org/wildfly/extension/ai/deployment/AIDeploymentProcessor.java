@@ -9,7 +9,6 @@ import static org.wildfly.extension.ai.AILogger.ROOT_LOGGER;
 import static org.wildfly.extension.ai.Capabilities.OPENTELEMETRY_CAPABILITY_NAME;
 
 import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.service.tool.ToolProvider;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import jakarta.enterprise.inject.spi.Extension;
@@ -23,6 +22,7 @@ import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.as.weld.WeldCapability;
 import org.wildfly.extension.ai.injection.WildFlyBeanRegistry;
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
+import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
 
 
 public class AIDeploymentProcessor implements DeploymentUnitProcessor {
@@ -47,7 +47,7 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
             List<String> requiredEmbeddingModelNames = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_MODEL_KEYS);
             List<EmbeddingStore> requiredEmbeddingStores = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_STORES);
             List<String> requiredEmbeddingStoreNames = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_STORE_KEYS);
-            List<ContentRetriever> requiredContentRetrievers = deploymentUnit.getAttachmentList(AIAttachements.CONTENT_RETRIEVERS);
+            List<WildFlyContentRetrieverConfig> requiredContentRetrievers = deploymentUnit.getAttachmentList(AIAttachements.CONTENT_RETRIEVERS);
             List<String> requiredContentRetrieverNames = deploymentUnit.getAttachmentList(AIAttachements.CONTENT_RETRIEVER_KEYS);
             List<ToolProvider> requiredToolProviders = deploymentUnit.getAttachmentList(AIAttachements.TOOL_PROVIDERS);
             List<String> requiredToolProviderNames = deploymentUnit.getAttachmentList(AIAttachements.TOOL_PROVIDER_KEYS);

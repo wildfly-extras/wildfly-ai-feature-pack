@@ -25,42 +25,49 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
     private String modelName;
     private boolean streaming;
     private boolean observable;
+    private Object instance = null;
 
     @Override
     public ChatLanguageModel createLanguageModel(List<ChatModelListener> listeners) {
-        OllamaChatModel.OllamaChatModelBuilder builder = OllamaChatModel.builder()
-                .baseUrl(baseUrl)
-                .logRequests(logRequests)
-                .logResponses(logResponses)
-                .maxRetries(maxRetries)
-                .temperature(temperature)
-                .timeout(connectTimeOut)
-                .modelName(modelName);
-        if (isJson) {
-            builder.responseFormat(ResponseFormat.JSON);
+        if (instance == null) {
+            OllamaChatModel.OllamaChatModelBuilder builder = OllamaChatModel.builder()
+                    .baseUrl(baseUrl)
+                    .logRequests(logRequests)
+                    .logResponses(logResponses)
+                    .maxRetries(maxRetries)
+                    .temperature(temperature)
+                    .timeout(connectTimeOut)
+                    .modelName(modelName);
+            if (isJson) {
+                builder.responseFormat(ResponseFormat.JSON);
+            }
+            if (observable) {
+                builder.listeners(listeners);
+            }
+            instance = builder.build();
         }
-        if (observable) {
-            builder.listeners(listeners);
-        }
-        return builder.build();
+        return (ChatLanguageModel) instance;
     }
 
     @Override
     public StreamingChatLanguageModel createStreamingLanguageModel(List<ChatModelListener> listeners) {
-        OllamaStreamingChatModel.OllamaStreamingChatModelBuilder builder = OllamaStreamingChatModel.builder()
-                .baseUrl(baseUrl)
-                .logRequests(logRequests)
-                .logResponses(logResponses)
-                .temperature(temperature)
-                .timeout(connectTimeOut)
-                .modelName(modelName);
-        if (isJson) {
-            builder.responseFormat(ResponseFormat.JSON);
+        if (instance == null) {
+            OllamaStreamingChatModel.OllamaStreamingChatModelBuilder builder = OllamaStreamingChatModel.builder()
+                    .baseUrl(baseUrl)
+                    .logRequests(logRequests)
+                    .logResponses(logResponses)
+                    .temperature(temperature)
+                    .timeout(connectTimeOut)
+                    .modelName(modelName);
+            if (isJson) {
+                builder.responseFormat(ResponseFormat.JSON);
+            }
+            if (observable) {
+                builder.listeners(listeners);
+            }
+            instance = builder.build();
         }
-        if (observable) {
-            builder.listeners(listeners);
-        }
-        return builder.build();
+        return (StreamingChatLanguageModel) instance;
     }
 
     public WildFlyOllamaChatModelConfig baseUrl(String baseUrl) {

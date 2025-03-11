@@ -4,12 +4,14 @@
  */
 package org.wildfly.extension.ai.injection;
 
+import static io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig.PRODUCER;
 import static io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig.getBeanPropertyName;
 import static org.wildfly.extension.ai.injection.AILogger.ROOT_LOGGER;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig;
 import io.smallrye.llm.core.langchain4j.core.config.spi.ProducerFunction;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
+import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
 
 public class WildFlyLLMConfig implements LLMConfig {
 
@@ -68,6 +71,7 @@ public class WildFlyLLMConfig implements LLMConfig {
                         } else {
                             listeners = Collections.emptyList();
                         }
+                        ROOT_LOGGER.info("Bean " + beanName + " of type " + expectedType + " has been produced");
                         if (ChatLanguageModel.class.isAssignableFrom(expectedType) && !config.isStreaming()) {
                             return (T) config.createLanguageModel(listeners);
                         }
@@ -77,10 +81,20 @@ public class WildFlyLLMConfig implements LLMConfig {
                         throw ROOT_LOGGER.incorrectLLMConfiguration(beanName, expectedType.getName(), config.isStreaming());
                     }
                 };
+            }  else if (ContentRetriever.class.isAssignableFrom(expectedType)) {
+                return (T) new ProducerFunction<Object>() {
+                    @Override
+                    public Object produce(Instance<Object> lookup, String beanName) {
+                         ROOT_LOGGER.info("Bean " + beanName + " of type " + expectedType + " has been produced");
+                         WildFlyContentRetrieverConfig config = (WildFlyContentRetrieverConfig) beanData.get(getBeanPropertyName(beanName, BEAN_VALUE));
+                         return (T) config.createContentRetriever(lookup);
+                    }
+                };
             } else {
                 return (T) new ProducerFunction<Object>() {
                     @Override
                     public Object produce(Instance<Object> lookup, String beanName) {
+                         ROOT_LOGGER.info("Bean " + beanName + " of type " + expectedType + " has been produced");
                         return beanData.get(getBeanPropertyName(beanName, BEAN_VALUE));
                     }
                 };

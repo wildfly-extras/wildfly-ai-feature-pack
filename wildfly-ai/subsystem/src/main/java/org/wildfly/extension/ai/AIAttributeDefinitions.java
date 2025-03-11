@@ -4,11 +4,13 @@
  */
 package org.wildfly.extension.ai;
 
+import org.jboss.as.controller.ObjectTypeAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
 import org.jboss.as.controller.access.management.SensitiveTargetAccessConstraintDefinition;
 import org.jboss.as.controller.client.helpers.MeasurementUnit;
 import org.jboss.as.controller.operations.validation.EnumValidator;
+import org.jboss.as.controller.security.CredentialReference;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
@@ -26,10 +28,16 @@ public class AIAttributeDefinitions {
             .addAccessConstraint(SensitiveTargetAccessConstraintDefinition.SOCKET_CONFIG)
             .setAllowExpression(true)
             .build();
+    public static final SimpleAttributeDefinition BOLT_URL = new SimpleAttributeDefinitionBuilder("bolt-url", ModelType.STRING, true)
+            .setAllowExpression(true)
+            .build();
     public static final SimpleAttributeDefinition CONNECT_TIMEOUT = new SimpleAttributeDefinitionBuilder("connect-timeout", ModelType.LONG, true)
             .setAllowExpression(true)
             .setDefaultValue(ModelNode.ZERO)
             .setMeasurementUnit(MeasurementUnit.MILLISECONDS)
+            .build();
+    public static final ObjectTypeAttributeDefinition CREDENTIAL_REFERENCE = CredentialReference.getAttributeBuilder(true, true)
+            .addAccessConstraint(SensitiveTargetAccessConstraintDefinition.CREDENTIAL)
             .build();
     public static final SimpleAttributeDefinition FREQUENCY_PENALTY = new SimpleAttributeDefinitionBuilder("frequency-penalty", ModelType.DOUBLE, true)
             .setAllowExpression(true)
@@ -73,6 +81,9 @@ public class AIAttributeDefinitions {
             .setAllowExpression(true)
             .build();
     public static final SimpleAttributeDefinition USER_MESSAGE = new SimpleAttributeDefinitionBuilder("user-message", ModelType.STRING, false)
+            .setAllowExpression(true)
+            .build();
+    public static final SimpleAttributeDefinition USERNAME = new SimpleAttributeDefinitionBuilder("username", ModelType.STRING, false)
             .setAllowExpression(true)
             .build();
 

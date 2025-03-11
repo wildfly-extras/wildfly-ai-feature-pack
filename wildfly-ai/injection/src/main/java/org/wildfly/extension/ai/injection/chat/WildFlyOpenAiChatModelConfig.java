@@ -30,56 +30,63 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
     private boolean isJson;
     private boolean streaming;
     private boolean observable;
+    private Object instance = null;
 
     @Override
     public ChatLanguageModel createLanguageModel(List<ChatModelListener> listeners) {
-        OpenAiChatModel.OpenAiChatModelBuilder builder = OpenAiChatModel.builder()
-                .apiKey(key)
-                .baseUrl(baseUrl)
-                .frequencyPenalty(frequencyPenalty)
-                .logRequests(logRequests)
-                .logResponses(logResponses)
-                .maxRetries(5)
-                .maxTokens(maxToken)
-                .modelName(modelName)
-                .organizationId(organizationId)
-                .presencePenalty(presencePenalty)
-                .seed(seed)
-                .temperature(temperature)
-                .timeout(connectTimeOut)
-                .topP(topP);
-        if (isJson) {
-            builder.responseFormat("json_object");
+        if (instance == null) {
+            OpenAiChatModel.OpenAiChatModelBuilder builder = OpenAiChatModel.builder()
+                    .apiKey(key)
+                    .baseUrl(baseUrl)
+                    .frequencyPenalty(frequencyPenalty)
+                    .logRequests(logRequests)
+                    .logResponses(logResponses)
+                    .maxRetries(5)
+                    .maxTokens(maxToken)
+                    .modelName(modelName)
+                    .organizationId(organizationId)
+                    .presencePenalty(presencePenalty)
+                    .seed(seed)
+                    .temperature(temperature)
+                    .timeout(connectTimeOut)
+                    .topP(topP);
+            if (isJson) {
+                builder.responseFormat("json_object");
+            }
+            if (observable) {
+                builder.listeners(listeners);
+            }
+            instance = builder.build();
         }
-        if (observable) {
-            builder.listeners(listeners);
-        }
-        return builder.build();
+        return (ChatLanguageModel) instance;
     }
 
     @Override
     public StreamingChatLanguageModel createStreamingLanguageModel(List<ChatModelListener> listeners) {
-        OpenAiStreamingChatModel.OpenAiStreamingChatModelBuilder builder = OpenAiStreamingChatModel.builder()
-                .apiKey(key)
-                .baseUrl(baseUrl)
-                .frequencyPenalty(frequencyPenalty)
-                .logRequests(logRequests)
-                .logResponses(logResponses)
-                .maxTokens(maxToken)
-                .modelName(modelName)
-                .organizationId(organizationId)
-                .presencePenalty(presencePenalty)
-                .seed(seed)
-                .temperature(temperature)
-                .timeout(connectTimeOut)
-                .topP(topP);
-        if (isJson) {
-            builder.responseFormat("json_object");
+        if (instance == null) {
+            OpenAiStreamingChatModel.OpenAiStreamingChatModelBuilder builder = OpenAiStreamingChatModel.builder()
+                    .apiKey(key)
+                    .baseUrl(baseUrl)
+                    .frequencyPenalty(frequencyPenalty)
+                    .logRequests(logRequests)
+                    .logResponses(logResponses)
+                    .maxTokens(maxToken)
+                    .modelName(modelName)
+                    .organizationId(organizationId)
+                    .presencePenalty(presencePenalty)
+                    .seed(seed)
+                    .temperature(temperature)
+                    .timeout(connectTimeOut)
+                    .topP(topP);
+            if (isJson) {
+                builder.responseFormat("json_object");
+            }
+            if (observable) {
+                builder.listeners(listeners);
+            }
+            instance = builder.build();
         }
-        if (observable) {
-            builder.listeners(listeners);
-        }
-        return builder.build();
+        return (StreamingChatLanguageModel) instance;
     }
 
     public WildFlyOpenAiChatModelConfig apiKey(String key) {

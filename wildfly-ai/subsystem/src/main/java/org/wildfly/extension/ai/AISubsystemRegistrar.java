@@ -28,6 +28,7 @@ import org.wildfly.extension.ai.embedding.store.WeaviateEmbeddingStoreProviderRe
 import org.wildfly.extension.ai.mcp.client.McpClientSseProviderRegistrar;
 import org.wildfly.extension.ai.mcp.client.McpClientStdioProviderRegistrar;
 import org.wildfly.extension.ai.mcp.client.McpToolProviderProviderRegistrar;
+import org.wildfly.extension.ai.rag.retriever.Neo4JContentRetrieverProviderRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrationContext;
 import org.wildfly.subsystem.resource.ResourceDescriptor;
@@ -66,6 +67,7 @@ class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
         new Neo4jEmbeddingStoreProviderRegistrar(RESOLVER).register(registration, context);
         new WeaviateEmbeddingStoreProviderRegistrar(RESOLVER).register(registration, context);
         new EmbeddingStoreContentRetrieverProviderRegistrar(RESOLVER).register(registration, context);
+        new Neo4JContentRetrieverProviderRegistrar(RESOLVER).register(registration, context);
         new WebSearchContentContentRetrieverProviderRegistrar(RESOLVER).register(registration, context);
         new McpToolProviderProviderRegistrar(RESOLVER).register(registration, context);
         new McpClientSseProviderRegistrar(RESOLVER).register(registration, context);
