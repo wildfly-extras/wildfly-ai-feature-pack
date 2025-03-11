@@ -26,14 +26,16 @@ Supported AI types
 
 For each AI type it supports, the feature-pack provides 21 Galleon layers that build upon each other :
 * Support for chat models to interact with a LLM:
+  * `github-chat-model` 
+  * `groq-chat-model` (same as openai-chat-model but targeting Groq)
   * `mistral-ai-chat-model`
   * `ollama-chat-model`
-  * `groq-chat-model` (same as openai-chat-model but targeting Groq)
   * `openai-chat-model` 
 * Support for streaming chat models to interact with a LLM:
+  * `github-streaming-chat-model` 
+  * `groq-streaming-chat-model` (same as openai-chat-model but targeting Groq)
   * `mistral-ai-streaming-chat-model`
   * `ollama-streaming-chat-model`
-  * `groq-streaming-chat-model` (same as openai-chat-model but targeting Groq)
   * `openai-streaming-chat-model` 
 * Support for embedding models: 
   * `in-memory-embedding-model-all-minilm-l6-v2`
@@ -51,8 +53,11 @@ For each AI type it supports, the feature-pack provides 21 Galleon layers that b
   * `weaviate-embedding-store`
 * Support for content retriever for RAG:
   * `default-embedding-content-retriever`: default content retriever using an `in-memory-embedding-store` and `in-memory-embedding-model-all-minilm-l6-v2` for embedding model.
+  * `neo4j-content-retriever`
   * `web-search-engines`
-
+* Support for tool provider (MCP): 
+  * `mcp-sse`: MCP SSE client
+  * `mcp-stdio`: MCP SSE client
 For more details on these you can take a look at [LangChain4J](https://docs.langchain4j.dev/) and [Smallrye-llm](https://github.com/smallrye/smallrye-llm).
 
 Using the WildFly AI Feature Pack
