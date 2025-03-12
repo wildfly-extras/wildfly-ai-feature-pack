@@ -9,6 +9,7 @@
         <prop name="org.wildfly.rule.add-on" value="ai-content-retriever,default-embedding-content-retriever"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use embedding content retriever"/>
         <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.rag.content.retriever.ContentRetriever,jakarta.inject.Named[value=embedding-store-retriever]"/>
+        <prop name="org.wildfly.rule.annotation.field.value" value="io.smallrye.llm.spi.RegisterAIService,contentRetrieverName=embedding-store-retriever"/>
     </props>
     <dependencies>
         <layer name="ai"/>
