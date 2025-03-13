@@ -16,7 +16,7 @@
     <feature spec="subsystem.ai">
         <feature spec="subsystem.ai.in-memory-embedding-store">
             <param name="in-memory-embedding-store" value="in-memory"/>
-            <param name="path" value="embeddings.json"/>
+            <param name="path" value="${org.wildfly.ai.in-memory.embedding.file,env.IN_MEMORY_EMBEDDING_FILE:embeddings.json}"/>
             <param name="relative-to" value="jboss.server.config.dir"/>
         </feature>
     </feature>

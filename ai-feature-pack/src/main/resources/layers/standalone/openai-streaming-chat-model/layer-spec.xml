@@ -9,6 +9,7 @@
         <prop name="org.wildfly.rule.add-on" value="ai-llm,openai-chat-model"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use OpenAI API for LLM interactions"/>
         <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.model.chat.StreamingChatLanguageModel,jakarta.inject.Named[value=streaming-openai]"/>
+        <prop name="org.wildfly.rule.annotation.field.value" value="io.smallrye.llm.spi.RegisterAIService,streamingChatLanguageModelName=streaming-openai"/>
     </props>
     <dependencies>
         <layer name="ai"/>
