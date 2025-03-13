@@ -22,7 +22,10 @@
     </resources>
 
     <dependencies>
-        <module name="com.google.code.gson"/>
+        <module name="com.fasterxml.jackson.core.jackson-annotations"/>
+        <module name="com.fasterxml.jackson.core.jackson-core"/>
+        <module name="com.fasterxml.jackson.core.jackson-databind"/>
+        <module name="com.knuddels.jtokkit"/>
         <module name="com.squareup.retrofit2" export="true" services="import"/>
         <module name="java.logging"/>
         <module name="java.net.http"/>
