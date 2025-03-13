@@ -53,7 +53,7 @@ public class ChatModelConnectionCheckerOperationHandler implements OperationStep
         }
         ModelNode answer = executor.execute((WildFlyChatModelConfig chatLanguageModelConfig) -> {
             AILogger.ROOT_LOGGER.debug("About to execute a chat call to the LLM with the following user message: " + userMessage);
-            String response = (chatLanguageModelConfig.createLanguageModel(Collections.emptyList())).generate(userMessage);
+            String response = (chatLanguageModelConfig.createLanguageModel(Collections.emptyList())).chat(userMessage);
             AILogger.ROOT_LOGGER.debug("This is the answer I got: " + response);
             return new ModelNode(response);
         });
