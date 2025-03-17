@@ -7,7 +7,7 @@ package org.wildfly.extension.ai.injection.chat;
 import static dev.langchain4j.internal.Utils.isNullOrBlank;
 
 import com.azure.ai.inference.ModelServiceVersion;
-import com.azure.ai.inference.models.ChatCompletionsResponseFormatJson;
+import com.azure.ai.inference.models.ChatCompletionsResponseFormatJsonObject;
 import com.azure.ai.inference.models.ChatCompletionsResponseFormatText;
 import com.azure.core.http.ProxyOptions;
 import dev.langchain4j.model.chat.ChatLanguageModel;
@@ -68,7 +68,7 @@ public class WildFlyGithubModelChatModelConfig implements WildFlyChatModelConfig
                 .topP(topP)
                 .userAgentSuffix(userAgentSuffix);
         if (isJson) {
-            builder.responseFormat(new ChatCompletionsResponseFormatJson());
+            builder.responseFormat(new ChatCompletionsResponseFormatJsonObject());
         } else {
             builder.responseFormat(new ChatCompletionsResponseFormatText());
         }
@@ -104,7 +104,7 @@ public class WildFlyGithubModelChatModelConfig implements WildFlyChatModelConfig
                 .topP(topP)
                 .userAgentSuffix(userAgentSuffix);
         if (isJson) {
-            builder.responseFormat(new ChatCompletionsResponseFormatJson());
+            builder.responseFormat(new ChatCompletionsResponseFormatJsonObject());
         }
         if (observable) {
             builder.listeners(listeners);
