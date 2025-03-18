@@ -802,6 +802,7 @@
         </repository>
     </repositories>
     <modules>
+        <module>bom</module>
         <module>wildfly-ai</module>
         <module>wildfly-mcp</module>
         <module>ai-feature-pack</module>
