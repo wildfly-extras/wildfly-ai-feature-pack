@@ -19,7 +19,7 @@ Resources:
 Galleon feature-pack compatible with WildFly
 ========================
 
-The Maven coordinates to use is: `org.wildfly:wildfly-ai-galleon-pack::<version>`
+The Maven coordinates to use is: `org.wildfly:wildfly-ai-galleon-pack:<version>`
 
 Supported AI types
 ========================
@@ -55,9 +55,10 @@ For each AI type it supports, the feature-pack provides 21 Galleon layers that b
   * `default-embedding-content-retriever`: default content retriever using an `in-memory-embedding-store` and `in-memory-embedding-model-all-minilm-l6-v2` for embedding model.
   * `neo4j-content-retriever`
   * `web-search-engines`
-* Support for tool provider (MCP): 
-  * `mcp-sse`: MCP SSE client
-  * `mcp-stdio`: MCP SSE client
+* Support for [Model Context Protocol (MCP)](https://modelcontextprotocol.io/): 
+  * `mcp-sse`: MCP Client using the Server-Sent Events (SSE) transport
+  * `mcp-stdio`: MCP Client using the Standard Input/Output (stdio) transport
+  
 For more details on these you can take a look at [LangChain4J](https://docs.langchain4j.dev/) and [Smallrye-llm](https://github.com/smallrye/smallrye-llm).
 
 Using the WildFly AI Feature Pack
@@ -71,7 +72,7 @@ You can download the latest Galleon CLI tool from the Galleon github project [re
  
 You need to define a Galleon provisioning configuration file such as:
 
-```
+```xml
 <?xml version="1.0" ?>
 <installation xmlns="urn:jboss:galleon:provisioning:3.0">
   <feature-pack location="org.wildfly:wildfly-galleon-pack:34.0.0.Final">
@@ -104,9 +105,9 @@ galleon.sh provision provisioning.xml --dir=my-wildfly-server
 
 ## Provisioning using the [WildFly Maven Plugin](https://github.com/wildfly/wildfly-maven-plugin/) or the [WildFly JAR Maven plugin](https://github.com/wildfly-extras/wildfly-jar-maven-plugin/)
 
-You need to include the datasources feature-pack and layers in the Maven Plugin configuration. This looks like:
+You need to include the AI feature-pack and layers in the Maven Plugin configuration. This looks like:
 
-```
+```xml
 ...
 <feature-packs>
   <feature-pack>
@@ -126,7 +127,7 @@ You need to include the datasources feature-pack and layers in the Maven Plugin 
       <layer>in-memory-embedding-model-all-minilm-l6-v2</layer>
       <layer>in-memory-embedding-store</layer>
     -->
-    <!-- Exisiting layers thart can be used -->
+    <!-- Exisiting layers that can be used -->
     <!--
       <layer>ollama-embedding-model</layer>
       <layer>openai-chat-model</layer>
@@ -146,8 +147,9 @@ This [example](https://github.com/ehsavoie/webchat/) contains a complete WildFly
 ==========================
 
 The feature pack supports also in a very experimental way the expose of your JakartaEE application as a [Model Context Protocol Server](https://spec.modelcontextprotocol.io/specification/2024-11-05/).
-What you need to do in that case is to use the `org.wildfly:wildfly-mcp-api` aterfact as a provided dependencies and annotation the code you want to expose with the several annotations provided.
+What you need to do in that case is to use the `org.wildfly:wildfly-mcp-api` artifact as a provided dependency and annotate the code you want to expose with the annotations provided by the API.
+
 You may want to take a look at [wildfly-weather](https://github.com/ehsavoie/wildfly-weather) example.
 
-You can then use [widldfly-mcp-chatbot] from the [wildfly-mcp](https://github.com/wildfly-extras/wildfly-mcp) project to connect via Server-Sent-Event to it and play with your tools.
+You can then use [widldfly-mcp-chatbot](https://github.com/wildfly-extras/wildfly-mcp/tree/main/wildfly-chat-bot) from the [wildfly-mcp](https://github.com/wildfly-extras/wildfly-mcp) project to connect via Server-Sent-Event to it and play with your tools.
 
