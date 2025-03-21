@@ -127,7 +127,7 @@ You need to include the AI feature-pack and layers in the Maven Plugin configura
       <layer>in-memory-embedding-model-all-minilm-l6-v2</layer>
       <layer>in-memory-embedding-store</layer>
     -->
-    <!-- Exisiting layers thart can be used -->
+    <!-- Exisiting layers that can be used -->
     <!--
       <layer>ollama-embedding-model</layer>
       <layer>openai-chat-model</layer>
