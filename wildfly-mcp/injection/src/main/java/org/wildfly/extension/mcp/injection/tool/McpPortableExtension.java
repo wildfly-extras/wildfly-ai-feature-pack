@@ -21,7 +21,7 @@ public class McpPortableExtension implements Extension {
     
     private final WildFlyMCPRegistry registry;
     private final ClassLoader deploymentClassLoader;
-    
+
     public McpPortableExtension(WildFlyMCPRegistry registry, ClassLoader deploymentClassLoader) {
         this.registry = registry;
         this.deploymentClassLoader = deploymentClassLoader;

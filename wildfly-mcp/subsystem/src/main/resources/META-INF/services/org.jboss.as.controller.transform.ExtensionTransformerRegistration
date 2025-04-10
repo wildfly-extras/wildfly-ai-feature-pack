@@ -1,1 +1,1 @@
-org.wildfly.extension.ai.AIExtensionTransformerRegistration
+org.wildfly.extension.mcp.MCPExtensionTransformerRegistration

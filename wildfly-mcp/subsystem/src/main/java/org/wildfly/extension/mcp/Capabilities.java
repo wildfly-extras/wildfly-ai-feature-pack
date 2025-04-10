@@ -8,6 +8,7 @@ import org.jboss.as.controller.capability.RuntimeCapability;
 import org.wildfly.service.descriptor.NullaryServiceDescriptor;
 
 public interface Capabilities {
+    public static final String MCP_CAPABILITY_NAME = "org.wildfly.ai.mcp.server";
 
     NullaryServiceDescriptor<McpEndpointConfiguration> MCP_SERVER_PROVIDER_DESCRIPTOR = NullaryServiceDescriptor.of("org.wildfly.ai.mcp.server.configuration", McpEndpointConfiguration.class);
     RuntimeCapability<Void> MCP_SERVER_PROVIDER_CAPABILITY = RuntimeCapability.Builder.of(MCP_SERVER_PROVIDER_DESCRIPTOR).setAllowMultipleRegistrations(false).build();

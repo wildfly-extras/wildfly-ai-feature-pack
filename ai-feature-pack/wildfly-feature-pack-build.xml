@@ -24,6 +24,7 @@
             <standalone>
                 <extension>org.wildfly.extension.ai</extension>
                 <extension>org.wildfly.extension.mcp</extension>
+                <extension>org.wildfly.extension.wasm</extension>
             </standalone>
         </extensions>
     </generate-feature-specs>
