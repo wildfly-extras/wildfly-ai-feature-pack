@@ -95,6 +95,23 @@
         </dependency>
 
         <dependency>
+            <groupId>com.dylibso.chicory</groupId>
+            <artifactId>log</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.dylibso.chicory</groupId>
+            <artifactId>runtime</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.dylibso.chicory</groupId>
+            <artifactId>wasi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.dylibso.chicory</groupId>
+            <artifactId>wasm</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.victools</groupId>
             <artifactId>jsonschema-generator</artifactId>
         </dependency> 
@@ -263,7 +280,13 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-        </dependency> 
+        </dependency>
+
+        <dependency>
+            <groupId>org.extism.sdk</groupId>
+            <artifactId>chicory-sdk</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>

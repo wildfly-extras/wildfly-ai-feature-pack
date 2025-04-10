@@ -4,6 +4,7 @@
  */
 package org.wildfly.extension.mcp.deployment;
 
+import static org.wildfly.extension.mcp.Capabilities.WASM_TOOL_PROVIDER_CAPABILITY;
 import static org.wildfly.extension.mcp.MCPLogger.ROOT_LOGGER;
 import static org.wildfly.extension.mcp.deployment.MCPAttachements.MCP_REGISTRY_METADATA;
 
@@ -18,6 +19,7 @@ import org.jboss.as.server.deployment.annotation.CompositeIndex;
 import org.jboss.as.server.deployment.module.ModuleDependency;
 import org.jboss.as.server.deployment.module.ModuleSpecification;
 import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.AnnotationTarget.Kind;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.JandexReflection;
 import org.jboss.jandex.MethodInfo;
@@ -30,10 +32,12 @@ import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 import org.wildfly.extension.mcp.injection.tool.ArgumentMetadata;
 import org.wildfly.extension.mcp.injection.tool.McpFeatureMetadata;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
+import org.wildfly.mcp.api.wasm.WasmTool;
 import org.wildfly.mcp.api.Prompt;
 import org.wildfly.mcp.api.PromptArg;
 import org.wildfly.mcp.api.Resource;
 import org.wildfly.mcp.api.ResourceArg;
+import org.wildfly.mcp.api.wasm.WasmToolService;
 
 public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
 
@@ -57,6 +61,10 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
         processPrompts(registry, annotations);
         annotations = index.getAnnotations(DotName.createSimple(Resource.class));
         processResources(registry, annotations);
+        annotations = index.getAnnotations(DotName.createSimple(WasmTool.class));
+        processWasmTools(deploymentPhaseContext, annotations);
+        annotations = index.getAnnotations(DotName.createSimple(WasmToolService.class));
+        processWasmToolServices(deploymentPhaseContext, annotations);
         deploymentUnit.putAttachment(MCP_REGISTRY_METADATA, registry);
         deploymentPhaseContext.addDeploymentDependency(Capabilities.MCP_SERVER_PROVIDER_CAPABILITY.getCapabilityServiceName(), MCPAttachements.MCP_ENDPOINT_CONFIGURATION);
     }
@@ -82,13 +90,13 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
             }
             MCPLogger.ROOT_LOGGER.debug("Prompt detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
             McpFeatureMetadata metadata = new McpFeatureMetadata(McpFeatureMetadata.Kind.PROMPT,
-                    name, 
+                    name,
                     new MethodMetadata(
                             annotation.target().asMethod().name(),
                             description,
                             null,
                             null,
-                            arguments, 
+                            arguments,
                             info.declaringClass().toString(),
                             annotation.target().asMethod().returnType().name().toString())
             );
@@ -96,7 +104,7 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
         }
     }
 
-    private void processTools(WildFlyMCPRegistry registry,  List<AnnotationInstance> annotations) {
+    private void processTools(WildFlyMCPRegistry registry, List<AnnotationInstance> annotations) {
         if (annotations == null || annotations.isEmpty()) {
             return;
         }
@@ -117,13 +125,13 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
             }
             MCPLogger.ROOT_LOGGER.debug("Tool detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
             McpFeatureMetadata metadata = new McpFeatureMetadata(McpFeatureMetadata.Kind.TOOL,
-                    name, 
+                    name,
                     new MethodMetadata(
                             annotation.target().asMethod().name(),
                             description,
                             null,
                             null,
-                            arguments, 
+                            arguments,
                             info.declaringClass().toString(),
                             annotation.target().asMethod().returnType().name().toString())
             );
@@ -131,7 +139,7 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
         }
     }
 
-    private void processResources(WildFlyMCPRegistry registry,  List<AnnotationInstance> annotations) {
+    private void processResources(WildFlyMCPRegistry registry, List<AnnotationInstance> annotations) {
         if (annotations == null || annotations.isEmpty()) {
             return;
         }
@@ -154,17 +162,52 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
             }
             MCPLogger.ROOT_LOGGER.debug("Resource detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
             McpFeatureMetadata metadata = new McpFeatureMetadata(McpFeatureMetadata.Kind.RESOURCE,
-                    name, 
+                    name,
                     new MethodMetadata(
                             annotation.target().asMethod().name(),
                             description,
                             uri,
                             mimeType,
-                            arguments, 
+                            arguments,
                             info.declaringClass().toString(),
                             annotation.target().asMethod().returnType().name().toString())
             );
             registry.addResource(uri, metadata);
+        }
+    }
+
+    private void processWasmTools(DeploymentPhaseContext deploymentPhaseContext, List<AnnotationInstance> annotations) {
+        if (annotations == null || annotations.isEmpty()) {
+            return;
+        }
+        DeploymentUnit deploymentUnit = deploymentPhaseContext.getDeploymentUnit();
+        for (AnnotationInstance annotation : annotations) {
+            String name;
+            if(annotation.value("name") != null) {
+                name = annotation.value("name").asString();
+            }else {
+                if(annotation.target().kind() == Kind.FIELD) {
+                   name = annotation.target().asField().name();
+                } else {
+                    name = annotation.target().asMethodParameter().name();
+                }
+            }
+            deploymentUnit.addToAttachmentList(MCPAttachements.WASM_TOOL_NAMES, name);
+            deploymentPhaseContext.addDeploymentDependency(WASM_TOOL_PROVIDER_CAPABILITY.getCapabilityServiceName(name), MCPAttachements.WASM_TOOL_CONFIGURATIONS);
+        }
+    }
+    private void processWasmToolServices(DeploymentPhaseContext deploymentPhaseContext, List<AnnotationInstance> annotations) {
+        if (annotations == null || annotations.isEmpty()) {
+            return;
+        }
+        DeploymentUnit deploymentUnit = deploymentPhaseContext.getDeploymentUnit();
+        for (AnnotationInstance annotation : annotations) {
+            String name;
+            if (annotation.value("wasmToolConfigurationName") != null) {
+                name = annotation.value("wasmToolConfigurationName").asString();
+                deploymentUnit.addToAttachmentList(MCPAttachements.WASM_TOOL_NAMES, name);
+                deploymentPhaseContext.addDeploymentDependency(WASM_TOOL_PROVIDER_CAPABILITY.getCapabilityServiceName(name), MCPAttachements.WASM_TOOL_CONFIGURATIONS);
+            }
         }
     }
 }

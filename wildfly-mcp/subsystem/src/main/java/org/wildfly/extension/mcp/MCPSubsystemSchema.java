@@ -33,6 +33,7 @@ enum MCPSubsystemSchema implements PersistentSubsystemSchema<MCPSubsystemSchema>
         PersistentResourceXMLDescription.Factory factory = PersistentResourceXMLDescription.factory(this);
         return factory.builder(MCPSubsystemRegistrar.PATH)
                 .addChild(factory.builder(McpEndpointConfigurationProviderRegistrar.PATH).addAttributes(McpEndpointConfigurationProviderRegistrar.ATTRIBUTES.stream()).build())
+                .addChild(factory.builder(WasmProviderRegistrar.PATH).addAttributes(WasmProviderRegistrar.ATTRIBUTES.stream()).build())
                 .build();
     }
 }
