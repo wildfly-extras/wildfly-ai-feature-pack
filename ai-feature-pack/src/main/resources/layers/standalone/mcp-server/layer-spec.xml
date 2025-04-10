@@ -10,6 +10,7 @@
     </props>
     <dependencies>
         <layer name="mcp"/>
+        <layer name="elytron-oidc-client"/>
     </dependencies>
     <feature spec="subsystem.mcp">
         <feature spec="subsystem.mcp.mcp-server">

@@ -15,6 +15,7 @@ import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.as.weld.WeldCapability;
+import org.wildfly.extension.mcp.Capabilities;
 import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 import org.wildfly.extension.mcp.injection.tool.McpPortableExtension;
 
@@ -33,5 +34,6 @@ public class McpServerCDIProcessor implements DeploymentUnitProcessor {
         } else {
             weldCapability.get().registerExtensionInstance(new McpPortableExtension(registry, classLoader), deploymentUnit);
         }
+        phaseContext.addDeploymentDependency(Capabilities.MCP_SERVER_PROVIDER_CAPABILITY.getCapabilityServiceName(), MCPAttachements.MCP_ENDPOINT_CONFIGURATION);
     }
 }
