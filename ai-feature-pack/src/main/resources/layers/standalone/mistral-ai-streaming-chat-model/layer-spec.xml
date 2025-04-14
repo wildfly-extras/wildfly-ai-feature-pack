@@ -5,6 +5,7 @@
 -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="mistral-ai-streaming-chat-model">
     <props>
+        <prop name="org.wildfly.rule.configuration" value="https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/glow-layer-doc/mistral-ai-streaming-chat-model/env.yaml"/>
         <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
         <prop name="org.wildfly.rule.add-on" value="ai-llm,mistral-ai-chat-model"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use MistralAI API for LLM interactions"/>
