@@ -18,9 +18,9 @@ import static org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProvid
 import static org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegistrar.RETRIEVAL_QUERY;
 import static org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegistrar.TEXT_PROPERTY;
 
+import dev.langchain4j.community.store.embedding.neo4j.Neo4jEmbeddingStore;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
-import dev.langchain4j.store.embedding.neo4j.Neo4jEmbeddingStore;
 import java.io.IOException;
 import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;

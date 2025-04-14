@@ -7,8 +7,8 @@ package org.wildfly.extension.ai.injection.retriever;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
-import dev.langchain4j.rag.content.retriever.neo4j.Neo4jContentRetriever;
-import dev.langchain4j.store.graph.neo4j.Neo4jGraph;
+import dev.langchain4j.rag.content.retriever.neo4j.Neo4jText2CypherRetriever;
+import dev.langchain4j.rag.content.retriever.neo4j.Neo4jGraph;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.literal.NamedLiteral;
 import org.neo4j.driver.AuthTokens;
@@ -27,15 +27,11 @@ public class Neo4JContentRetrieverConfig implements WildFlyContentRetrieverConfi
         Instance<ChatLanguageModel> chatLanguageModelInstance = lookup.select(ChatLanguageModel.class, NamedLiteral.of(chatLanguageModelName));
         Neo4jGraph graph;
         if (userName != null) {
-            graph = Neo4jGraph.builder().driver(GraphDatabase.driver(boltUrl, AuthTokens.basic(userName, password))).build();
+            graph = new Neo4jGraph(GraphDatabase.driver(boltUrl, AuthTokens.basic(userName, password)));
         } else {
-            graph = Neo4jGraph.builder().driver(GraphDatabase.driver(boltUrl, AuthTokens.none())).build();
+            graph = new Neo4jGraph(GraphDatabase.driver(boltUrl, AuthTokens.none()));
         }
-        return Neo4jContentRetriever.builder()
-                .graph(graph)
-                .promptTemplate(promptTemplate)
-                .chatLanguageModel(chatLanguageModelInstance.get())
-                .build();
+        return new Neo4jText2CypherRetriever(graph, chatLanguageModelInstance.get(),promptTemplate);
     }
 
     public Neo4JContentRetrieverConfig boltUrl(String boltUrl) {
