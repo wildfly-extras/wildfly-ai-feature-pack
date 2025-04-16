@@ -27,6 +27,7 @@
         <module name="dev.langchain4j.github" optional="true"/>
         <module name="dev.langchain4j.mcp-client" optional="true"/>
         <module name="dev.langchain4j.mistral-ai" optional="true"/>
+        <module name="dev.langchain4j.neo4j" optional="true"/>
         <module name="dev.langchain4j.ollama" optional="true"/>
         <module name="dev.langchain4j.openai" optional="true"/>
         <module name="io.smallrye.llm"/>
