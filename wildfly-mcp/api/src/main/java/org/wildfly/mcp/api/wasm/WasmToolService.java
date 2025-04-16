@@ -17,5 +17,7 @@ import java.lang.annotation.Target;
 public  @interface WasmToolService {
 
     String wasmToolConfigurationName() default "#default";
+    Class<? extends WasmArgumentSerializer> argumentSerializer() default WasmArgumentSerializer.class;
+    Class<? extends WasmResultDeserializer> resultDeserializer() default WasmResultDeserializer.class;
 
 }

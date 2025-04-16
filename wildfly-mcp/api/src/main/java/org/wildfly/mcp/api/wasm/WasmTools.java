@@ -11,14 +11,16 @@ public abstract class WasmTools<T> {
         this.context = context;
     }
 
-    public static <T> T create(Class<T> wasmTool, WasmInvoker invoker) {
-        return builder(wasmTool)
+    public static <T> T create(Class<T> wasmTool,  WasmArgumentSerializer wasmArgumentSerializer, 
+            WasmResultDeserializer wasmResultDeserializer, WasmInvoker invoker) {
+        return builder(wasmTool, wasmArgumentSerializer, wasmResultDeserializer)
                 .wasmInvoker(invoker)
                 .build();
     }
 
-    public static <T> WasmTools<T> builder(Class<T> wasmTool) {
-        WasmToolContext context = new WasmToolContext(wasmTool);
+    public static <T> WasmTools<T> builder(Class<T> wasmTool, WasmArgumentSerializer wasmArgumentSerializer, 
+            WasmResultDeserializer wasmResultDeserializer) {
+        WasmToolContext context = new WasmToolContext(wasmTool, wasmArgumentSerializer, wasmResultDeserializer);
         return new DefaultWasmTools<>(context);
     }
 
