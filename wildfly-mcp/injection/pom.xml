@@ -18,7 +18,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>wildfly-mcp-injection</artifactId>
-    <name>WildFly: MPC Server Injection</name>
+    <name>WildFly: MCP Server Injection</name>
 
     <dependencies>
         <dependency>
