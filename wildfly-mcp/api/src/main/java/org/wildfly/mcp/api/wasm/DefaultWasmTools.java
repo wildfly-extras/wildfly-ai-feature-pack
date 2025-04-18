@@ -17,16 +17,16 @@ public class DefaultWasmTools<T> extends WasmTools<T> {
     @Override
     public T build() {
         Object proxyInstance = Proxy.newProxyInstance(
-                context.wasmToolClass.getClassLoader(),
-                new Class<?>[]{context.wasmToolClass},
+                context.wasmToolClass().getClassLoader(),
+                new Class<?>[]{context.wasmToolClass()},
                 new InvocationHandler() {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                 if(args == null && "toString".equals(method.getName())) {
                     return null;
                 }
-                byte[] input  = context.wasmArgumentSerializer.serialize(args);
-                return context.wasmResultDeserializer.deserialize(context.invoker.call(method.getName(), input));
+                byte[] input  = context.wasmArgumentSerializer().serialize(args);
+                return context.wasmResultDeserializer().deserialize(context.wasmInvoker().call(context.methodName(method), input));
             }
         });
         return (T)proxyInstance;

@@ -19,7 +19,7 @@ import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 import org.wildfly.extension.mcp.injection.WildFlyWasmRegistry;
 import org.wildfly.extension.mcp.injection.tool.McpPortableExtension;
 import org.wildfly.extension.mcp.injection.wasm.WasmPortableExtension;
-import org.wildfly.mcp.api.wasm.WasmServicePortableExtension;
+import org.wildfly.extension.mcp.injection.wasm.WasmServicePortableExtension;
 
 public class McpServerCDIProcessor implements DeploymentUnitProcessor {
 

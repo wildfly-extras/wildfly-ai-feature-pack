@@ -2,7 +2,7 @@
  * Copyright The WildFly Authors
  * SPDX-License-Identifier: Apache-2.0
  */
-package org.wildfly.mcp.api.wasm;
+package org.wildfly.extension.mcp.injection.wasm;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -14,7 +14,13 @@ import jakarta.enterprise.inject.spi.WithAnnotations;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
+import org.wildfly.extension.mcp.injection.tool.McpTool;
+import org.wildfly.mcp.api.wasm.WasmArgumentSerializer;
+import org.wildfly.mcp.api.wasm.WasmInvoker;
+import org.wildfly.mcp.api.wasm.WasmResultDeserializer;
 import org.wildfly.mcp.api.wasm.WasmTool.WasmToolLiteral;
+import org.wildfly.mcp.api.wasm.WasmToolService;
+import org.wildfly.mcp.api.wasm.WasmTools;
 
 public class WasmServicePortableExtension implements Extension {
 
@@ -52,13 +58,14 @@ public class WasmServicePortableExtension implements Extension {
             }
             atd.addBean()
                     .scope(ApplicationScoped.class)
-                    .addQualifier(Default.Literal.INSTANCE)
+                    .addQualifiers(Default.Literal.INSTANCE, McpTool.McpToolLiteral.INSTANCE)
                     .beanClass(wasmToolServiceClass)
                     .types(wasmToolServiceClass)
                     .produceWith(lookup -> {
                         String invokerName = wasmToolServiceClass.getAnnotation(WasmToolService.class).wasmToolConfigurationName();
+                        String methodName = wasmToolServiceClass.getAnnotation(WasmToolService.class).wasmMethodName();
                         WasmInvoker invoker = lookup.select(WasmInvoker.class, WasmToolLiteral.of(invokerName)).get();
-                        return WasmTools.create(wasmToolServiceClass, wasmArgumentSerializer, wasmResultDeserializer, invoker);
+                        return WasmTools.create(wasmToolServiceClass, methodName, wasmArgumentSerializer, wasmResultDeserializer, invoker);
                     });
         }
     }
