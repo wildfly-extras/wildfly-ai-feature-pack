@@ -14,26 +14,8 @@
     </props>
     <dependencies>
         <layer name="ai"/>
-        <layer name="ollama-chat-model"/>
     </dependencies>
     <packages>
         <package name="dev.langchain4j.neo4j"/>
     </packages>
-    <feature spec="subsystem.ai">
-        <feature spec="subsystem.ai.ollama-chat-model">
-            <param name="ollama-chat-model" value="cypher_model"/>
-            <param name="base-url" value="${org.wildfly.ai.ollama.chat.url,env.OLLAMA_CHAT_URL:http://127.0.0.1:11434}"/>
-            <param name="connect-timeout" value="600000"/>
-            <param name="model-name" value="${org.wildfly.ai.ollama.chat.model.name,env.OLLAMA_CHAT_MODEL_NAME:tomasonjo/llama3-text2cypher-demo}"/>
-            <param name="log-requests" value="${org.wildfly.ai.ollama.chat.log.request,env.OLLAMA_CHAT_LOG_REQUEST:true}"/>
-            <param name="log-responses" value="${org.wildfly.ai.ollama.chat.log.response,env.OLLAMA_CHAT_LOG_RESPONSE:true}"/>
-        </feature>
-        <feature spec="subsystem.ai.neo4j-content-retriever">
-            <param name="neo4j-content-retriever" value="neo4j-retriever"/>
-            <param name="username" value="${org.wildfly.ai.neo4j.username,env.NEO4J_USER:neo4j}"/>
-            <param name="credential-reference" value="{clear-text=${org.wildfly.ai.neo4j.password,env.NEO4J_PASSWORD:neo4jpassword}}" />
-            <param name="bolt-url" value="${org.wildfly.ai.neo4j.url,env.NEO4J_URL:neo4j://localhost:7687}"/>
-            <param name="chat-language-model" value="cypher_model"/>
-        </feature>
-    </feature>
 </layer-spec>
