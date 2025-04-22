@@ -10,7 +10,8 @@
     </properties>
 
     <resources>
-        <artifact name="${dev.langchain4j:langchain4j-neo4j}"/>
+        <artifact name="${dev.langchain4j:langchain4j-community-neo4j}"/>
+        <artifact name="${dev.langchain4j:langchain4j-community-neo4j-retriever}"/>
         <artifact name="${org.neo4j.driver:neo4j-java-driver}"/>
         <artifact name="${org.neo4j:neo4j-cypher-dsl-schema-name-support}"/>
         <artifact name="${org.reactivestreams:reactive-streams}"/>

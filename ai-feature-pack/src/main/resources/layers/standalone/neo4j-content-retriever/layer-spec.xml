@@ -10,6 +10,7 @@
         <prop name="org.wildfly.rule.add-on" value="ai-content-retriever,neo4j-content-retriever"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use Neo4J as a content retriever"/>
         <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.rag.content.retriever.ContentRetriever,jakarta.inject.Named[value=neo4j-retriever]"/>
+        <prop name="org.wildfly.rule.annotation.field.value" value="io.smallrye.llm.spi.RegisterAIService,contentRetrieverName=neo4j-retriever"/>
     </props>
     <dependencies>
         <layer name="ai"/>
@@ -17,14 +18,4 @@
     <packages>
         <package name="dev.langchain4j.neo4j"/>
     </packages>
-    <feature spec="subsystem.ai">
-        <feature spec="subsystem.ai.neo4j-content-retriever">
-            <param name="neo4j-content-retriever" value="neo4j-retriever"/>
-            <param name="username" value="${org.wildfly.ai.neo4j.username,env.NEO4J_USER:neo4j}"/>
-            <param name="credential-reference" value="{clear-text=${org.wildfly.ai.neo4j.password,env.NEO4J_PASSWORD:neo4jpassword}}" />
-            <param name="bolt-url" value="${org.wildfly.ai.neo4j.url,env.NEO4J_URL:neo4j://localhost:7687}"/>
-            <param name="prompt-template" value="${org.wildfly.ai.neo4j.prompt.template,env.NEO4J_PROMPT_TEMPLATE}"/>
-            <param name="chat-language-model" value="${org.wildfly.ai.neo4j.chat.language.model,env.NEO4J_CHAT_LANGUAGE_MODEL}"/>
-        </feature>
-    </feature>
 </layer-spec>
