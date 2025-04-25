@@ -45,6 +45,9 @@ public class AIAttributeDefinitions {
     public static final SimpleAttributeDefinition LOG_REQUESTS = SimpleAttributeDefinitionBuilder.create("log-requests", ModelType.BOOLEAN, true)
             .setAllowExpression(true)
             .build();
+    public static final SimpleAttributeDefinition LOG_REQUESTS_RESPONSES = SimpleAttributeDefinitionBuilder.create("log-requests-responses", ModelType.BOOLEAN, true)
+            .setAllowExpression(true)
+            .build();
     public static final SimpleAttributeDefinition LOG_RESPONSES = SimpleAttributeDefinitionBuilder.create("log-responses", ModelType.BOOLEAN, true)
             .setAllowExpression(true)
             .build();

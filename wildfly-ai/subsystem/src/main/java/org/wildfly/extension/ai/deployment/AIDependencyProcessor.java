@@ -35,6 +35,8 @@ import org.wildfly.extension.ai.Capabilities;
 public class AIDependencyProcessor implements DeploymentUnitProcessor {
 
     public static final String[] OPTIONAL_MODULES = {
+        "dev.langchain4j.gemini",
+        "dev.langchain4j.github-models",
         "dev.langchain4j.ollama",
         "dev.langchain4j.openai",
         "dev.langchain4j.mcp-client",
@@ -48,7 +50,6 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         "io.smallrye.llm",
         "org.wildfly.extension.ai.injection"
     };
-
     @Override
     public void deploy(DeploymentPhaseContext deploymentPhaseContext) throws DeploymentUnitProcessingException {
         DeploymentUnit deploymentUnit = deploymentPhaseContext.getDeploymentUnit();
