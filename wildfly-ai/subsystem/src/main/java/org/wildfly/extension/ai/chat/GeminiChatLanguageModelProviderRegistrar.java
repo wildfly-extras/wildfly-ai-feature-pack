@@ -6,12 +6,8 @@ package org.wildfly.extension.ai.chat;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.API_KEY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
-import static org.wildfly.extension.ai.AIAttributeDefinitions.FREQUENCY_PENALTY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS_RESPONSES;
-import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_RETRIES;
-import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_TOKEN;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
-import static org.wildfly.extension.ai.AIAttributeDefinitions.PRESENCE_PENALTY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
@@ -20,11 +16,9 @@ import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILI
 
 import java.util.Collection;
 import java.util.List;
+
 import org.jboss.as.controller.AttributeDefinition;
-import org.jboss.as.controller.AttributeMarshallers;
-import org.jboss.as.controller.AttributeParsers;
 import org.jboss.as.controller.PathElement;
-import org.jboss.as.controller.PropertiesAttributeDefinition;
 import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.ResourceRegistration;
 import org.jboss.as.controller.SimpleAttributeDefinition;
@@ -33,7 +27,6 @@ import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.controller.registry.RuntimePackageDependency;
 import org.jboss.dmr.ModelType;
-
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.service.capture.ValueExecutorRegistry;
 import org.wildfly.subsystem.resource.ChildResourceDefinitionRegistrar;
@@ -42,44 +35,58 @@ import org.wildfly.subsystem.resource.ManagementResourceRegistrationContext;
 import org.wildfly.subsystem.resource.ResourceDescriptor;
 import org.wildfly.subsystem.resource.operation.ResourceOperationRuntimeHandler;
 
-public class GithubModelChatLanguageModelProviderRegistrar implements ChildResourceDefinitionRegistrar {
-    
+public class GeminiChatLanguageModelProviderRegistrar implements ChildResourceDefinitionRegistrar {
 
-    public static final PropertiesAttributeDefinition CUSTOM_HEADERS = new PropertiesAttributeDefinition.Builder("custom-headers", true)
-            .setAllowExpression(true)
-            .setAttributeParser(new AttributeParsers.PropertiesParser(null, "header", false))
-            .setAttributeMarshaller(new AttributeMarshallers.PropertiesAttributeMarshaller(null, "header", false))
-            .build();
-    public static final SimpleAttributeDefinition ENDPOINT = SimpleAttributeDefinitionBuilder.create("endpoint", ModelType.STRING, false)
+    private static final String[] THRESHOLDS = new String[]{"HARM_BLOCK_THRESHOLD_UNSPECIFIED", "BLOCK_LOW_AND_ABOVE", "BLOCK_MEDIUM_AND_ABOVE", "BLOCK_ONLY_HIGH", "BLOCK_NONE"};
+    public static final SimpleAttributeDefinition ALLOWED_CODE_EXECUTION = new SimpleAttributeDefinitionBuilder("allowed-code-execution", ModelType.BOOLEAN, true)
             .setAllowExpression(true)
             .build();
-    public static final SimpleAttributeDefinition SEED = new SimpleAttributeDefinitionBuilder("seed", ModelType.LONG, true)
+    public static final SimpleAttributeDefinition CIVIC_INTEGRITY = new SimpleAttributeDefinitionBuilder("civic-integrity", ModelType.STRING, true)
+            .setAllowedValues(THRESHOLDS)
             .setAllowExpression(true)
             .build();
-    public static final SimpleAttributeDefinition SERVICE_VERSION = new SimpleAttributeDefinitionBuilder("service-version", ModelType.STRING, true)
-            .setAllowedValues("2024-05-01-preview", "2024-05-01-preview")
+    public static final SimpleAttributeDefinition DANGEROUS_CONTENT = new SimpleAttributeDefinitionBuilder("dangerous-content", ModelType.STRING, true)
+            .setAllowedValues(THRESHOLDS)
             .setAllowExpression(true)
             .build();
-    public static final SimpleAttributeDefinition USER_AGENT_SUFFIX = new SimpleAttributeDefinitionBuilder("user-agent-suffix", ModelType.STRING, true)
+    public static final SimpleAttributeDefinition HARASSMENT = new SimpleAttributeDefinitionBuilder("harassement", ModelType.STRING, true)
+            .setAllowedValues(THRESHOLDS)
+            .setAllowExpression(true)
+            .build();
+    public static final SimpleAttributeDefinition HATE_SPEECH = new SimpleAttributeDefinitionBuilder("hate-speech", ModelType.STRING, true)
+            .setAllowedValues(THRESHOLDS)
+            .setAllowExpression(true)
+            .build();
+    public static final SimpleAttributeDefinition INCLUDE_CODE_EXECUTION_OUTPUT = new SimpleAttributeDefinitionBuilder("include-code-execution-output", ModelType.BOOLEAN, true)
+            .setAllowExpression(true)
+            .build();
+    public static final SimpleAttributeDefinition MAX_OUTPUT_TOKEN = new SimpleAttributeDefinitionBuilder("max-output-token", ModelType.INT, true)
+            .setAllowExpression(true)
+            .build();
+    public static final SimpleAttributeDefinition SEXUALLY_EXPLICIT = new SimpleAttributeDefinitionBuilder("sexually-explicit", ModelType.STRING, true)
+            .setAllowedValues(THRESHOLDS)
+            .setAllowExpression(true)
+            .build();
+    public static final SimpleAttributeDefinition TOP_K = new SimpleAttributeDefinitionBuilder("top-k", ModelType.INT, true)
             .setAllowExpression(true)
             .build();
 
-    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(API_KEY, CONNECT_TIMEOUT,CUSTOM_HEADERS,
-            ENDPOINT, FREQUENCY_PENALTY, LOG_REQUESTS_RESPONSES, MAX_RETRIES, MAX_TOKEN, MODEL_NAME, PRESENCE_PENALTY,
-            RESPONSE_FORMAT, SEED, SERVICE_VERSION, STREAMING, TEMPERATURE, TOP_P, USER_AGENT_SUFFIX);
+    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(ALLOWED_CODE_EXECUTION, API_KEY,
+            CIVIC_INTEGRITY, CONNECT_TIMEOUT, DANGEROUS_CONTENT, HARASSMENT, HATE_SPEECH, INCLUDE_CODE_EXECUTION_OUTPUT,
+            LOG_REQUESTS_RESPONSES, MAX_OUTPUT_TOKEN, MODEL_NAME, RESPONSE_FORMAT, SEXUALLY_EXPLICIT, STREAMING,
+            TEMPERATURE, TOP_K, TOP_P);
 
     private final ResourceDescriptor descriptor;
-    static final String NAME = "github-chat-model";
+    static final String NAME = "gemini-chat-model";
     public static final PathElement PATH = PathElement.pathElement(NAME);
-
     public static final ResourceRegistration REGISTRATION = ResourceRegistration.of(PATH);
     private final ValueExecutorRegistry<String, WildFlyChatModelConfig> registry = ValueExecutorRegistry.newInstance();
 
-    public GithubModelChatLanguageModelProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
+    public GeminiChatLanguageModelProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(CHAT_MODEL_PROVIDER_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
-                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new GithubModelChatModelProviderServiceConfigurator(registry)))
+                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new GeminiChatModelProviderServiceConfigurator(registry)))
                 .build();
     }
 
@@ -88,9 +95,8 @@ public class GithubModelChatLanguageModelProviderRegistrar implements ChildResou
         ResourceDefinition definition = ResourceDefinition.builder(REGISTRATION, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
         ChatModelConnectionCheckerOperationHandler.register(resourceRegistration, descriptor, registry);
-        resourceRegistration.registerAdditionalRuntimePackages(RuntimePackageDependency.required("dev.langchain4j.github"), RuntimePackageDependency.required("com.azure"));
+        resourceRegistration.registerAdditionalRuntimePackages(RuntimePackageDependency.required("dev.langchain4j.gemini"));
         ManagementResourceRegistrar.of(this.descriptor).register(resourceRegistration);
         return resourceRegistration;
     }
-
 }

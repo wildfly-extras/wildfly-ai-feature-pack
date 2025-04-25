@@ -15,6 +15,7 @@ import org.jboss.as.controller.persistence.xml.SubsystemResourceXMLSchema;
 import org.jboss.as.controller.xml.VersionedNamespace;
 import org.jboss.as.controller.xml.XMLCardinality;
 import org.jboss.staxmapper.IntVersion;
+import org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.chat.GithubModelChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.chat.MistralAIChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar;
@@ -70,6 +71,7 @@ enum AISubsystemSchema implements SubsystemResourceXMLSchema<AISubsystemSchema> 
                         this.factory
                                 .choice()
                                 .withCardinality(XMLCardinality.Unbounded.OPTIONAL)
+                                .addElement(this.factory.namedElement(GeminiChatLanguageModelProviderRegistrar.REGISTRATION).addAttributes(GeminiChatLanguageModelProviderRegistrar.ATTRIBUTES).build())
                                 .addElement(this.factory.namedElement(GithubModelChatLanguageModelProviderRegistrar.REGISTRATION).addAttributes(GithubModelChatLanguageModelProviderRegistrar.ATTRIBUTES).build())
                                 .addElement(this.factory.namedElement(OllamaChatLanguageModelProviderRegistrar.REGISTRATION).addAttributes(OllamaChatLanguageModelProviderRegistrar.ATTRIBUTES).build())
                                 .addElement(this.factory.namedElement(OpenAIChatLanguageModelProviderRegistrar.REGISTRATION).addAttributes(OpenAIChatLanguageModelProviderRegistrar.ATTRIBUTES).build())

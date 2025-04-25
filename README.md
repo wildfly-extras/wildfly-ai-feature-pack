@@ -24,8 +24,9 @@ The Maven coordinates to use is: `org.wildfly:wildfly-ai-galleon-pack:<version>`
 Supported AI types
 ========================
 
-For each AI type it supports, the feature-pack provides 21 Galleon layers that build upon each other :
+For each AI type it supports, the feature-pack provides several Galleon layers that build upon each other :
 * Support for chat models to interact with a LLM:
+  * `gemini-chat-model` 
   * `github-chat-model` 
   * `groq-chat-model` (same as openai-chat-model but targeting Groq)
   * `mistral-ai-chat-model`
@@ -111,7 +112,7 @@ You need to include the AI feature-pack and layers in the Maven Plugin configura
 ...
 <feature-packs>
   <feature-pack>
-    <location>org.wildfly:wildfly-galleon-pack:34.0.0.Final</location>
+    <location>org.wildfly:wildfly-galleon-pack:36.0.0.Final</location>
   </feature-pack>
   <feature-pack>
     <location>org.wildfly:wildfly-ai-galleon-pack:1.0.0-SNAPSHOT</location>
@@ -137,6 +138,26 @@ You need to include the AI feature-pack and layers in the Maven Plugin configura
       <layer>web-search-engines</layer>
     -->
 </layers>
+...
+```
+
+## Provisioning using the [WildFly Maven Plugin](https://github.com/wildfly/wildfly-maven-plugin/) with Glow
+
+```xml
+...
+  <groupId>org.wildfly.plugins</groupId>
+  <artifactId>wildfly-maven-plugin</artifactId>
+  <version>${version.wildfly.maven.plugin}</version>
+    <configuration>
+      <discoverProvisioningInfo>
+        <spaces>
+          <space>incubating</space>
+        </spaces>
+          <version>${version.wildfly.server}</version>
+        </discoverProvisioningInfo>
+        <name>ROOT.war</name>
+        ...
+    </configuration>
 ...
 ```
 

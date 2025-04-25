@@ -11,6 +11,7 @@ import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.descriptions.SubsystemResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.server.deployment.Phase;
+import org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.chat.GithubModelChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.chat.MistralAIChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar;
@@ -56,6 +57,7 @@ class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
                 })
                 .build();
         ManagementResourceRegistrar.of(descriptor).register(registration);
+        new GeminiChatLanguageModelProviderRegistrar(RESOLVER).register(registration, context);
         new GithubModelChatLanguageModelProviderRegistrar(RESOLVER).register(registration, context);
         new OllamaChatLanguageModelProviderRegistrar(RESOLVER).register(registration, context);
         new OpenAIChatLanguageModelProviderRegistrar(RESOLVER).register(registration, context);

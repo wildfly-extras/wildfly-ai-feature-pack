@@ -194,6 +194,13 @@
             </xs:documentation>
         </xs:annotation>
         <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="gemini-chat-model" type="geminiChatModelType">
+                <xs:annotation>
+                    <xs:documentation>
+                        A chat model provider element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="github-chat-model" type="githubModelsChatModelType">
                 <xs:annotation>
                     <xs:documentation>
@@ -223,6 +230,141 @@
                 </xs:annotation>
             </xs:element>
         </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="geminiChatModelType">
+        <xs:annotation>
+            <xs:documentation>
+                A provider of a Google Gemini chat model.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of this provider.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="allowed-code-execution" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Allow generated code to be executed.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="api-key" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    The key to connect to the Gemini model.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="civic-integrity" type="threshold" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The threshold to filter civic integrity.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="connect-timeout" type="xs:long" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The connection timeout of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="dangerous-content" type="threshold" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The threshold to filter dangerous content.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="harassement" type="threshold" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The threshold to filter harassement content.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="hate-speech" type="threshold" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The threshold to filter hate speech content.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="include-code-execution-output" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Enables providing the code and the result in the ouptut.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-requests-responses" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API requests / responses.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="max-output-token" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The maximum number of output tokens of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="model-name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of the model to use
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="response-format" use="optional">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="JSON"/>
+                    <xs:enumeration value="TEXT"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="sexually-explicit" type="threshold" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The threshold to filter out sexually explicit content.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="streaming" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to create a token streaming chat language model or not
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="temperature" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The temperature of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="top-k" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The Top K of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="top-p" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The Top P of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
     </xs:complexType>
 
     <xs:complexType name="githubModelsChatModelType">
@@ -277,7 +419,7 @@
         <xs:attribute name="log-requests-responses" type="xs:boolean" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    Whether to log API requests
+                    Whether to log API requests / responses.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -349,7 +491,7 @@
         <xs:attribute name="top-p" type="xs:double" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    The top P of the chat model
+                    The Top P of the chat model
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -556,7 +698,7 @@
         <xs:attribute name="top-p" type="xs:double" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    The top P of the chat model
+                    The Top P of the chat model
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -663,7 +805,7 @@
         <xs:attribute name="top-p" type="xs:double" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    The top P of the chat model
+                    The Top P of the chat model
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -1329,6 +1471,21 @@
                     <![CDATA[ A list of string separated by whitespaces. ]]>
                 </xs:documentation>
             </xs:annotation>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="threshold">
+        <xs:restriction base="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    <![CDATA[ A threshold. ]]>
+                </xs:documentation>
+            </xs:annotation>
+            <xs:enumeration value="HARM_BLOCK_THRESHOLD_UNSPECIFIED"/>
+            <xs:enumeration value="BLOCK_LOW_AND_ABOVE"/>
+            <xs:enumeration value="BLOCK_MEDIUM_AND_ABOVE"/>
+            <xs:enumeration value="BLOCK_ONLY_HIGH"/>
+            <xs:enumeration value="BLOCK_NONE"/>
         </xs:restriction>
     </xs:simpleType>
 
