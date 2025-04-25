@@ -4,10 +4,9 @@
  */
 package org.wildfly.extension.ai;
 
-import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.ResourceDefinition;
-import org.jboss.as.controller.ResourceRegistration;
 import org.jboss.as.controller.SubsystemRegistration;
+import org.jboss.as.controller.SubsystemResourceRegistration;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.descriptions.SubsystemResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
@@ -39,8 +38,8 @@ import org.wildfly.subsystem.resource.SubsystemResourceDefinitionRegistrar;
  */
 class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
 
-    static final String NAME = "ai";
-    static final PathElement PATH = SubsystemResourceDefinitionRegistrar.pathElement(NAME);
+    static final String NAME = "ai"; 
+    static final SubsystemResourceRegistration REGISTRATION = SubsystemResourceRegistration.of(NAME);
     static final ParentResourceDescriptionResolver RESOLVER = new SubsystemResourceDescriptionResolver(NAME, AISubsystemRegistrar.class);
     private static final int PHASE_DEPENDENCIES_AI = 0x1930;
     private static final int PHASE_POST_MODULE_AI = 0x3840;
@@ -48,7 +47,7 @@ class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
     @Override
     public ManagementResourceRegistration register(SubsystemRegistration parent, ManagementResourceRegistrationContext context) {
         parent.setHostCapable();
-        ManagementResourceRegistration registration = parent.registerSubsystemModel(ResourceDefinition.builder(ResourceRegistration.of(PATH), RESOLVER).build());
+        ManagementResourceRegistration registration = parent.registerSubsystemModel(ResourceDefinition.builder(REGISTRATION, RESOLVER).build());
         ResourceDescriptor descriptor = ResourceDescriptor
                 .builder(RESOLVER)
                 .withDeploymentChainContributor(target -> {

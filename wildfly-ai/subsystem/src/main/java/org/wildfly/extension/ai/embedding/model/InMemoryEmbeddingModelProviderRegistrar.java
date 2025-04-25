@@ -37,13 +37,12 @@ public class InMemoryEmbeddingModelProviderRegistrar implements ChildResourceDef
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(EMBEDDING_MODULE, EMBEDDING_MODEL_CLASS);
 
-    private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;
     static final String NAME = "in-memory-embedding-model";
     public static final PathElement PATH = PathElement.pathElement(NAME);
+    public static final ResourceRegistration REGISTRATION = ResourceRegistration.of(PATH);
 
     public InMemoryEmbeddingModelProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
-        this.registration = ResourceRegistration.of(PATH);
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(EMBEDDING_MODEL_PROVIDER_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
@@ -53,7 +52,7 @@ public class InMemoryEmbeddingModelProviderRegistrar implements ChildResourceDef
 
     @Override
     public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext context) {
-        ResourceDefinition definition = ResourceDefinition.builder(this.registration, this.descriptor.getResourceDescriptionResolver()).build();
+        ResourceDefinition definition = ResourceDefinition.builder(REGISTRATION, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
         ManagementResourceRegistrar.of(this.descriptor).register(resourceRegistration);
         return resourceRegistration;

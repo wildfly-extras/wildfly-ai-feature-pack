@@ -30,40 +30,40 @@ import org.wildfly.subsystem.resource.operation.ResourceOperationRuntimeHandler;
 
 public class Neo4jEmbeddingStoreProviderRegistrar implements ChildResourceDefinitionRegistrar {
 
-    protected static final SimpleAttributeDefinition DATABASE_NAME
+    public static final SimpleAttributeDefinition DATABASE_NAME
             = new SimpleAttributeDefinitionBuilder("database-name", ModelType.STRING, true)
                     .setAllowExpression(true)
                     .build();
-    protected static final SimpleAttributeDefinition DIMENSION
+    public static final SimpleAttributeDefinition DIMENSION
             = new SimpleAttributeDefinitionBuilder("dimension", ModelType.INT, false)
                     .setAllowExpression(true)
                     .setValidator(IntRangeValidator.POSITIVE)
                     .build();
-    protected static final SimpleAttributeDefinition EMBEDDING_PROPERTY
+    public static final SimpleAttributeDefinition EMBEDDING_PROPERTY
             = new SimpleAttributeDefinitionBuilder("embedding-property", ModelType.STRING, true)
                     .setAllowExpression(true)
                     .build();
-    protected static final SimpleAttributeDefinition ID_PROPERTY
+    public static final SimpleAttributeDefinition ID_PROPERTY
             = new SimpleAttributeDefinitionBuilder("id-property", ModelType.STRING, true)
                     .setAllowExpression(true)
                     .build();
-    protected static final SimpleAttributeDefinition INDEX_NAME
+    public static final SimpleAttributeDefinition INDEX_NAME
             = new SimpleAttributeDefinitionBuilder("index-name", ModelType.STRING, true)
                     .setAllowExpression(true)
                     .build();
-    protected static final SimpleAttributeDefinition LABEL
+    public static final SimpleAttributeDefinition LABEL
             = new SimpleAttributeDefinitionBuilder("label", ModelType.STRING, true)
                     .setAllowExpression(true)
                     .build();
-    protected static final SimpleAttributeDefinition METADATA_PREFIX
+    public static final SimpleAttributeDefinition METADATA_PREFIX
             = new SimpleAttributeDefinitionBuilder("metadata-prefix", ModelType.STRING, true)
                     .setAllowExpression(true)
                     .build();
-    protected static final SimpleAttributeDefinition RETRIEVAL_QUERY
+    public static final SimpleAttributeDefinition RETRIEVAL_QUERY
             = new SimpleAttributeDefinitionBuilder("retrieval-query", ModelType.STRING, true)
                     .setAllowExpression(true)
                     .build();
-    protected static final SimpleAttributeDefinition TEXT_PROPERTY
+    public static final SimpleAttributeDefinition TEXT_PROPERTY
             = new SimpleAttributeDefinitionBuilder("text-property", ModelType.STRING, true)
                     .setAllowExpression(true)
                     .build();
@@ -71,13 +71,13 @@ public class Neo4jEmbeddingStoreProviderRegistrar implements ChildResourceDefini
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(BOLT_URL, CREDENTIAL_REFERENCE, DATABASE_NAME,
             DIMENSION, EMBEDDING_PROPERTY, ID_PROPERTY, INDEX_NAME, LABEL, METADATA_PREFIX, RETRIEVAL_QUERY, TEXT_PROPERTY,
             USERNAME);
-    private final ResourceRegistration registration;
+
     private final ResourceDescriptor descriptor;
     static final String NAME = "neo4j-embedding-store";
     public static final PathElement PATH = PathElement.pathElement(NAME);
+    public static final ResourceRegistration REGISTRATION = ResourceRegistration.of(PATH);
 
     public Neo4jEmbeddingStoreProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
-        this.registration = ResourceRegistration.of(PATH);
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(EMBEDDING_STORE_PROVIDER_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
@@ -87,7 +87,7 @@ public class Neo4jEmbeddingStoreProviderRegistrar implements ChildResourceDefini
 
     @Override
     public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext mrrc) {
-        ResourceDefinition definition = ResourceDefinition.builder(this.registration, this.descriptor.getResourceDescriptionResolver()).build();
+        ResourceDefinition definition = ResourceDefinition.builder(REGISTRATION, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
         resourceRegistration.registerAdditionalRuntimePackages(RuntimePackageDependency.required("dev.langchain4j.neo4j"));
         ManagementResourceRegistrar.of(this.descriptor).register(resourceRegistration);

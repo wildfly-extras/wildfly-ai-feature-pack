@@ -91,13 +91,12 @@ public class WebSearchContentContentRetrieverProviderRegistrar implements ChildR
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(GOOGLE_SEARCH_ENGINE, MAX_RESULTS, TAVILY_SEARCH_ENGINE);
 
-    private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;
     static final String NAME = "web-search-content-retriever";
     public static final PathElement PATH = PathElement.pathElement(NAME);
+    public static final ResourceRegistration REGISTRATION = ResourceRegistration.of(PATH);
 
     public WebSearchContentContentRetrieverProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
-        this.registration = ResourceRegistration.of(PATH);
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(Capabilities.CONTENT_RETRIEVER_PROVIDER_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
@@ -107,7 +106,7 @@ public class WebSearchContentContentRetrieverProviderRegistrar implements ChildR
 
     @Override
     public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext mrrc) {
-        ResourceDefinition definition = ResourceDefinition.builder(this.registration, this.descriptor.getResourceDescriptionResolver()).build();
+        ResourceDefinition definition = ResourceDefinition.builder(REGISTRATION, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
         resourceRegistration.registerAdditionalRuntimePackages(RuntimePackageDependency.required("dev.langchain4j.web-search-engines"));
         ManagementResourceRegistrar.of(this.descriptor).register(resourceRegistration);
