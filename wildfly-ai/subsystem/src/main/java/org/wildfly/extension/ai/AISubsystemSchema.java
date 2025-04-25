@@ -4,11 +4,16 @@
  */
 package org.wildfly.extension.ai;
 
+import static org.wildfly.extension.ai.AIAttributeDefinitions.CREDENTIAL_REFERENCE;
 import org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar;
-import org.jboss.as.controller.PersistentResourceXMLDescription;
-import org.jboss.as.controller.PersistentSubsystemSchema;
 import org.jboss.as.controller.SubsystemSchema;
+import org.jboss.as.controller.persistence.xml.ResourceXMLChoice;
+import org.jboss.as.controller.persistence.xml.ResourceXMLElement;
+import org.jboss.as.controller.persistence.xml.ResourceXMLParticleFactory;
+import org.jboss.as.controller.persistence.xml.SubsystemResourceRegistrationXMLElement;
+import org.jboss.as.controller.persistence.xml.SubsystemResourceXMLSchema;
 import org.jboss.as.controller.xml.VersionedNamespace;
+import org.jboss.as.controller.xml.XMLCardinality;
 import org.jboss.staxmapper.IntVersion;
 import org.wildfly.extension.ai.chat.GithubModelChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.chat.MistralAIChatLanguageModelProviderRegistrar;
@@ -29,9 +34,10 @@ import org.wildfly.extension.ai.rag.retriever.Neo4JContentRetrieverProviderRegis
 /**
  * Enumeration of AI subsystem schema versions.
  */
-enum AISubsystemSchema implements PersistentSubsystemSchema<AISubsystemSchema> {
+enum AISubsystemSchema implements SubsystemResourceXMLSchema<AISubsystemSchema> {
     VERSION_1_0(1, 0),;
     static final AISubsystemSchema CURRENT = VERSION_1_0;
+    private final ResourceXMLParticleFactory factory = ResourceXMLParticleFactory.newInstance(this);
 
     private final VersionedNamespace<IntVersion, AISubsystemSchema> namespace;
 
@@ -45,34 +51,88 @@ enum AISubsystemSchema implements PersistentSubsystemSchema<AISubsystemSchema> {
     }
 
     @Override
-    public PersistentResourceXMLDescription getXMLDescription() {
-        PersistentResourceXMLDescription.Factory factory = PersistentResourceXMLDescription.factory(this);
-        return factory.builder(AISubsystemRegistrar.PATH)
-                .addChild(PersistentResourceXMLDescription.decorator("chat-language-models")
-                        .addChild(factory.builder(GithubModelChatLanguageModelProviderRegistrar.PATH).addAttributes(GithubModelChatLanguageModelProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .addChild(factory.builder(OllamaChatLanguageModelProviderRegistrar.PATH).addAttributes(OllamaChatLanguageModelProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .addChild(factory.builder(OpenAIChatLanguageModelProviderRegistrar.PATH).addAttributes(OpenAIChatLanguageModelProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .addChild(factory.builder(MistralAIChatLanguageModelProviderRegistrar.PATH).addAttributes(MistralAIChatLanguageModelProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .build())
-                .addChild(PersistentResourceXMLDescription.decorator("embedding-models")
-                        .addChild(factory.builder(OllamaEmbeddingModelProviderRegistrar.PATH).addAttributes(OllamaEmbeddingModelProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .addChild(factory.builder(InMemoryEmbeddingModelProviderRegistrar.PATH).addAttributes(InMemoryEmbeddingModelProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .build())
-                .addChild(PersistentResourceXMLDescription.decorator("embedding-stores")
-                        .addChild(factory.builder(InMemoryEmbeddingStoreProviderRegistrar.PATH).addAttributes(InMemoryEmbeddingStoreProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .addChild(factory.builder(Neo4jEmbeddingStoreProviderRegistrar.PATH).addAttributes(Neo4jEmbeddingStoreProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .addChild(factory.builder(WeaviateEmbeddingStoreProviderRegistrar.PATH).addAttributes(WeaviateEmbeddingStoreProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .build())
-                .addChild(PersistentResourceXMLDescription.decorator("content-retrievers")
-                        .addChild(factory.builder(EmbeddingStoreContentRetrieverProviderRegistrar.PATH).addAttributes(EmbeddingStoreContentRetrieverProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .addChild(factory.builder(Neo4JContentRetrieverProviderRegistrar.PATH).addAttributes(Neo4JContentRetrieverProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .addChild(factory.builder(WebSearchContentContentRetrieverProviderRegistrar.PATH).addAttributes(WebSearchContentContentRetrieverProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .build())
-                .addChild(PersistentResourceXMLDescription.decorator("mcp")
-                        .addChild(factory.builder(McpToolProviderProviderRegistrar.PATH).addAttributes(McpToolProviderProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .addChild(factory.builder(McpClientSseProviderRegistrar.PATH).addAttributes(McpClientSseProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .addChild(factory.builder(McpClientStdioProviderRegistrar.PATH).addAttributes(McpClientStdioProviderRegistrar.ATTRIBUTES.stream()).build())
-                        .build())
+    public SubsystemResourceRegistrationXMLElement getSubsystemXMLElement() {
+        ResourceXMLChoice providerChoices = this.factory.choice().withCardinality(XMLCardinality.Unbounded.OPTIONAL)
+                .addElement(this.chatLanguageModels())
+                .addElement(this.embeddingModels())
+                .addElement(this.embeddingStores())
+                .addElement(this.contentRetrievers())
+                .addElement(this.mcp())
                 .build();
+        return this.factory.subsystemElement(AISubsystemRegistrar.REGISTRATION)
+                .withContent(providerChoices)
+                .build();
+    }
+
+    private ResourceXMLElement chatLanguageModels() {
+        return this.factory.element(this.resolve("chat-language-models"))
+                .withContent(
+                        this.factory
+                                .choice()
+                                .withCardinality(XMLCardinality.Unbounded.OPTIONAL)
+                                .addElement(this.factory.namedElement(GithubModelChatLanguageModelProviderRegistrar.REGISTRATION).addAttributes(GithubModelChatLanguageModelProviderRegistrar.ATTRIBUTES).build())
+                                .addElement(this.factory.namedElement(OllamaChatLanguageModelProviderRegistrar.REGISTRATION).addAttributes(OllamaChatLanguageModelProviderRegistrar.ATTRIBUTES).build())
+                                .addElement(this.factory.namedElement(OpenAIChatLanguageModelProviderRegistrar.REGISTRATION).addAttributes(OpenAIChatLanguageModelProviderRegistrar.ATTRIBUTES).build())
+                                .addElement(this.factory.namedElement(MistralAIChatLanguageModelProviderRegistrar.REGISTRATION).addAttributes(MistralAIChatLanguageModelProviderRegistrar.ATTRIBUTES).build())
+                                .build()
+                ).build();
+    }
+
+    private ResourceXMLElement embeddingModels() {
+        return this.factory.element(this.resolve("embedding-models"))
+                .withContent(
+                        this.factory
+                                .choice()
+                                .withCardinality(XMLCardinality.Unbounded.OPTIONAL)
+                                .addElement(this.factory.namedElement(OllamaEmbeddingModelProviderRegistrar.REGISTRATION).addAttributes(OllamaEmbeddingModelProviderRegistrar.ATTRIBUTES).build())
+                                .addElement(this.factory.namedElement(InMemoryEmbeddingModelProviderRegistrar.REGISTRATION).addAttributes(InMemoryEmbeddingModelProviderRegistrar.ATTRIBUTES).build())
+                                .build()
+                ).build();
+    }
+
+    private ResourceXMLElement embeddingStores() {
+        return this.factory.element(this.resolve("embedding-stores"))
+                .withContent(
+                        this.factory
+                                .choice()
+                                .withCardinality(XMLCardinality.Unbounded.OPTIONAL)
+                                .addElement(this.factory.namedElement(InMemoryEmbeddingStoreProviderRegistrar.REGISTRATION).addAttributes(InMemoryEmbeddingStoreProviderRegistrar.ATTRIBUTES).build())
+                                .addElement(this.factory.namedElement(Neo4jEmbeddingStoreProviderRegistrar.REGISTRATION).addAttributes(Neo4jEmbeddingStoreProviderRegistrar.ATTRIBUTES)
+                                        .withContent(this.factory.choice().withCardinality(XMLCardinality.Single.OPTIONAL).addElement(CREDENTIAL_REFERENCE).build()).build())
+                                .addElement(this.factory.namedElement(WeaviateEmbeddingStoreProviderRegistrar.REGISTRATION).addAttributes(WeaviateEmbeddingStoreProviderRegistrar.ATTRIBUTES).build())
+                                .build()
+                ).build();
+    }
+
+    private ResourceXMLElement contentRetrievers() {
+        return this.factory.element(this.resolve("content-retrievers"))
+                .withContent(
+                        this.factory
+                                .choice()
+                                .withCardinality(XMLCardinality.Unbounded.OPTIONAL)
+                                .addElement(this.factory.namedElement(EmbeddingStoreContentRetrieverProviderRegistrar.REGISTRATION).addAttributes(EmbeddingStoreContentRetrieverProviderRegistrar.ATTRIBUTES).build())
+                                .addElement(this.factory.namedElement(Neo4JContentRetrieverProviderRegistrar.REGISTRATION).addAttributes(Neo4JContentRetrieverProviderRegistrar.ATTRIBUTES)
+                                        .withContent(this.factory.choice().withCardinality(XMLCardinality.Single.OPTIONAL).addElement(CREDENTIAL_REFERENCE).build()).build())
+                                .addElement(this.factory.namedElement(WebSearchContentContentRetrieverProviderRegistrar.REGISTRATION).addAttributes(WebSearchContentContentRetrieverProviderRegistrar.ATTRIBUTES)
+                                        .withContent(this.factory.choice()
+                                                .addElement(WebSearchContentContentRetrieverProviderRegistrar.GOOGLE_SEARCH_ENGINE)
+                                                .addElement(WebSearchContentContentRetrieverProviderRegistrar.TAVILY_SEARCH_ENGINE)
+                                                .build())
+                                        .build())
+                                .build()
+                ).build();
+    }
+
+    private ResourceXMLElement mcp() {
+        return this.factory.element(this.resolve("mcp"))
+                .withContent(
+                        this.factory
+                                .choice()
+                                .withCardinality(XMLCardinality.Unbounded.OPTIONAL)
+                                .addElement(this.factory.namedElement(McpToolProviderProviderRegistrar.REGISTRATION).addAttributes(McpToolProviderProviderRegistrar.ATTRIBUTES).build())
+                                .addElement(this.factory.namedElement(McpClientSseProviderRegistrar.REGISTRATION).addAttributes(McpClientSseProviderRegistrar.ATTRIBUTES).build())
+                                .addElement(this.factory.namedElement(McpClientStdioProviderRegistrar.REGISTRATION).addAttributes(McpClientStdioProviderRegistrar.ATTRIBUTES).build())
+                                .build()
+                ).build();
     }
 }

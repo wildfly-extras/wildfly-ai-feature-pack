@@ -69,14 +69,13 @@ public class GithubModelChatLanguageModelProviderRegistrar implements ChildResou
             ENDPOINT, FREQUENCY_PENALTY, LOG_REQUESTS_RESPONSES, MAX_RETRIES, MAX_TOKEN, MODEL_NAME, PRESENCE_PENALTY,
             RESPONSE_FORMAT, SEED, SERVICE_VERSION, STREAMING, TEMPERATURE, TOP_P, USER_AGENT_SUFFIX);
 
-    private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;
     static final String NAME = "github-chat-model";
     public static final PathElement PATH = PathElement.pathElement(NAME);
+    public static final ResourceRegistration REGISTRATION = ResourceRegistration.of(PATH);
     private final ValueExecutorRegistry<String, WildFlyChatModelConfig> registry = ValueExecutorRegistry.newInstance();
 
     public GithubModelChatLanguageModelProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
-        this.registration = ResourceRegistration.of(PATH);
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(CHAT_MODEL_PROVIDER_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
@@ -86,7 +85,7 @@ public class GithubModelChatLanguageModelProviderRegistrar implements ChildResou
 
     @Override
     public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext context) {
-        ResourceDefinition definition = ResourceDefinition.builder(this.registration, this.descriptor.getResourceDescriptionResolver()).build();
+        ResourceDefinition definition = ResourceDefinition.builder(REGISTRATION, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
         ChatModelConnectionCheckerOperationHandler.register(resourceRegistration, descriptor, registry);
         resourceRegistration.registerAdditionalRuntimePackages(RuntimePackageDependency.required("dev.langchain4j.github"), RuntimePackageDependency.required("com.azure"));

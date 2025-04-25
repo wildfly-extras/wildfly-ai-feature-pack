@@ -46,13 +46,12 @@ public class InMemoryEmbeddingStoreProviderRegistrar implements ChildResourceDef
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(STORE_PATH, STORE_RELATIVE_TO);
 
-    private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;
     static final String NAME = "in-memory-embedding-store";
     public static final PathElement PATH = PathElement.pathElement(NAME);
+    public static final ResourceRegistration REGISTRATION = ResourceRegistration.of(PATH);
 
     public InMemoryEmbeddingStoreProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
-        this.registration = ResourceRegistration.of(PATH);
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(EMBEDDING_STORE_PROVIDER_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
@@ -62,7 +61,7 @@ public class InMemoryEmbeddingStoreProviderRegistrar implements ChildResourceDef
 
     @Override
     public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext context) {
-        ResourceDefinition definition = ResourceDefinition.builder(this.registration, this.descriptor.getResourceDescriptionResolver()).build();
+        ResourceDefinition definition = ResourceDefinition.builder(REGISTRATION, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
         if (context.getPathManager().isPresent()) {
             final ResolvePathHandler resolvePathHandler = ResolvePathHandler.Builder.of(context.getPathManager().get())

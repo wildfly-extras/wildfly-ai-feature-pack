@@ -45,13 +45,12 @@ public class McpClientSseProviderRegistrar implements ChildResourceDefinitionReg
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(CONNECT_TIMEOUT, LOG_REQUESTS, LOG_RESPONSES, SSE_PATH, SSL_ENABLED, SSE_SOCKET_BINDING);
 
-    private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;
     static final String NAME = "mcp-client-sse";
     public static final PathElement PATH = PathElement.pathElement(NAME);
+    public static final ResourceRegistration REGISTRATION = ResourceRegistration.of(PATH);
 
     public McpClientSseProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
-        this.registration = ResourceRegistration.of(PATH);
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(MCP_CLIENT_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
@@ -61,7 +60,7 @@ public class McpClientSseProviderRegistrar implements ChildResourceDefinitionReg
 
     @Override
     public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext mrrc) {
-        ResourceDefinition definition = ResourceDefinition.builder(this.registration, this.descriptor.getResourceDescriptionResolver()).build();
+        ResourceDefinition definition = ResourceDefinition.builder(REGISTRATION, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
         ManagementResourceRegistrar.of(this.descriptor).register(resourceRegistration);
         return resourceRegistration;
