@@ -152,4 +152,41 @@ What you need to do in that case is to use the `org.wildfly:wildfly-mcp-api` art
 You may want to take a look at [wildfly-weather](https://github.com/ehsavoie/wildfly-weather) example.
 
 You can then use [widldfly-mcp-chatbot](https://github.com/wildfly-extras/wildfly-mcp/tree/main/wildfly-chat-bot) from the [wildfly-mcp](https://github.com/wildfly-extras/wildfly-mcp) project to connect via Server-Sent-Event to it and play with your tools.
+### Securing the MCP Server
+
+To secure your MCP Server, bearer token authentication via OIDC is handled by the `elytron-oidc-client` subsystem. You can configure this mechanism using Keycloak. You can use the Keycloak container image:
+
+```bash
+podman volume create keycloack
+podman run -p 8080:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin -v keycloack:/opt/keycloak/data/ quay.io/keycloak/keycloak:26.2.1 start-dev
+```
+
+Then you need to set-up Keycloack creating a realm *myrealm*, following the instructions provided [there](https://www.wildfly.org/guides/security-oidc-management-console) and create a user.
+In your application you need to add the following section in your web.xml:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+   version="6.0">
+   ...
+    <login-config>
+        <auth-method>OIDC</auth-method>
+    </login-config>
+    ...
+</web-app>
+```
+Then you need to secure your application using the *elytron-oidc-client* subsystem with a cli script like this one:
+
+```bash
+/subsystem=elytron-oidc-client/secure-deployment=ROOT.war:add(client-id=mcp-client, bearer-only=true, provider-url="${env.OIDC_PROVIDER_URL:http://localhost:8080}/realms/myrealm", ssl-required=EXTERNAL, public-client="true", principal-attribute="preferred_username")
+```
+Please note that the secured deployment MUST be configured with `bearer-only=true` within the `elytron-oidc-client` subsystem, as this ensures the MCP server relies on the bearer token provided by the MCP client for authentication.
+
+To get the token associated to a user you can use the following command:
+
+```
+curl -X POST http://localhost:8080/realms/myrealm/protocol/openid-connect/token -H 'content-type: application/x-www-form-urlencoded' -d 'client_id=mcp-client&client_secret=UmqLUYjlRbDXZqa6vsiOmonjysIxTL7W' -d 'username=myuser&password=myuser&grant_type=password' | jq --raw-output '.access_token'
+```
 
