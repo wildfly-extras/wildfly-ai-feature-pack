@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright The WildFly Authors
+~ SPDX-License-Identifier: Apache-2.0
+-->
+<module name="org.extism.sdk.chicory-sdk" xmlns="urn:jboss:module:1.9">
+
+    <properties>
+        <property name="jboss.api" value="private"/>
+    </properties>
+
+    <resources>
+        <artifact name="${com.dylibso.chicory:log}"/>
+        <artifact name="${com.dylibso.chicory:runtime}"/>
+        <artifact name="${com.dylibso.chicory:wasi}"/>
+        <artifact name="${com.dylibso.chicory:wasm}"/>
+        <artifact name="${org.extism.sdk:chicory-sdk}"/>
+    </resources>
+    <dependencies>
+        <module name="com.fasterxml.jackson.core.jackson-annotations"/>
+        <module name="com.fasterxml.jackson.core.jackson-core"/>
+        <module name="com.fasterxml.jackson.core.jackson-databind"/>
+        <module name="java.logging"/>
+        <module name="java.net.http"/>
+    </dependencies>
+
+</module>

@@ -82,13 +82,13 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
             }
             MCPLogger.ROOT_LOGGER.debug("Prompt detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
             McpFeatureMetadata metadata = new McpFeatureMetadata(McpFeatureMetadata.Kind.PROMPT,
-                    name, 
+                    name,
                     new MethodMetadata(
                             annotation.target().asMethod().name(),
                             description,
                             null,
                             null,
-                            arguments, 
+                            arguments,
                             info.declaringClass().toString(),
                             annotation.target().asMethod().returnType().name().toString())
             );
@@ -96,7 +96,7 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
         }
     }
 
-    private void processTools(WildFlyMCPRegistry registry,  List<AnnotationInstance> annotations) {
+    private void processTools(WildFlyMCPRegistry registry, List<AnnotationInstance> annotations) {
         if (annotations == null || annotations.isEmpty()) {
             return;
         }
@@ -117,13 +117,13 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
             }
             MCPLogger.ROOT_LOGGER.debug("Tool detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
             McpFeatureMetadata metadata = new McpFeatureMetadata(McpFeatureMetadata.Kind.TOOL,
-                    name, 
+                    name,
                     new MethodMetadata(
                             annotation.target().asMethod().name(),
                             description,
                             null,
                             null,
-                            arguments, 
+                            arguments,
                             info.declaringClass().toString(),
                             annotation.target().asMethod().returnType().name().toString())
             );
@@ -131,7 +131,7 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
         }
     }
 
-    private void processResources(WildFlyMCPRegistry registry,  List<AnnotationInstance> annotations) {
+    private void processResources(WildFlyMCPRegistry registry, List<AnnotationInstance> annotations) {
         if (annotations == null || annotations.isEmpty()) {
             return;
         }
@@ -154,13 +154,13 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
             }
             MCPLogger.ROOT_LOGGER.debug("Resource detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
             McpFeatureMetadata metadata = new McpFeatureMetadata(McpFeatureMetadata.Kind.RESOURCE,
-                    name, 
+                    name,
                     new MethodMetadata(
                             annotation.target().asMethod().name(),
                             description,
                             uri,
                             mimeType,
-                            arguments, 
+                            arguments,
                             info.declaringClass().toString(),
                             annotation.target().asMethod().returnType().name().toString())
             );

@@ -27,21 +27,21 @@
                 The MCP subsystem root type.
             </xs:documentation>
         </xs:annotation>
-        <xs:choice minOccurs="0" maxOccurs="1">
-            <xs:element name="mcp-server" type="mcpServerType">
+        <xs:sequence>
+            <xs:element name="mcp-server" type="mcpServerType"  minOccurs="0" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation>
-                        The MCP server.
+                        The MCP server configuration.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-        </xs:choice>
+        </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="mcpServerType">
         <xs:annotation>
             <xs:documentation>
-                The MCP.
+                The MCP endpoints.
             </xs:documentation>
         </xs:annotation>
         <xs:attribute name="name" type="xs:string" use="required">

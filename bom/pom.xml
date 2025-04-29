@@ -49,6 +49,18 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-wasm-api</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>io.smallrye.llm</groupId>
                 <artifactId>smallrye-llm-langchain4j-core</artifactId>
                 <version>${version.io.smallrye.llm}</version>

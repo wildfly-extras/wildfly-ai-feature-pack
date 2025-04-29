@@ -19,6 +19,7 @@
         <module name="io.smallrye.jandex"/>
         <module name="jakarta.enterprise.api"/>
         <module name="jakarta.json.api"/>
+        <module name="org.extism.sdk.chicory-sdk"/>
         <module name="org.jboss.as.controller"/>
         <module name="org.jboss.as.server"/>
         <module name="org.jboss.as.weld.common"/>
