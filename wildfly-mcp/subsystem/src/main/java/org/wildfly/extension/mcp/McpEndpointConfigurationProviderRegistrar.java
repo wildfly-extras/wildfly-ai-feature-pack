@@ -38,13 +38,12 @@ public class McpEndpointConfigurationProviderRegistrar implements ChildResourceD
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(SSE_PATH, MESSAGES_PATH);
 
-    private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;
     static final String NAME = "mcp-server";
     public static final PathElement PATH = PathElement.pathElement(NAME);
+    public static final ResourceRegistration REGISTRATION = ResourceRegistration.of(PATH);
 
     public McpEndpointConfigurationProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
-        this.registration = ResourceRegistration.of(PATH);
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(Capabilities.MCP_SERVER_PROVIDER_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
@@ -54,7 +53,7 @@ public class McpEndpointConfigurationProviderRegistrar implements ChildResourceD
 
     @Override
     public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext mrrc) {
-        ResourceDefinition definition = ResourceDefinition.builder(this.registration, this.descriptor.getResourceDescriptionResolver()).build();
+        ResourceDefinition definition = ResourceDefinition.builder(REGISTRATION, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
         ManagementResourceRegistrar.of(this.descriptor).register(resourceRegistration);
         return resourceRegistration;

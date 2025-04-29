@@ -6,10 +6,9 @@ package org.wildfly.extension.mcp;
 
 import static org.wildfly.extension.mcp.Capabilities.MCP_CAPABILITY_NAME;
 import org.wildfly.extension.mcp.deployment.McpServerCDIProcessor;
-import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.ResourceDefinition;
-import org.jboss.as.controller.ResourceRegistration;
 import org.jboss.as.controller.SubsystemRegistration;
+import org.jboss.as.controller.SubsystemResourceRegistration;
 import org.jboss.as.controller.capability.RuntimeCapability;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.descriptions.SubsystemResourceDescriptionResolver;
@@ -29,7 +28,7 @@ class MCPSubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
 
     static final String NAME = "mcp";
     public static final RuntimeCapability<Void> MCP_CAPABILITY = RuntimeCapability.Builder.of(MCP_CAPABILITY_NAME).setAllowMultipleRegistrations(false).build();
-    static final PathElement PATH = SubsystemResourceDefinitionRegistrar.pathElement(NAME);
+    static final SubsystemResourceRegistration REGISTRATION = SubsystemResourceRegistration.of(NAME);
     static final ParentResourceDescriptionResolver RESOLVER = new SubsystemResourceDescriptionResolver(NAME, MCPSubsystemRegistrar.class);
     private static final int PHASE_DEPENDENCIES_MCP = 0x1940;
     private static final int PHASE_POST_MODULE_MCP = 0x3840;
@@ -38,7 +37,7 @@ class MCPSubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
     @Override
     public ManagementResourceRegistration register(SubsystemRegistration parent, ManagementResourceRegistrationContext context) {
         parent.setHostCapable();
-        ManagementResourceRegistration registration = parent.registerSubsystemModel(ResourceDefinition.builder(ResourceRegistration.of(PATH), RESOLVER).build());
+        ManagementResourceRegistration registration = parent.registerSubsystemModel(ResourceDefinition.builder(REGISTRATION, RESOLVER).build());
         ResourceDescriptor descriptor = ResourceDescriptor
                 .builder(RESOLVER)
                 .withDeploymentChainContributor(target -> {

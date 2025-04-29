@@ -4,20 +4,24 @@
  */
 package org.wildfly.extension.mcp;
 
-import org.jboss.as.controller.PersistentResourceXMLDescription;
-import org.jboss.as.controller.PersistentSubsystemSchema;
 import org.jboss.as.controller.SubsystemSchema;
+import org.jboss.as.controller.persistence.xml.ResourceXMLParticleFactory;
+import org.jboss.as.controller.persistence.xml.SubsystemResourceRegistrationXMLElement;
+import org.jboss.as.controller.persistence.xml.SubsystemResourceXMLSchema;
 import org.jboss.as.controller.xml.VersionedNamespace;
+import org.jboss.as.controller.xml.XMLCardinality;
 import org.jboss.staxmapper.IntVersion;
 
+
 /**
- * Enumeration of AI subsystem schema versions.
+ * Enumeration of MCP Server subsystem schema versions.
  */
-enum MCPSubsystemSchema implements PersistentSubsystemSchema<MCPSubsystemSchema> {
+enum MCPSubsystemSchema implements SubsystemResourceXMLSchema<MCPSubsystemSchema> {
     VERSION_1_0(1, 0),;
     static final MCPSubsystemSchema CURRENT = VERSION_1_0;
 
     private final VersionedNamespace<IntVersion, MCPSubsystemSchema> namespace;
+    private final ResourceXMLParticleFactory factory = ResourceXMLParticleFactory.newInstance(this);
 
     MCPSubsystemSchema(int major, int minor) {
         this.namespace = SubsystemSchema.createLegacySubsystemURN(MCPSubsystemRegistrar.NAME, new IntVersion(major, minor));
@@ -29,10 +33,13 @@ enum MCPSubsystemSchema implements PersistentSubsystemSchema<MCPSubsystemSchema>
     }
 
     @Override
-    public PersistentResourceXMLDescription getXMLDescription() {
-        PersistentResourceXMLDescription.Factory factory = PersistentResourceXMLDescription.factory(this);
-        return factory.builder(MCPSubsystemRegistrar.PATH)
-                .addChild(factory.builder(McpEndpointConfigurationProviderRegistrar.PATH).addAttributes(McpEndpointConfigurationProviderRegistrar.ATTRIBUTES.stream()).build())
+    public SubsystemResourceRegistrationXMLElement getSubsystemXMLElement() {
+        return this.factory.subsystemElement(MCPSubsystemRegistrar.REGISTRATION)
+                .withContent(this.factory.choice().withCardinality(XMLCardinality.Single.OPTIONAL)
+                        .addElement(this.factory.namedElement(McpEndpointConfigurationProviderRegistrar.REGISTRATION)
+                                .addAttributes(McpEndpointConfigurationProviderRegistrar.ATTRIBUTES).build())
+                        .build()
+                )
                 .build();
     }
 }
