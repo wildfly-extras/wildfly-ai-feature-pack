@@ -47,12 +47,11 @@ public class WasmProviderRegistrar implements ChildResourceDefinitionRegistrar {
 
     static final String WASM_TOOL = "wasm-tool";
 
-    private final ResourceRegistration registration;
     private final ResourceDescriptor descriptor;
     public static final PathElement PATH = PathElement.pathElement(WASM_TOOL);
+    public static final ResourceRegistration REGISTRATION = ResourceRegistration.of(PATH);
 
     public WasmProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
-        this.registration = ResourceRegistration.of(PATH);
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(Capabilities.WASM_TOOL_PROVIDER_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
@@ -62,7 +61,7 @@ public class WasmProviderRegistrar implements ChildResourceDefinitionRegistrar {
 
     @Override
     public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext mrrc) {
-        ResourceDefinition definition = ResourceDefinition.builder(this.registration, this.descriptor.getResourceDescriptionResolver()).build();
+        ResourceDefinition definition = ResourceDefinition.builder(REGISTRATION, this.descriptor.getResourceDescriptionResolver()).build();
         ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
         ManagementResourceRegistrar.of(this.descriptor).register(resourceRegistration);
         return resourceRegistration;

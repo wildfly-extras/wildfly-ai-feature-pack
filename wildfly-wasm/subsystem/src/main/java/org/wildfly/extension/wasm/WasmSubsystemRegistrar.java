@@ -4,10 +4,9 @@
  */
 package org.wildfly.extension.wasm;
 
-import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.ResourceDefinition;
-import org.jboss.as.controller.ResourceRegistration;
 import org.jboss.as.controller.SubsystemRegistration;
+import org.jboss.as.controller.SubsystemResourceRegistration;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.descriptions.SubsystemResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
@@ -25,7 +24,7 @@ import org.wildfly.subsystem.resource.SubsystemResourceDefinitionRegistrar;
 class WasmSubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
 
     static final String NAME = "wasm";
-    static final PathElement PATH = SubsystemResourceDefinitionRegistrar.pathElement(NAME);
+    static final SubsystemResourceRegistration REGISTRATION = SubsystemResourceRegistration.of(NAME);
     static final ParentResourceDescriptionResolver RESOLVER = new SubsystemResourceDescriptionResolver(NAME, WasmSubsystemRegistrar.class);
     private static final int PHASE_DEPENDENCIES_WASM = 0x1950;
     private static final int PHASE_POST_MODULE_WASM = 0x3850;
@@ -33,7 +32,7 @@ class WasmSubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
     @Override
     public ManagementResourceRegistration register(SubsystemRegistration parent, ManagementResourceRegistrationContext context) {
         parent.setHostCapable();
-        ManagementResourceRegistration registration = parent.registerSubsystemModel(ResourceDefinition.builder(ResourceRegistration.of(PATH), RESOLVER).build());
+        ManagementResourceRegistration registration = parent.registerSubsystemModel(ResourceDefinition.builder(REGISTRATION, RESOLVER).build());
         ResourceDescriptor descriptor = ResourceDescriptor
                 .builder(RESOLVER)
                 .withDeploymentChainContributor(target -> {
