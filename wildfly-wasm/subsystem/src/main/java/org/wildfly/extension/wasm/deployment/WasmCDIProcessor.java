@@ -5,7 +5,6 @@
 package org.wildfly.extension.wasm.deployment;
 
 import static org.jboss.as.weld.Capabilities.WELD_CAPABILITY_NAME;
-import static org.wildfly.extension.mcp.WasmLogger.ROOT_LOGGER;
 
 import static org.wildfly.extension.wasm.Capabilities.MCP_CAPABILITY_NAME;
 import java.lang.annotation.Annotation;
@@ -17,7 +16,7 @@ import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.as.weld.WeldCapability;
-import org.wildfly.extension.mcp.WasmLogger;
+import org.wildfly.extension.wasm.WasmLogger;
 import org.wildfly.extension.wasm.injection.WasmPortableExtension;
 import org.wildfly.extension.wasm.injection.WasmServicePortableExtension;
 import org.wildfly.extension.wasm.injection.WildFlyWasmRegistry;
@@ -32,7 +31,7 @@ public class WasmCDIProcessor implements DeploymentUnitProcessor {
         deploymentUnit.getAttachmentList(WasmAttachements.WASM_TOOL_CONFIGURATIONS).forEach(c -> wasmRegistry.registerWasmTool(c));
         final Optional<WeldCapability> weldCapability = support.getOptionalCapabilityRuntimeAPI(WELD_CAPABILITY_NAME, WeldCapability.class);
         if (weldCapability != null && weldCapability.isPresent() && !weldCapability.get().isPartOfWeldDeployment(deploymentUnit)) {
-            ROOT_LOGGER.cdiRequired();
+            WasmLogger.ROOT_LOGGER.cdiRequired();
         } else {
             weldCapability.get().registerExtensionInstance(new WasmPortableExtension(wasmRegistry), deploymentUnit);
             if (support.hasCapability(MCP_CAPABILITY_NAME)) {

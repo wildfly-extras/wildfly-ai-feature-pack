@@ -21,14 +21,14 @@ public class WasmPortableExtension implements Extension {
         this.registry = registry;
     }
 
-    public void atd(@Observes AfterBeanDiscovery atd) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException {
+    public void abd(@Observes AfterBeanDiscovery abd) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException {
         for (Map.Entry<String, WasmToolConfiguration> entry : registry.listWasmTools().entrySet()) {
-            atd.addBean()
+            abd.addBean()
                     .scope(ApplicationScoped.class)
                     .addQualifiers(WasmToolLiteral.of(entry.getKey()))
                     .types(WasmInvoker.class)
                     .produceWith(c -> entry.getValue().create());
-            WASMLogger.ROOT_LOGGER.info(entry.getKey() + " should be discoverable by CDI as a WASM Tool");
+            WASMLogger.ROOT_LOGGER.wasmToolDefined(entry.getKey());
         }
     }
 }

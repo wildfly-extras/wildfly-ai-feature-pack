@@ -211,3 +211,13 @@ To get the token associated to a user you can use the following command:
 curl -X POST http://localhost:8080/realms/myrealm/protocol/openid-connect/token -H 'content-type: application/x-www-form-urlencoded' -d 'client_id=mcp-client&client_secret=UmqLUYjlRbDXZqa6vsiOmonjysIxTL7W' -d 'username=myuser&password=myuser&grant_type=password' | jq --raw-output '.access_token'
 ```
 
+[EXPERIMENTAL] WASM Support
+==========================
+
+
+The feature pack supports also in a very experimental way [Wasm Wasi](https://wasi.dev/) modules.
+What you need to do in that case is to use the `org.wildfly:wildfly-wasm-api` artifact as a provided dependency and annotate the code you want to expose with the annotations provided by the API.
+Wasm binaries can be defined in the `wasm subsystem` to be injected as `org.wildfly.wasm.api.WasmInvoker` via CDI. You can even expose `org.wildfly.wasm.api.WasmToolService` as MCP tools.
+
+You may want to take a look at [wildfly-weather](https://github.com/ehsavoie/wildfly-weather/compare/wasm_subsystem) example.
+

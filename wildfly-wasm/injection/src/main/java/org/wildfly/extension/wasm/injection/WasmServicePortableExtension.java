@@ -38,15 +38,14 @@ public class WasmServicePortableExtension implements Extension {
         if (pat.getAnnotatedType().getJavaClass().isInterface()) {
             detectedWasmServicesDeclaredInterfaces.add(pat.getAnnotatedType().getJavaClass());
         } else {
-            System.out.println("processAnnotatedType reject " + pat.getAnnotatedType().getJavaClass().getName()
-                    + " which is not an interface");
+            WASMLogger.ROOT_LOGGER.wasmToolServiceShouldBeInterface(pat.getAnnotatedType().getJavaClass().getName());
             pat.veto();
         }
     }
 
-    public void atd(@Observes AfterBeanDiscovery atd) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, IllegalArgumentException, InvocationTargetException {
+    public void abd(@Observes AfterBeanDiscovery abd) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, IllegalArgumentException, InvocationTargetException {
         for (Class<?> wasmToolServiceClass : detectedWasmServicesDeclaredInterfaces) {
-            System.out.println("afterBeanDiscovery create synthetic:  " + wasmToolServiceClass.getName() + " " + wasmToolServiceClass.getClassLoader());
+            WASMLogger.ROOT_LOGGER.creatingWasmToolService(wasmToolServiceClass.getName(), wasmToolServiceClass.getClassLoader().toString());
             Class<? extends WasmArgumentSerializer> wasmArgumentSerializerClass = wasmToolServiceClass.getAnnotation(WasmToolService.class).argumentSerializer();
             final WasmArgumentSerializer wasmArgumentSerializer;
             if (wasmArgumentSerializerClass != null && !wasmArgumentSerializerClass.isInterface()) {
@@ -61,7 +60,7 @@ public class WasmServicePortableExtension implements Extension {
             } else {
                 wasmResultDeserializer = WasmResultDeserializer.DEFAULT;
             }
-            atd.addBean()
+            abd.addBean()
                     .scope(ApplicationScoped.class)
                     .addQualifiers(qualifiers)
                     .beanClass(wasmToolServiceClass)

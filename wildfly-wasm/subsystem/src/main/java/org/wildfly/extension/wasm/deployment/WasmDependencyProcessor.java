@@ -4,7 +4,6 @@
  */
 package org.wildfly.extension.wasm.deployment;
 
-import static org.wildfly.extension.mcp.WasmLogger.ROOT_LOGGER;
 import static org.wildfly.extension.wasm.Capabilities.WASM_TOOL_PROVIDER_CAPABILITY;
 import java.util.List;
 import org.jboss.as.server.deployment.Attachments;
@@ -21,6 +20,7 @@ import org.jboss.jandex.DotName;
 import org.jboss.modules.ModuleLoader;
 import org.wildfly.wasm.api.WasmTool;
 import org.wildfly.wasm.api.WasmToolService;
+import org.wildfly.extension.wasm.WasmLogger;
 
 public class WasmDependencyProcessor implements DeploymentUnitProcessor {
 
@@ -35,7 +35,7 @@ public class WasmDependencyProcessor implements DeploymentUnitProcessor {
         moduleSpecification.addSystemDependency(modDep);
         final CompositeIndex index = deploymentUnit.getAttachment(Attachments.COMPOSITE_ANNOTATION_INDEX);
         if (index == null) {
-            throw ROOT_LOGGER.unableToResolveAnnotationIndex(deploymentUnit);
+            throw WasmLogger.ROOT_LOGGER.unableToResolveAnnotationIndex(deploymentUnit);
         }
         List<AnnotationInstance> annotations = index.getAnnotations(DotName.createSimple(WasmTool.class));
         processWasmTools(deploymentPhaseContext, annotations);
