@@ -4,13 +4,14 @@
  */
 package org.wildfly.extension.ai.injection.retriever;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.community.rag.content.retriever.neo4j.Neo4jGraph;
+import dev.langchain4j.community.rag.content.retriever.neo4j.Neo4jText2CypherRetriever;
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
-import dev.langchain4j.rag.content.retriever.neo4j.Neo4jText2CypherRetriever;
-import dev.langchain4j.rag.content.retriever.neo4j.Neo4jGraph;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.literal.NamedLiteral;
+import java.util.List;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.GraphDatabase;
 
@@ -24,14 +25,14 @@ public class Neo4JContentRetrieverConfig implements WildFlyContentRetrieverConfi
 
     @Override
     public ContentRetriever createContentRetriever(Instance<Object> lookup) {
-        Instance<ChatLanguageModel> chatLanguageModelInstance = lookup.select(ChatLanguageModel.class, NamedLiteral.of(chatLanguageModelName));
+        Instance<ChatModel> chatLanguageModelInstance = lookup.select(ChatModel.class, NamedLiteral.of(chatLanguageModelName));
         Neo4jGraph graph;
         if (userName != null) {
-            graph = new Neo4jGraph(GraphDatabase.driver(boltUrl, AuthTokens.basic(userName, password)));
+            graph = new Neo4jGraph(GraphDatabase.driver(boltUrl, AuthTokens.basic(userName, password)), null, null);
         } else {
-            graph = new Neo4jGraph(GraphDatabase.driver(boltUrl, AuthTokens.none()));
+            graph = new Neo4jGraph(GraphDatabase.driver(boltUrl, AuthTokens.none()), null, null);
         }
-        return new Neo4jText2CypherRetriever(graph, chatLanguageModelInstance.get(),promptTemplate);
+        return new Neo4jText2CypherRetriever(graph, chatLanguageModelInstance.get(),promptTemplate, List.of(), 2, List.of(), null);
     }
 
     public Neo4JContentRetrieverConfig boltUrl(String boltUrl) {

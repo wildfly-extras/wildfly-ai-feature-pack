@@ -9,8 +9,8 @@
         <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
         <prop name="org.wildfly.rule.add-on" value="ai-llm,groq-chat-model"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use OpenAI API for GROQ LLM interactions"/>
-        <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.model.chat.StreamingChatLanguageModel,jakarta.inject.Named[value=streaming-groq]"/>
-        <prop name="org.wildfly.rule.annotation.field.value" value="io.smallrye.llm.spi.RegisterAIService,streamingChatLanguageModelName=streaming-groq"/>
+        <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.model.chat.StreamingChatModel,jakarta.inject.Named[value=streaming-groq]"/>
+        <prop name="org.wildfly.rule.annotation.field.value" value="io.smallrye.llm.spi.RegisterAIService,streamingChatModelName=streaming-groq"/>
     </props>
     <dependencies>
         <layer name="ai"/>

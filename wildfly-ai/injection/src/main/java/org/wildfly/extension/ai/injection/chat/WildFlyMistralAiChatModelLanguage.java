@@ -4,8 +4,8 @@
  */
 package org.wildfly.extension.ai.injection.chat;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
 import dev.langchain4j.model.mistralai.MistralAiChatModel;
 import dev.langchain4j.model.mistralai.MistralAiStreamingChatModel;
@@ -31,7 +31,7 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
     private Object instance = null;
 
     @Override
-    public ChatLanguageModel createLanguageModel(List<ChatModelListener> listeners) {
+    public ChatModel createLanguageModel(List<ChatModelListener> listeners) {
         if (instance == null) {
             MistralAiChatModel.MistralAiChatModelBuilder builder = MistralAiChatModel.builder()
                     .apiKey(key)
@@ -54,11 +54,11 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
             }
             instance = builder.build();
         }
-        return (ChatLanguageModel) instance;
+        return (ChatModel) instance;
     }
 
     @Override
-    public StreamingChatLanguageModel createStreamingLanguageModel(List<ChatModelListener> listeners) {
+    public StreamingChatModel createStreamingLanguageModel(List<ChatModelListener> listeners) {
         if (instance == null) {
             MistralAiStreamingChatModel.MistralAiStreamingChatModelBuilder builder = MistralAiStreamingChatModel.builder()
                     .apiKey(key)
@@ -77,7 +77,7 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
             }
             instance = builder.build();
         }
-        return (StreamingChatLanguageModel) instance;
+        return (StreamingChatModel) instance;
     }
 
     public WildFlyMistralAiChatModelLanguage apiKey(String key) {

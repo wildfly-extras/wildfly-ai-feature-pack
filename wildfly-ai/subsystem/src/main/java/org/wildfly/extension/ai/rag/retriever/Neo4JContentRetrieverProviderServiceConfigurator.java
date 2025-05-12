@@ -51,7 +51,7 @@ public class Neo4JContentRetrieverProviderServiceConfigurator implements Resourc
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
-                WildFlyBeanRegistry.registerChatLanguageModel(chatLanguageModelName, chatLanguageModel.get());
+                WildFlyBeanRegistry.registerChatModel(chatLanguageModelName, chatLanguageModel.get());
                 return new Neo4JContentRetrieverConfig()
                         .boltUrl(boltUrl)
                         .chatLanguageModel(chatLanguageModelName)

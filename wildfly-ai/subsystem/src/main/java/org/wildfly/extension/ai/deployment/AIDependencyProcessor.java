@@ -83,10 +83,10 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                 if (field.type().kind() == Type.Kind.CLASS) {
                     try {
                         Class fieldClass = Class.forName(field.type().asClassType().name().toString());
-                        if (dev.langchain4j.model.chat.ChatLanguageModel.class.isAssignableFrom(fieldClass) || dev.langchain4j.model.chat.StreamingChatLanguageModel.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.debug("We need the ChatLanguageModel in the class " + field.declaringClass());
+                        if (dev.langchain4j.model.chat.ChatModel.class.isAssignableFrom(fieldClass) || dev.langchain4j.model.chat.StreamingChatModel.class.isAssignableFrom(fieldClass)) {
+                            ROOT_LOGGER.debug("We need the ChatModel in the class " + field.declaringClass());
                             String chatLanguageModelName = annotation.value().asString();
-                            ROOT_LOGGER.debug("We need the ChatLanguageModel called " + chatLanguageModelName);
+                            ROOT_LOGGER.debug("We need the ChatModel called " + chatLanguageModelName);
                             requiredChatModels.add(chatLanguageModelName);
                         } else if (dev.langchain4j.model.embedding.EmbeddingModel.class.isAssignableFrom(fieldClass)) {
                             ROOT_LOGGER.debug("We need the EmbeddingModel in the class " + field.declaringClass());
@@ -118,14 +118,14 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         for (AnnotationInstance annotation : serviceAnnotations) {
             String chatLanguageModelName = getAnnotationValue(annotation, "chatLanguageModelName");
             if (!chatLanguageModelName.isBlank()) {
-                ROOT_LOGGER.debug("We need the ChatLanguageModel in the class " + annotation.target());
-                ROOT_LOGGER.debug("We need the ChatLanguageModel called " + chatLanguageModelName);
+                ROOT_LOGGER.debug("We need the ChatModel in the class " + annotation.target());
+                ROOT_LOGGER.debug("We need the ChatModel called " + chatLanguageModelName);
                 requiredChatModels.add(chatLanguageModelName);
             }
-            chatLanguageModelName = getAnnotationValue(annotation, "streamingChatLanguageModelName");
+            chatLanguageModelName = getAnnotationValue(annotation, "streamingChatModelName");
             if (!chatLanguageModelName.isBlank()) {
-                ROOT_LOGGER.debug("We need the StreamingChatLanguageModel in the class " + annotation.target());
-                ROOT_LOGGER.debug("We need the StreamingChatLanguageModel called " + chatLanguageModelName);
+                ROOT_LOGGER.debug("We need the StreamingChatModel in the class " + annotation.target());
+                ROOT_LOGGER.debug("We need the StreamingChatModel called " + chatLanguageModelName);
                 requiredChatModels.add(chatLanguageModelName);
             }
             String contentRetrieverName = getAnnotationValue(annotation, "contentRetrieverName");

@@ -8,8 +8,8 @@ import static io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig.PRODUCE
 import static io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig.getBeanPropertyName;
 import static org.wildfly.extension.ai.injection.AILogger.ROOT_LOGGER;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig;
@@ -60,7 +60,7 @@ public class WildFlyLLMConfig implements LLMConfig {
     public <T> T getBeanPropertyValue(String beanName, String propertyName, Class<T> type) {
         if (PRODUCER.equals(propertyName)) {
             Class<?> expectedType = (Class<?>) beanData.get(getBeanPropertyName(beanName, BEAN_CLASS));
-            if (ChatLanguageModel.class.isAssignableFrom(expectedType) || StreamingChatLanguageModel.class.isAssignableFrom(expectedType)) {
+            if (ChatModel.class.isAssignableFrom(expectedType) || StreamingChatModel.class.isAssignableFrom(expectedType)) {
                 return (T) new ProducerFunction<Object>() {
                     @Override
                     public Object produce(Instance<Object> lookup, String beanName) {
@@ -72,10 +72,10 @@ public class WildFlyLLMConfig implements LLMConfig {
                             listeners = Collections.emptyList();
                         }
                         ROOT_LOGGER.info("Bean " + beanName + " of type " + expectedType + " has been produced");
-                        if (ChatLanguageModel.class.isAssignableFrom(expectedType) && !config.isStreaming()) {
+                        if (ChatModel.class.isAssignableFrom(expectedType) && !config.isStreaming()) {
                             return (T) config.createLanguageModel(listeners);
                         }
-                        if (StreamingChatLanguageModel.class.isAssignableFrom(expectedType) && config.isStreaming()) {
+                        if (StreamingChatModel.class.isAssignableFrom(expectedType) && config.isStreaming()) {
                             return (T) config.createStreamingLanguageModel(listeners);
                         }
                         throw ROOT_LOGGER.incorrectLLMConfiguration(beanName, expectedType.getName(), config.isStreaming());
