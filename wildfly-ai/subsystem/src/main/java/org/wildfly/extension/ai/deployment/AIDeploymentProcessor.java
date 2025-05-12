@@ -54,7 +54,7 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
             if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty()) {
                 if (!requiredChatModels.isEmpty()) {
                     for (int i = 0; i < requiredChatModels.size(); i++) {
-                        WildFlyBeanRegistry.registerChatLanguageModel(chatLanguageModelNames.get(i), requiredChatModels.get(i));
+                        WildFlyBeanRegistry.registerChatModel(chatLanguageModelNames.get(i), requiredChatModels.get(i));
                     }
                 }
                 if (!requiredEmbeddingModels.isEmpty()) {

@@ -6,8 +6,8 @@ package org.wildfly.extension.ai.injection;
 
 import static org.wildfly.extension.ai.injection.WildFlyLLMConfig.registerBean;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.service.tool.ToolProvider;
@@ -29,13 +29,13 @@ public class WildFlyBeanRegistry {
     private static final Map<String, WildFlyContentRetrieverConfig> contentRetrievers = new HashMap<>();
     private static final Map<String, ToolProvider> toolProviders = new HashMap<>();
 
-    public static final void registerChatLanguageModel(String id, WildFlyChatModelConfig chatModel) {
+    public static final void registerChatModel(String id, WildFlyChatModelConfig chatModel) {
         if (!chatModels.containsKey(id)) {
             chatModels.put(id, chatModel);
             if (chatModel.isStreaming()) {
-                registerBean(id, chatModel, StreamingChatLanguageModel.class);
+                registerBean(id, chatModel, StreamingChatModel.class);
             } else {
-                registerBean(id, chatModel, ChatLanguageModel.class);
+                registerBean(id, chatModel, ChatModel.class);
             }
         }
     }

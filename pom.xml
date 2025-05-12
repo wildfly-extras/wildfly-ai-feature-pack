@@ -26,7 +26,7 @@
         <connection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</connection>
         <developerConnection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</developerConnection>
         <url>https://github.com/wildfly-extras/wildfly-ai-feature-pack</url>
-        <tag>0.4.1</tag>
+        <tag>0.5.0</tag>
     </scm>
 
     <properties>
@@ -54,10 +54,12 @@
         <version.com.squareup.okio-jvm>3.6.0</version.com.squareup.okio-jvm>
         <version.com.squareup.retrofit2>2.9.0</version.com.squareup.retrofit2>
         <version.commons-compress>1.27.1</version.commons-compress>
-        <version.dev.langchain4j>1.0.0-beta3</version.dev.langchain4j>
+        <version.dev.langchain4j>1.0.0-beta4</version.dev.langchain4j>
+        <version.dev.langchain4j.comunity>1.0.0-beta4</version.dev.langchain4j.comunity>
+        <version.dev.langchain4j.core>1.0.0-rc1</version.dev.langchain4j.core>
         <version.io.projectreactor.netty>1.0.45</version.io.projectreactor.netty>
         <version.io.projectreactor.reactor-core>3.4.38</version.io.projectreactor.reactor-core>
-        <version.io.smallrye.llm>0.0.4</version.io.smallrye.llm>
+        <version.io.smallrye.llm>0.0.6</version.io.smallrye.llm>
         <version.io.weaviate.client>4.9.0</version.io.weaviate.client>
         <version.net.java.dev.jna>5.13.0</version.net.java.dev.jna>
         <version.org.extism.sdk.chicory-sdk>0.1.5</version.org.extism.sdk.chicory-sdk>
@@ -237,7 +239,7 @@
             <dependency>
                 <groupId>com.azure</groupId>
                 <artifactId>azure-core-serializer-json-jackson</artifactId>
-                <version>1.5.7</version>
+                <version>1.5.8</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -420,7 +422,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
+<!--
             <dependency>
                 <groupId>dev.ai4j</groupId>
                 <artifactId>openai4j</artifactId>
@@ -431,12 +433,12 @@
                         <artifactId>*</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency> 
+            </dependency> -->
 
             <dependency>
                 <groupId>dev.langchain4j</groupId>
                 <artifactId>langchain4j</artifactId>
-                <version>${version.dev.langchain4j}</version>
+                <version>${version.dev.langchain4j.core}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -447,7 +449,7 @@
             <dependency>
                 <groupId>dev.langchain4j</groupId>
                 <artifactId>langchain4j-core</artifactId>
-                <version>${version.dev.langchain4j}</version>
+                <version>${version.dev.langchain4j.core}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -531,12 +533,12 @@
             <dependency>
                 <groupId>dev.langchain4j</groupId>
                 <artifactId>langchain4j-http-client</artifactId>
-                <version>${version.dev.langchain4j}</version>
+                <version>${version.dev.langchain4j.core}</version>
             </dependency>
             <dependency>
                 <groupId>dev.langchain4j</groupId>
                 <artifactId>langchain4j-http-client-jdk</artifactId>
-                <version>${version.dev.langchain4j}</version>
+                <version>${version.dev.langchain4j.core}</version>
             </dependency>
             <dependency>
                 <groupId>dev.langchain4j</groupId>
@@ -559,7 +561,7 @@
             <dependency>
                 <groupId>dev.langchain4j</groupId>
                  <artifactId>langchain4j-community-neo4j</artifactId>
-                <version>${version.dev.langchain4j}</version>
+                <version>${version.dev.langchain4j.comunity}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>
@@ -582,7 +584,7 @@
             <dependency>
                 <groupId>dev.langchain4j</groupId>
                 <artifactId>langchain4j-open-ai</artifactId>
-                <version>${version.dev.langchain4j}</version>
+                <version>${version.dev.langchain4j.core}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>

@@ -4,15 +4,15 @@
  */
 package org.wildfly.extension.ai.injection.chat;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
 import java.util.List;
 
 public interface WildFlyChatModelConfig {
-    ChatLanguageModel createLanguageModel(List<ChatModelListener> listeners);
+    ChatModel createLanguageModel(List<ChatModelListener> listeners);
 
-    StreamingChatLanguageModel createStreamingLanguageModel(List<ChatModelListener> listeners);
+    StreamingChatModel createStreamingLanguageModel(List<ChatModelListener> listeners);
 
     boolean isStreaming();
 

@@ -4,8 +4,8 @@
  */
 package org.wildfly.extension.ai.injection.chat;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
@@ -33,7 +33,7 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
     private Object instance = null;
 
     @Override
-    public ChatLanguageModel createLanguageModel(List<ChatModelListener> listeners) {
+    public ChatModel createLanguageModel(List<ChatModelListener> listeners) {
         if (instance == null) {
             OpenAiChatModel.OpenAiChatModelBuilder builder = OpenAiChatModel.builder()
                     .apiKey(key)
@@ -58,11 +58,11 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
             }
             instance = builder.build();
         }
-        return (ChatLanguageModel) instance;
+        return (ChatModel) instance;
     }
 
     @Override
-    public StreamingChatLanguageModel createStreamingLanguageModel(List<ChatModelListener> listeners) {
+    public StreamingChatModel createStreamingLanguageModel(List<ChatModelListener> listeners) {
         if (instance == null) {
             OpenAiStreamingChatModel.OpenAiStreamingChatModelBuilder builder = OpenAiStreamingChatModel.builder()
                     .apiKey(key)
@@ -86,7 +86,7 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
             }
             instance = builder.build();
         }
-        return (StreamingChatLanguageModel) instance;
+        return (StreamingChatModel) instance;
     }
 
     public WildFlyOpenAiChatModelConfig apiKey(String key) {

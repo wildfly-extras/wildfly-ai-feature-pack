@@ -10,8 +10,8 @@ import com.azure.ai.inference.ModelServiceVersion;
 import com.azure.ai.inference.models.ChatCompletionsResponseFormatJsonObject;
 import com.azure.ai.inference.models.ChatCompletionsResponseFormatText;
 import com.azure.core.http.ProxyOptions;
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
 import dev.langchain4j.model.github.GitHubModelsChatModel;
 import dev.langchain4j.model.github.GitHubModelsStreamingChatModel;
@@ -42,7 +42,7 @@ public class WildFlyGithubModelChatModelConfig implements WildFlyChatModelConfig
     private boolean observable;
 
     @Override
-    public ChatLanguageModel createLanguageModel(List<ChatModelListener> listeners) {
+    public ChatModel createLanguageModel(List<ChatModelListener> listeners) {
         ModelServiceVersion modelServiceVersion;
         if(isNullOrBlank(serviceVersion)) {
             modelServiceVersion = ModelServiceVersion.getLatest();
@@ -79,7 +79,7 @@ public class WildFlyGithubModelChatModelConfig implements WildFlyChatModelConfig
     }
 
     @Override
-    public StreamingChatLanguageModel createStreamingLanguageModel(List<ChatModelListener> listeners) {ModelServiceVersion modelServiceVersion;
+    public StreamingChatModel createStreamingLanguageModel(List<ChatModelListener> listeners) {ModelServiceVersion modelServiceVersion;
         if(isNullOrBlank(serviceVersion)) {
             modelServiceVersion = ModelServiceVersion.getLatest();
         } else {

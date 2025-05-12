@@ -4,8 +4,8 @@
  */
 package org.wildfly.extension.ai.injection.chat;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
 import dev.langchain4j.model.chat.request.ResponseFormat;
 import dev.langchain4j.model.ollama.OllamaChatModel;
@@ -28,7 +28,7 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
     private Object instance = null;
 
     @Override
-    public ChatLanguageModel createLanguageModel(List<ChatModelListener> listeners) {
+    public ChatModel createLanguageModel(List<ChatModelListener> listeners) {
         if (instance == null) {
             OllamaChatModel.OllamaChatModelBuilder builder = OllamaChatModel.builder()
                     .baseUrl(baseUrl)
@@ -46,11 +46,11 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
             }
             instance = builder.build();
         }
-        return (ChatLanguageModel) instance;
+        return (ChatModel) instance;
     }
 
     @Override
-    public StreamingChatLanguageModel createStreamingLanguageModel(List<ChatModelListener> listeners) {
+    public StreamingChatModel createStreamingLanguageModel(List<ChatModelListener> listeners) {
         if (instance == null) {
             OllamaStreamingChatModel.OllamaStreamingChatModelBuilder builder = OllamaStreamingChatModel.builder()
                     .baseUrl(baseUrl)
@@ -67,7 +67,7 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
             }
             instance = builder.build();
         }
-        return (StreamingChatLanguageModel) instance;
+        return (StreamingChatModel) instance;
     }
 
     public WildFlyOllamaChatModelConfig baseUrl(String baseUrl) {

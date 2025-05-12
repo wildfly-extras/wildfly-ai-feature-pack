@@ -9,8 +9,8 @@
         <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
         <prop name="org.wildfly.rule.add-on" value="ai-llm,ollama-chat-model"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use ollama for LLM interactions and embeddings"/>
-        <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.model.chat.StreamingChatLanguageModel,jakarta.inject.Named[value=streaming-ollama]"/>
-        <prop name="org.wildfly.rule.annotation.field.value" value="io.smallrye.llm.spi.RegisterAIService,streamingChatLanguageModelName=streaming-ollama"/>
+        <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.model.chat.StreamingChatModel,jakarta.inject.Named[value=streaming-ollama]"/>
+        <prop name="org.wildfly.rule.annotation.field.value" value="io.smallrye.llm.spi.RegisterAIService,streamingChatModelName=streaming-ollama"/>
     </props>
     <dependencies>
         <layer name="ai"/>
