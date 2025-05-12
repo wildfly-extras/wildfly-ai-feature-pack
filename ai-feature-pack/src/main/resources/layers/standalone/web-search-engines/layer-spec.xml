@@ -5,7 +5,7 @@
   -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="web-search-engines">
     <props>
-        <prop name="org.wildfly.rule.configuration" value="https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/glow-layer-doc/web-search-engines/env.yaml"/>
+        <prop name="org.wildfly.rule.configuration" value="https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/tags/0.5.0/doc/glow-layer-doc/web-search-engines/env.yaml"/>
         <prop name="org.wildfly.rule.add-on-depends-on" value="ai"/>
         <prop name="org.wildfly.rule.add-on" value="ai-content-retriever,web-search-engines"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use Web search engines as content retrievers"/>
