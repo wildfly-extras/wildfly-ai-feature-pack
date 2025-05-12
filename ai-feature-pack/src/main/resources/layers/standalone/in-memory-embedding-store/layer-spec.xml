@@ -5,7 +5,7 @@
 -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="in-memory-embedding-store">
     <props>
-        <prop name="org.wildfly.rule.configuration" value="https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/glow-layer-doc/in-memory-embedding-storel/env.yaml"/>
+        <prop name="org.wildfly.rule.configuration" value="https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/tags/0.5.0/doc/glow-layer-doc/in-memory-embedding-storel/env.yaml"/>
         <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
         <prop name="org.wildfly.rule.add-on" value="ai-embedding-store,in-memory-embedding-store"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use an in memory embedding store"/>
