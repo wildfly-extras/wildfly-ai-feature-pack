@@ -1,0 +1,8 @@
+{
+    "wildfly-versions": [
+        {
+            "wildfly-version": "36.0.1.Final",
+            "url": "https://raw.githubusercontent.com/jfdenise/wildfly-ai-feature-pack/refs/heads/catalog/ai-feature-pack/feature-pack-metadata.json"
+        }
+    ]
+}
