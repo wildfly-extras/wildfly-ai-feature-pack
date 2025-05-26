@@ -5,6 +5,9 @@
   -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="ai">
     <props>
+        <prop name="org.wildfly.category" value="AI"/>
+        <prop name="org.wildfly.description" value="Support for Langchain4j"/>
+        <prop name="org.wildfly.stability" value="experimental"/>
         <prop name="org.wildfly.rule.class" value="dev.langchain4j.*,org.eclipse.microprofile.ai.llm.*"/>
         <prop name="org.wildfly.rule.annotations" value="dev.langchain4j.*,org.eclipse.microprofile.ai.llm.*"/>
     </props>

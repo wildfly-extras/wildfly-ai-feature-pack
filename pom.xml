@@ -35,7 +35,7 @@
         <version.org.wildfly>36.0.1.Final</version.org.wildfly>
         <version.org.wildfly.core>28.0.0.Final</version.org.wildfly.core>
         <version.org.wildfly.common>1.7.0.Final</version.org.wildfly.common>    
-        <version.org.wildfly.galleon-plugins>7.3.1.Final</version.org.wildfly.galleon-plugins>
+        <version.org.wildfly.galleon-plugins>7.3.2.Final-SNAPSHOT</version.org.wildfly.galleon-plugins>
 
         <version.ai.djl>0.31.1</version.ai.djl>
         <version.com.azure.azure-ai-inference>1.0.0-beta.4</version.com.azure.azure-ai-inference>

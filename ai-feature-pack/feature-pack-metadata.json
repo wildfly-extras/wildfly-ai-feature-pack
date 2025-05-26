@@ -1,0 +1,77 @@
+{
+  "version" : "1.0.0-SNAPSHOT",
+  "feature-pack-location" : "org.wildfly:wildfly-ai-feature-pack:1.0.0-SNAPSHOT",
+  "layers" : [ {
+    "name" : "ai",
+    "managementModel" : {
+      "address" : "/",
+      "children" : [ {
+        "address" : "subsystem=ai"
+      } ]
+    },
+    "properties" : [ {
+      "name" : "org.wildfly.rule.class",
+      "value" : "dev.langchain4j.*,org.eclipse.microprofile.ai.llm.*"
+    }, {
+      "name" : "org.wildfly.stability",
+      "value" : "experimental"
+    }, {
+      "name" : "org.wildfly.category",
+      "value" : "AI"
+    }, {
+      "name" : "org.wildfly.description",
+      "value" : "Support for Langchain4j"
+    }, {
+      "name" : "org.wildfly.rule.annotations",
+      "value" : "dev.langchain4j.*,org.eclipse.microprofile.ai.llm.*"
+    } ]
+  }, {
+    "name" : "gemini-chat-model",
+    "dependencies" : [ {
+      "name" : "ai",
+      "optional" : false
+    } ],
+    "managementModel" : {
+      "address" : "/",
+      "children" : [ {
+        "address" : "subsystem=ai",
+        "children" : [ {
+          "address" : "gemini-chat-model=gemini",
+          "attributes" : {
+            "api-key" : "${env.GEMINI_API_KEY:YOUR_KEY_VALUE}",
+            "log-requests-responses" : "${org.wildfly.ai.gemini.chat.log,env.GEMINI_CHAT_LOG:true}",
+            "model-name" : "${org.wildfly.ai.gemini.chat.model.name,env.GEMINI_CHAT_MODEL_NAME:gemini-1.5-flash}"
+          }
+        } ]
+      } ]
+    },
+    "properties" : [ {
+      "name" : "org.wildfly.rule.add-on-depends-on",
+      "value" : "only:ai"
+    }, {
+      "name" : "org.wildfly.rule.annotation.field.value",
+      "value" : "io.smallrye.llm.spi.RegisterAIService,chatModelName=gemini"
+    }, {
+      "name" : "org.wildfly.stability",
+      "value" : "experimental"
+    }, {
+      "name" : "org.wildfly.rule.configuration",
+      "value" : "https://raw.geminiusercontent.com/wildfly-extras/wildfly-ai-feature-pack/glow-layer-doc/gemini-chat-model/env.yaml"
+    }, {
+      "name" : "org.wildfly.category",
+      "value" : "AI"
+    }, {
+      "name" : "org.wildfly.description",
+      "value" : "Support for Gemini chat model"
+    }, {
+      "name" : "org.wildfly.rule.add-on-description",
+      "value" : "Use Github Models API for LLM interactions"
+    }, {
+      "name" : "org.wildfly.rule.add-on",
+      "value" : "ai-llm,gemini-chat-model"
+    }, {
+      "name" : "org.wildfly.rule.annotated.type",
+      "value" : "dev.langchain4j.model.chat.ChatModel,jakarta.inject.Named[value=gemini]"
+    } ]
+  } ]
+}
