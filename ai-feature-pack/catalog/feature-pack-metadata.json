@@ -29,6 +29,9 @@
       "name" : "org.wildfly.rule.annotation.field.value",
       "value" : "io.smallrye.llm.spi.RegisterAIService,chatModelName=github"
     }, {
+      "name" : "org.wildfly.stability",
+      "value" : "experimental"
+    }, {
       "name" : "org.wildfly.rule.configuration",
       "value" : "https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/tags/0.5.0/doc/glow-layer-doc/github-chat-model/env.yaml"
     }, {
@@ -60,6 +63,9 @@
     }, {
       "name" : "org.wildfly.rule.annotation.field.value",
       "value" : "io.smallrye.llm.spi.RegisterAIService,contentRetrieverName=neo4j-retriever"
+    }, {
+      "name" : "org.wildfly.stability",
+      "value" : "experimental"
     }, {
       "name" : "org.wildfly.rule.configuration",
       "value" : "https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/tags/0.5.0/doc/glow-layer-doc/neo4j-content-retriever/env.yaml"
@@ -108,6 +114,9 @@
       "name" : "org.wildfly.rule.annotation.field.value",
       "value" : "io.smallrye.llm.spi.RegisterAIService,chatModelName=mistral"
     }, {
+      "name" : "org.wildfly.stability",
+      "value" : "experimental"
+    }, {
       "name" : "org.wildfly.rule.configuration",
       "value" : "https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/tags/0.5.0/doc/glow-layer-doc/mistral-ai-chat-model/env.yaml"
     }, {
@@ -155,6 +164,9 @@
     }, {
       "name" : "org.wildfly.rule.annotation.field.value",
       "value" : "io.smallrye.llm.spi.RegisterAIService,chatModelName=ollama"
+    }, {
+      "name" : "org.wildfly.stability",
+      "value" : "experimental"
     }, {
       "name" : "org.wildfly.rule.configuration",
       "value" : "https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/tags/0.5.0/doc/glow-layer-doc/ollama-chat-model/env.yaml"
