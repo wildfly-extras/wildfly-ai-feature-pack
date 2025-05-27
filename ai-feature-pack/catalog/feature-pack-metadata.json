@@ -2,6 +2,179 @@
   "version" : "1.0.0-SNAPSHOT",
   "feature-pack-location" : "org.wildfly:wildfly-ai-feature-pack:1.0.0-SNAPSHOT",
   "layers" : [ {
+    "name" : "github-chat-model",
+    "dependencies" : [ {
+      "name" : "ai",
+      "optional" : false
+    } ],
+    "managementModel" : {
+      "address" : "/",
+      "children" : [ {
+        "address" : "subsystem=ai",
+        "children" : [ {
+          "address" : "github-chat-model=github",
+          "attributes" : {
+            "api-key" : "${env.GITHUB_API_KEY:YOUR_KEY_VALUE}",
+            "endpoint" : "${org.wildfly.ai.github.chat.url,env.GITHUB_CHAT_URL:https://models.inference.ai.azure.com}",
+            "log-requests-responses" : "${org.wildfly.ai.github.chat.log,env.GITHUB_CHAT_LOG:true}",
+            "model-name" : "${org.wildfly.ai.github.chat.model.name,env.GITHUB_CHAT_MODEL_NAME:gpt-4o-mini}"
+          }
+        } ]
+      } ]
+    },
+    "properties" : [ {
+      "name" : "org.wildfly.rule.add-on-depends-on",
+      "value" : "only:ai"
+    }, {
+      "name" : "org.wildfly.rule.annotation.field.value",
+      "value" : "io.smallrye.llm.spi.RegisterAIService,chatModelName=github"
+    }, {
+      "name" : "org.wildfly.rule.configuration",
+      "value" : "https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/tags/0.5.0/doc/glow-layer-doc/github-chat-model/env.yaml"
+    }, {
+      "name" : "org.wildfly.category",
+      "value" : "AI"
+    }, {
+      "name" : "org.wildfly.description",
+      "value" : "Support for GitHub chat model"
+    }, {
+      "name" : "org.wildfly.rule.add-on-description",
+      "value" : "Use Github Models API for LLM interactions"
+    }, {
+      "name" : "org.wildfly.rule.add-on",
+      "value" : "ai-llm,github-chat-model"
+    }, {
+      "name" : "org.wildfly.rule.annotated.type",
+      "value" : "dev.langchain4j.model.chat.ChatModel,jakarta.inject.Named[value=github]"
+    } ]
+  }, {
+    "name" : "neo4j-content-retriever",
+    "dependencies" : [ {
+      "name" : "ai",
+      "optional" : false
+    } ],
+    "managementModel" : { },
+    "properties" : [ {
+      "name" : "org.wildfly.rule.add-on-depends-on",
+      "value" : "only:ai"
+    }, {
+      "name" : "org.wildfly.rule.annotation.field.value",
+      "value" : "io.smallrye.llm.spi.RegisterAIService,contentRetrieverName=neo4j-retriever"
+    }, {
+      "name" : "org.wildfly.rule.configuration",
+      "value" : "https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/tags/0.5.0/doc/glow-layer-doc/neo4j-content-retriever/env.yaml"
+    }, {
+      "name" : "org.wildfly.category",
+      "value" : "AI"
+    }, {
+      "name" : "org.wildfly.description",
+      "value" : "Support for neo4j content retriever"
+    }, {
+      "name" : "org.wildfly.rule.add-on-description",
+      "value" : "Use Neo4J as a content retriever"
+    }, {
+      "name" : "org.wildfly.rule.add-on",
+      "value" : "ai-content-retriever,neo4j-content-retriever"
+    }, {
+      "name" : "org.wildfly.rule.annotated.type",
+      "value" : "dev.langchain4j.rag.content.retriever.ContentRetriever,jakarta.inject.Named[value=neo4j-retriever]"
+    } ]
+  }, {
+    "name" : "mistral-ai-chat-model",
+    "dependencies" : [ {
+      "name" : "ai",
+      "optional" : false
+    } ],
+    "managementModel" : {
+      "address" : "/",
+      "children" : [ {
+        "address" : "subsystem=ai",
+        "children" : [ {
+          "address" : "mistral-ai-chat-model=mistral",
+          "attributes" : {
+            "api-key" : "${env.MISTRAL_API_KEY:YOUR_KEY_VALUE}",
+            "base-url" : "${org.wildfly.ai.mistral.chat.url,env.MISTRAL_CHAT_URL:https://api.mistral.ai/v1}",
+            "log-requests" : "${org.wildfly.ai.mistral.chat.log.request,env.MISTRAL_CHAT_LOG_REQUEST:true}",
+            "log-responses" : "${org.wildfly.ai.mistral.chat.log.response,env.MISTRAL_CHAT_LOG_RESPONSE:true}",
+            "model-name" : "${org.wildfly.ai.mistral.chat.model.name,env.MISTRAL_CHAT_MODEL_NAME:mistral-small-latest}"
+          }
+        } ]
+      } ]
+    },
+    "properties" : [ {
+      "name" : "org.wildfly.rule.add-on-depends-on",
+      "value" : "only:ai"
+    }, {
+      "name" : "org.wildfly.rule.annotation.field.value",
+      "value" : "io.smallrye.llm.spi.RegisterAIService,chatModelName=mistral"
+    }, {
+      "name" : "org.wildfly.rule.configuration",
+      "value" : "https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/tags/0.5.0/doc/glow-layer-doc/mistral-ai-chat-model/env.yaml"
+    }, {
+      "name" : "org.wildfly.category",
+      "value" : "AI"
+    }, {
+      "name" : "org.wildfly.description",
+      "value" : "Support for Mistral AI chat model"
+    }, {
+      "name" : "org.wildfly.rule.add-on-description",
+      "value" : "Use MistralAI API for LLM interactions"
+    }, {
+      "name" : "org.wildfly.rule.add-on",
+      "value" : "ai-llm,mistral-ai-chat-model"
+    }, {
+      "name" : "org.wildfly.rule.annotated.type",
+      "value" : "dev.langchain4j.model.chat.ChatModel,jakarta.inject.Named[value=mistral]"
+    } ]
+  }, {
+    "name" : "ollama-chat-model",
+    "dependencies" : [ {
+      "name" : "ai",
+      "optional" : false
+    } ],
+    "managementModel" : {
+      "address" : "/",
+      "children" : [ {
+        "address" : "subsystem=ai",
+        "children" : [ {
+          "address" : "ollama-chat-model=ollama",
+          "attributes" : {
+            "base-url" : "${org.wildfly.ai.ollama.chat.url,env.OLLAMA_CHAT_URL:http://127.0.0.1:11434}",
+            "connect-timeout" : "600000",
+            "log-requests" : "${org.wildfly.ai.ollama.chat.log.request,env.OLLAMA_CHAT_LOG_REQUEST:true}",
+            "log-responses" : "${org.wildfly.ai.ollama.chat.log.response,env.OLLAMA_CHAT_LOG_RESPONSE:true}",
+            "model-name" : "${org.wildfly.ai.ollama.chat.model.name,env.OLLAMA_CHAT_MODEL_NAME:llama3.1:8b}",
+            "temperature" : "${org.wildfly.ai.ollama.chat.temperature,env.OLLAMA_CHAT_TEMPERATURE:0.9}"
+          }
+        } ]
+      } ]
+    },
+    "properties" : [ {
+      "name" : "org.wildfly.rule.add-on-depends-on",
+      "value" : "only:ai"
+    }, {
+      "name" : "org.wildfly.rule.annotation.field.value",
+      "value" : "io.smallrye.llm.spi.RegisterAIService,chatModelName=ollama"
+    }, {
+      "name" : "org.wildfly.rule.configuration",
+      "value" : "https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/tags/0.5.0/doc/glow-layer-doc/ollama-chat-model/env.yaml"
+    }, {
+      "name" : "org.wildfly.category",
+      "value" : "AI"
+    }, {
+      "name" : "org.wildfly.description",
+      "value" : "Support for Ollama chat model"
+    }, {
+      "name" : "org.wildfly.rule.add-on-description",
+      "value" : "Use ollama for LLM interactions and embeddings"
+    }, {
+      "name" : "org.wildfly.rule.add-on",
+      "value" : "ai-llm,ollama-chat-model"
+    }, {
+      "name" : "org.wildfly.rule.annotated.type",
+      "value" : "dev.langchain4j.model.chat.ChatModel,jakarta.inject.Named[value=ollama]"
+    } ]
+  }, {
     "name" : "ai",
     "managementModel" : {
       "address" : "/",

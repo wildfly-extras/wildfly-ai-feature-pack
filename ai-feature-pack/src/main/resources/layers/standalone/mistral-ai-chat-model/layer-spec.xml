@@ -5,6 +5,8 @@
 -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="mistral-ai-chat-model">
     <props>
+        <prop name="org.wildfly.category" value="AI"/>
+        <prop name="org.wildfly.description" value="Support for Mistral AI chat model"/>
         <prop name="org.wildfly.rule.configuration" value="https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/tags/0.5.0/doc/glow-layer-doc/mistral-ai-chat-model/env.yaml"/>
         <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
         <prop name="org.wildfly.rule.add-on" value="ai-llm,mistral-ai-chat-model"/>
