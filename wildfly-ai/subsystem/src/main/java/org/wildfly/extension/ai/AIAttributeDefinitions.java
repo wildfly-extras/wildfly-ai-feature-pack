@@ -90,7 +90,7 @@ public class AIAttributeDefinitions {
             .setAllowExpression(true)
             .build();
 
-    public static enum ResponseFormat {
+    public enum ResponseFormat {
         JSON, TEXT;
 
         public static boolean isJson(String format) {

@@ -25,7 +25,7 @@ public class WildFlyBeanRegistry {
 
     private static final Map<String, WildFlyChatModelConfig> chatModels = new HashMap<>();
     private static final Map<String, EmbeddingModel> embeddingModels = new HashMap<>();
-    private static final Map<String, EmbeddingStore> embeddingStores = new HashMap<>();
+    private static final Map<String, EmbeddingStore<?>> embeddingStores = new HashMap<>();
     private static final Map<String, WildFlyContentRetrieverConfig> contentRetrievers = new HashMap<>();
     private static final Map<String, ToolProvider> toolProviders = new HashMap<>();
 
@@ -47,7 +47,7 @@ public class WildFlyBeanRegistry {
         }
     }
 
-    public static void registerEmbeddingStore(String id, EmbeddingStore embeddingStore) {
+    public static void registerEmbeddingStore(String id, EmbeddingStore<?> embeddingStore) {
         if (!embeddingStores.containsKey(id)) {
             embeddingStores.put(id, embeddingStore);
             registerBean(id, embeddingStore, EmbeddingStore.class);

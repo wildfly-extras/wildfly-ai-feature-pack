@@ -144,38 +144,38 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty()) {
             if (!requiredChatModels.isEmpty()) {
                 for (String chatLanguageModelName : requiredChatModels) {
-                    deploymentUnit.addToAttachmentList(AIAttachements.CHAT_MODEL_KEYS, chatLanguageModelName);
-                    deploymentPhaseContext.addDeploymentDependency(CHAT_MODEL_PROVIDER_CAPABILITY.getCapabilityServiceName(chatLanguageModelName), AIAttachements.CHAT_MODELS);
+                    deploymentUnit.addToAttachmentList(AIAttachments.CHAT_MODEL_KEYS, chatLanguageModelName);
+                    deploymentPhaseContext.addDeploymentDependency(CHAT_MODEL_PROVIDER_CAPABILITY.getCapabilityServiceName(chatLanguageModelName), AIAttachments.CHAT_MODELS);
                 }
             }
             if (!requiredEmbeddingModels.isEmpty()) {
                 for (String embeddingModelName : requiredEmbeddingModels) {
-                    deploymentUnit.addToAttachmentList(AIAttachements.EMBEDDING_MODEL_KEYS, embeddingModelName);
-                    deploymentPhaseContext.addDeploymentDependency(EMBEDDING_MODEL_PROVIDER_CAPABILITY.getCapabilityServiceName(embeddingModelName), AIAttachements.EMBEDDING_MODELS);
+                    deploymentUnit.addToAttachmentList(AIAttachments.EMBEDDING_MODEL_KEYS, embeddingModelName);
+                    deploymentPhaseContext.addDeploymentDependency(EMBEDDING_MODEL_PROVIDER_CAPABILITY.getCapabilityServiceName(embeddingModelName), AIAttachments.EMBEDDING_MODELS);
                 }
             }
             if (!requiredEmbeddingStores.isEmpty()) {
                 for (String embeddingStoreName : requiredEmbeddingStores) {
-                    deploymentUnit.addToAttachmentList(AIAttachements.EMBEDDING_STORE_KEYS, embeddingStoreName);
-                    deploymentPhaseContext.addDeploymentDependency(EMBEDDING_STORE_PROVIDER_CAPABILITY.getCapabilityServiceName(embeddingStoreName), AIAttachements.EMBEDDING_STORES);
+                    deploymentUnit.addToAttachmentList(AIAttachments.EMBEDDING_STORE_KEYS, embeddingStoreName);
+                    deploymentPhaseContext.addDeploymentDependency(EMBEDDING_STORE_PROVIDER_CAPABILITY.getCapabilityServiceName(embeddingStoreName), AIAttachments.EMBEDDING_STORES);
                 }
             }
             if (!requiredContentRetrievers.isEmpty()) {
                 for (String contentRetrieverName : requiredContentRetrievers) {
-                    deploymentUnit.addToAttachmentList(AIAttachements.CONTENT_RETRIEVER_KEYS, contentRetrieverName);
-                    deploymentPhaseContext.addDeploymentDependency(Capabilities.CONTENT_RETRIEVER_PROVIDER_CAPABILITY.getCapabilityServiceName(contentRetrieverName), AIAttachements.CONTENT_RETRIEVERS);
+                    deploymentUnit.addToAttachmentList(AIAttachments.CONTENT_RETRIEVER_KEYS, contentRetrieverName);
+                    deploymentPhaseContext.addDeploymentDependency(Capabilities.CONTENT_RETRIEVER_PROVIDER_CAPABILITY.getCapabilityServiceName(contentRetrieverName), AIAttachments.CONTENT_RETRIEVERS);
                 }
             }
             if (!requiredContentRetrievers.isEmpty()) {
                 for (String contentRetrieverName : requiredContentRetrievers) {
-                    deploymentUnit.addToAttachmentList(AIAttachements.CONTENT_RETRIEVER_KEYS, contentRetrieverName);
-                    deploymentPhaseContext.addDeploymentDependency(Capabilities.CONTENT_RETRIEVER_PROVIDER_CAPABILITY.getCapabilityServiceName(contentRetrieverName), AIAttachements.CONTENT_RETRIEVERS);
+                    deploymentUnit.addToAttachmentList(AIAttachments.CONTENT_RETRIEVER_KEYS, contentRetrieverName);
+                    deploymentPhaseContext.addDeploymentDependency(Capabilities.CONTENT_RETRIEVER_PROVIDER_CAPABILITY.getCapabilityServiceName(contentRetrieverName), AIAttachments.CONTENT_RETRIEVERS);
                 }
             }
             if (!requiredToolProviders.isEmpty()) {
                 for (String toolProviderName : requiredToolProviders) {
-                    deploymentUnit.addToAttachmentList(AIAttachements.TOOL_PROVIDER_KEYS, toolProviderName);
-                    deploymentPhaseContext.addDeploymentDependency(Capabilities.TOOL_PROVIDER_CAPABILITY.getCapabilityServiceName(toolProviderName), AIAttachements.TOOL_PROVIDERS);
+                    deploymentUnit.addToAttachmentList(AIAttachments.TOOL_PROVIDER_KEYS, toolProviderName);
+                    deploymentPhaseContext.addDeploymentDependency(Capabilities.TOOL_PROVIDER_CAPABILITY.getCapabilityServiceName(toolProviderName), AIAttachments.TOOL_PROVIDERS);
                 }
             }
         }
