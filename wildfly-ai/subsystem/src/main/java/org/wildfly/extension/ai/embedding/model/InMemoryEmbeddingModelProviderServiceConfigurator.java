@@ -8,12 +8,12 @@ import static org.wildfly.extension.ai.Capabilities.EMBEDDING_MODEL_PROVIDER_CAP
 import static org.wildfly.extension.ai.embedding.model.InMemoryEmbeddingModelProviderRegistrar.EMBEDDING_MODEL_CLASS;
 import static org.wildfly.extension.ai.embedding.model.InMemoryEmbeddingModelProviderRegistrar.EMBEDDING_MODULE;
 
-import dev.langchain4j.model.embedding.EmbeddingModel;
 import java.util.function.Supplier;
-import org.jboss.as.controller.ModuleIdentifierUtil;
 
+import dev.langchain4j.model.embedding.EmbeddingModel;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.controller.client.helpers.JBossModulesNameUtil;
 import org.jboss.dmr.ModelNode;
 import org.wildfly.extension.ai.AILogger;
 import org.wildfly.subsystem.service.ResourceServiceConfigurator;
@@ -27,7 +27,7 @@ public class InMemoryEmbeddingModelProviderServiceConfigurator implements Resour
 
     @Override
     public ResourceServiceInstaller configure(OperationContext context, ModelNode model) throws OperationFailedException {
-        String moduleName = ModuleIdentifierUtil.canonicalModuleIdentifier(EMBEDDING_MODULE.resolveModelAttribute(context, model).asStringOrNull());
+        String moduleName = JBossModulesNameUtil.parseCanonicalModuleIdentifier(EMBEDDING_MODULE.resolveModelAttribute(context, model).asStringOrNull());
         String embeddingModelClassName = EMBEDDING_MODEL_CLASS.resolveModelAttribute(context, model).asStringOrNull();
         Supplier<EmbeddingModel> factory = new Supplier<>() {
             @Override
