@@ -36,21 +36,21 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
             if (weldCapability != null && !weldCapability.isPartOfWeldDeployment(deploymentUnit)) {
                 ROOT_LOGGER.cdiRequired();
             }
-            List<WildFlyChatModelConfig> requiredChatModels = deploymentUnit.getAttachmentList(AIAttachements.CHAT_MODELS);
+            List<WildFlyChatModelConfig> requiredChatModels = deploymentUnit.getAttachmentList(AIAttachments.CHAT_MODELS);
             if (! support.hasCapability(OPENTELEMETRY_CAPABILITY_NAME)) {
                 ROOT_LOGGER.info("No opentelemetry support available");
             } else {
                 ROOT_LOGGER.debug("OpenTelemetry is active for AI");
             }
-            List<String> chatLanguageModelNames = deploymentUnit.getAttachmentList(AIAttachements.CHAT_MODEL_KEYS);
-            List<EmbeddingModel> requiredEmbeddingModels = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_MODELS);
-            List<String> requiredEmbeddingModelNames = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_MODEL_KEYS);
-            List<EmbeddingStore> requiredEmbeddingStores = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_STORES);
-            List<String> requiredEmbeddingStoreNames = deploymentUnit.getAttachmentList(AIAttachements.EMBEDDING_STORE_KEYS);
-            List<WildFlyContentRetrieverConfig> requiredContentRetrievers = deploymentUnit.getAttachmentList(AIAttachements.CONTENT_RETRIEVERS);
-            List<String> requiredContentRetrieverNames = deploymentUnit.getAttachmentList(AIAttachements.CONTENT_RETRIEVER_KEYS);
-            List<ToolProvider> requiredToolProviders = deploymentUnit.getAttachmentList(AIAttachements.TOOL_PROVIDERS);
-            List<String> requiredToolProviderNames = deploymentUnit.getAttachmentList(AIAttachements.TOOL_PROVIDER_KEYS);
+            List<String> chatLanguageModelNames = deploymentUnit.getAttachmentList(AIAttachments.CHAT_MODEL_KEYS);
+            List<EmbeddingModel> requiredEmbeddingModels = deploymentUnit.getAttachmentList(AIAttachments.EMBEDDING_MODELS);
+            List<String> requiredEmbeddingModelNames = deploymentUnit.getAttachmentList(AIAttachments.EMBEDDING_MODEL_KEYS);
+            List<EmbeddingStore<?>> requiredEmbeddingStores = deploymentUnit.getAttachmentList(AIAttachments.EMBEDDING_STORES);
+            List<String> requiredEmbeddingStoreNames = deploymentUnit.getAttachmentList(AIAttachments.EMBEDDING_STORE_KEYS);
+            List<WildFlyContentRetrieverConfig> requiredContentRetrievers = deploymentUnit.getAttachmentList(AIAttachments.CONTENT_RETRIEVERS);
+            List<String> requiredContentRetrieverNames = deploymentUnit.getAttachmentList(AIAttachments.CONTENT_RETRIEVER_KEYS);
+            List<ToolProvider> requiredToolProviders = deploymentUnit.getAttachmentList(AIAttachments.TOOL_PROVIDERS);
+            List<String> requiredToolProviderNames = deploymentUnit.getAttachmentList(AIAttachments.TOOL_PROVIDER_KEYS);
             if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty()) {
                 if (!requiredChatModels.isEmpty()) {
                     for (int i = 0; i < requiredChatModels.size(); i++) {
