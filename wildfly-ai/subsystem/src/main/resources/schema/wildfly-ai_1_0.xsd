@@ -132,28 +132,26 @@
             <xs:element name="embedding-store-content-retriever" type="embeddingStoreContentRetrieverType">
                 <xs:annotation>
                     <xs:documentation>
-                        A content retriever retriving content from an embedding store definition element.
+                        A content retriever retrieving content from an embedding store definition element.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="neo4j-content-retriever" type="neo4jContentRetrieverType">
                 <xs:annotation>
                     <xs:documentation>
-                        A content retriever retriving content from a Neo4J Graph database.
+                        A content retriever retrieving content from a Neo4J Graph database.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="web-search-content-retriever" type="webSearchContentRetrieverType">
                 <xs:annotation>
                     <xs:documentation>
-                        A content retriever retriving content from a web search definition element.
+                        A content retriever retrieving content from a web search definition element.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:choice>
     </xs:complexType>
-    
-    
 
     <xs:complexType name="mcpType">
         <xs:annotation>
@@ -165,21 +163,21 @@
             <xs:element name="mcp-tool-provider" type="mcpToolProviderType">
                 <xs:annotation>
                     <xs:documentation>
-                        A content retriever retriving content from an embedding store definition element.
+                        Tool provider using MCP protocol.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="mcp-client-sse" type="mcpClientSseType">
                 <xs:annotation>
                     <xs:documentation>
-                        A content retriever retriving content from a web search definition element.
+                        An MCP SSE client.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="mcp-client-stdio" type="mcpClientStdioType">
                 <xs:annotation>
                     <xs:documentation>
-                        A content retriever retriving content from a web search definition element.
+                        An MCP Stdio Client.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -255,7 +253,7 @@
         <xs:attribute name="api-key" type="xs:string">
             <xs:annotation>
                 <xs:documentation>
-                    The key to connect to the Gemini model.
+                    The API key to connect to the Gemini model.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -280,10 +278,10 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="harassement" type="threshold" use="optional">
+        <xs:attribute name="harassment" type="threshold" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    The threshold to filter harassement content.
+                    The threshold to filter harassment content.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -370,7 +368,7 @@
     <xs:complexType name="githubModelsChatModelType">
         <xs:annotation>
             <xs:documentation>
-                A provider of an Github chat model.
+                A provider of a GitHub chat model.
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
@@ -379,7 +377,7 @@
                     Custom HTTP headers.
                 </xs:documentation>
             </xs:annotation>
-            <xs:element name="header" minOccurs="0" maxOccurs="unbounded" type="headerType" />
+            <xs:element name="header" minOccurs="0" maxOccurs="unbounded" type="headerType"/>
         </xs:sequence>
         <xs:attribute name="name" type="xs:string" use="required">
             <xs:annotation>
@@ -707,7 +705,7 @@
     <xs:complexType name="mistralAIChatModelType">
         <xs:annotation>
             <xs:documentation>
-                A provider of an Mistral AI chat model.
+                A provider of a Mistral AI chat model.
             </xs:documentation>
         </xs:annotation>
         <xs:attribute name="name" type="xs:string" use="required">
@@ -727,7 +725,7 @@
         <xs:attribute name="base-url" type="xs:string">
             <xs:annotation>
                 <xs:documentation>
-                    The base url to the chat model endpoint
+                    The base URL to the chat model endpoint
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -844,7 +842,7 @@
     <xs:complexType name="mcpClientSseType">
         <xs:annotation>
             <xs:documentation>
-                The configuration of a client to a SSE MCP server.
+                The configuration of a client to an SSE MCP server.
             </xs:documentation>
         </xs:annotation>
         <xs:attribute name="name" type="xs:string" use="required">
@@ -892,7 +890,7 @@
         <xs:attribute name="ssl-enabled" type="xs:boolean" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    If the connection to thhe MCP server is secured.
+                    If the connection to the MCP server is secured.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -914,7 +912,7 @@
         <xs:attribute name="cmd" type="xs:string">
             <xs:annotation>
                 <xs:documentation>
-                    The command to execute to srtart the MCP server process.
+                    The command to execute to start the MCP server process.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -1000,7 +998,7 @@
         <xs:attribute name="embedding-class" type="xs:string" use="required">
             <xs:annotation>
                 <xs:documentation>
-                    The class from which the embedding model will be instanciated.
+                    The class from which the embedding model will be instantiated.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -1022,7 +1020,8 @@
         </xs:attribute>
         <xs:attribute name="path" use="required">
             <xs:annotation>
-                <xs:documentation>The actual filesystem path. Treated as an absolute path, unless the
+                <xs:documentation>
+                    The actual filesystem path. Treated as an absolute path, unless the
                     'relative-to' attribute is specified, in which case the value
                     is treated as relative to that path.
                 </xs:documentation>
@@ -1030,7 +1029,8 @@
         </xs:attribute>
         <xs:attribute name="relative-to" type="xs:string" use="optional">
             <xs:annotation>
-                <xs:documentation>Reference to a filesystem path defined in the "paths" section
+                <xs:documentation>
+                    Reference to a filesystem path defined in the "paths" section
                     of the server configuration.
                 </xs:documentation>
             </xs:annotation>
@@ -1083,7 +1083,7 @@
         <xs:attribute name="embedding-property" type="xs:string" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    The optional embeddingProperty name 
+                    The optional embeddingProperty name
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -1118,7 +1118,7 @@
         <xs:attribute name="retrieval-query" type="xs:string" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    The optional retrieval query 
+                    The optional retrieval query
                     (default: "RETURN properties(node) AS metadata, node.`idProperty` AS `idProperty`, node.`textProperty` AS `textProperty`, node.`embeddingProperty` AS `embeddingProperty`, score")
                 </xs:documentation>
             </xs:annotation>
@@ -1162,7 +1162,7 @@
         <xs:attribute name="consistency-level" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    How the consistency is tuned when writting into weaviate embedding store.
+                    How the consistency is tuned when writing into weaviate embedding store.
                 </xs:documentation>
             </xs:annotation>
             <xs:simpleType>
@@ -1206,7 +1206,7 @@
     <xs:complexType name="neo4jContentRetrieverType">
         <xs:annotation>
             <xs:documentation>
-                A content retriever retriving content from a Neo4J graph database.
+                A content retriever retrieving content from a Neo4J graph database.
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
@@ -1242,7 +1242,7 @@
         <xs:attribute name="prompt-template" type="xs:string" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    The prompte template to use to create the cypher queries.
+                    The prompt template to use to create the cypher queries.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -1259,7 +1259,7 @@
     <xs:complexType name="embeddingStoreContentRetrieverType">
         <xs:annotation>
             <xs:documentation>
-                A content retriever retriving content from an embedding store.
+                A content retriever retrieving content from an embedding store.
             </xs:documentation>
         </xs:annotation>
         <xs:attribute name="name" type="xs:string" use="required">
@@ -1293,7 +1293,7 @@
         <xs:attribute name="min-score" type="xs:double" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    The minimum relevance score for the returned contents.Contentss scoring below this score are excluded from the results.
+                    The minimum relevance score for the returned contents. Contents scoring below this score are excluded from the results.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -1302,7 +1302,7 @@
     <xs:complexType name="webSearchContentRetrieverType">
         <xs:annotation>
             <xs:documentation>
-                A content retriever retriving content from a web search.
+                A content retriever retrieving content from a web search.
             </xs:documentation>
         </xs:annotation>
         <xs:choice>
@@ -1468,17 +1468,17 @@
         <xs:restriction base="xs:string">
             <xs:annotation>
                 <xs:documentation>
-                    <![CDATA[ A list of string separated by whitespaces. ]]>
+                    A list of string separated by whitespaces.
                 </xs:documentation>
             </xs:annotation>
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:simpleType name="threshold">
         <xs:restriction base="xs:string">
             <xs:annotation>
                 <xs:documentation>
-                    <![CDATA[ A threshold. ]]>
+                    A threshold.
                 </xs:documentation>
             </xs:annotation>
             <xs:enumeration value="HARM_BLOCK_THRESHOLD_UNSPECIFIED"/>
@@ -1492,10 +1492,10 @@
     <xs:complexType name="headerType">
         <xs:annotation>
             <xs:documentation>
-                    <![CDATA[ A custom header. ]]>
+                A custom header.
             </xs:documentation>
         </xs:annotation>
-        <xs:attribute name="name" type="xs:string" use="required" />
-        <xs:attribute name="value" type="xs:string" use="required" />
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="value" type="xs:string" use="required"/>
     </xs:complexType>
 </xs:schema>

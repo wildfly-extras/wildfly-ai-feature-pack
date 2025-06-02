@@ -49,7 +49,7 @@ public class GeminiChatLanguageModelProviderRegistrar implements ChildResourceDe
             .setAllowedValues(THRESHOLDS)
             .setAllowExpression(true)
             .build();
-    public static final SimpleAttributeDefinition HARASSMENT = new SimpleAttributeDefinitionBuilder("harassement", ModelType.STRING, true)
+    public static final SimpleAttributeDefinition HARASSMENT = new SimpleAttributeDefinitionBuilder("harassment", ModelType.STRING, true)
             .setAllowedValues(THRESHOLDS)
             .setAllowExpression(true)
             .build();
