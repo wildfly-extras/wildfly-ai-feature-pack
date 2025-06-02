@@ -278,10 +278,10 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="harassement" type="threshold" use="optional">
+        <xs:attribute name="harassment" type="threshold" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    The threshold to filter harassement content.
+                    The threshold to filter harassment content.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
