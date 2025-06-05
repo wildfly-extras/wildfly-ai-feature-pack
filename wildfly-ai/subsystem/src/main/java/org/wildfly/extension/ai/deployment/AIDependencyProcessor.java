@@ -77,6 +77,7 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         Set<String> requiredEmbeddingStores = new HashSet<>();
         Set<String> requiredContentRetrievers = new HashSet<>();
         Set<String> requiredToolProviders = new HashSet<>();
+        Set<String> requiredChatMemoryProviders = new HashSet<>();
         for (AnnotationInstance annotation : annotations) {
             if (annotation.target().kind() == AnnotationTarget.Kind.FIELD) {
                 FieldInfo field = annotation.target().asField();
@@ -108,9 +109,14 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                             String toolProviderName = annotation.value().asString();
                             ROOT_LOGGER.debug("We need the ToolProvider called " + toolProviderName);
                             requiredToolProviders.add(toolProviderName);
+                        }else if (dev.langchain4j.memory.chat.ChatMemoryProvider.class.isAssignableFrom(fieldClass)) {
+                            ROOT_LOGGER.debug("We need the ChatMemoryProvider in the class " + field.declaringClass());
+                            String chatMemoryProviderName = annotation.value().asString();
+                            ROOT_LOGGER.debug("We need the ChatMemory called " + chatMemoryProviderName);
+                            requiredChatMemoryProviders.add(chatMemoryProviderName);
                         }
                     } catch (ClassNotFoundException ex) {
-                        ROOT_LOGGER.error("Coudln't get the class type for " + field.type().asClassType().name().toString() + " to be able to check what to inject", ex);
+                        ROOT_LOGGER.error("Couldn't get the class type for " + field.type().asClassType().name().toString() + " to be able to check what to inject", ex);
                     }
                 }
             }
@@ -139,6 +145,12 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                 ROOT_LOGGER.debug("We need the ToolProvider in the class " + annotation.target());
                 ROOT_LOGGER.debug("We need the ToolProvider called " + toolProviderName);
                 requiredToolProviders.add(toolProviderName);
+            }
+            String chatMemoryProviderName = getAnnotationValue(annotation, "chatMemoryProviderName");
+            if (!chatMemoryProviderName.isBlank()) {
+                ROOT_LOGGER.debug("We need the chatMemoryProvider in the class " + annotation.target());
+                ROOT_LOGGER.debug("We need the ChatMemoryProvider called " + chatMemoryProviderName);
+                requiredChatMemoryProviders.add(chatMemoryProviderName);
             }
         }
         if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty()) {
@@ -176,6 +188,12 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                 for (String toolProviderName : requiredToolProviders) {
                     deploymentUnit.addToAttachmentList(AIAttachments.TOOL_PROVIDER_KEYS, toolProviderName);
                     deploymentPhaseContext.addDeploymentDependency(Capabilities.TOOL_PROVIDER_CAPABILITY.getCapabilityServiceName(toolProviderName), AIAttachments.TOOL_PROVIDERS);
+                }
+            }
+            if (!requiredChatMemoryProviders.isEmpty()) {
+                for (String chatMemoryProviderName : requiredChatMemoryProviders) {
+                    deploymentUnit.addToAttachmentList(AIAttachments.CHAT_MEMORY_PROVIDER_KEYS, chatMemoryProviderName);
+                    deploymentPhaseContext.addDeploymentDependency(Capabilities.CHAT_MEMORY_PROVIDER_CAPABILITY.getCapabilityServiceName(chatMemoryProviderName), AIAttachments.CHAT_MEMORY_PROVIDERS);
                 }
             }
         }

@@ -8,6 +8,7 @@ import static io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig.PRODUCE
 import static io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig.getBeanPropertyName;
 import static org.wildfly.extension.ai.injection.AILogger.ROOT_LOGGER;
 
+import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
+import org.wildfly.extension.ai.injection.memory.WildFlyChatMemoryProviderConfig;
 import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
 
 public class WildFlyLLMConfig implements LLMConfig {
@@ -81,13 +83,22 @@ public class WildFlyLLMConfig implements LLMConfig {
                         throw ROOT_LOGGER.incorrectLLMConfiguration(beanName, expectedType.getName(), config.isStreaming());
                     }
                 };
-            }  else if (ContentRetriever.class.isAssignableFrom(expectedType)) {
+            } else if (ContentRetriever.class.isAssignableFrom(expectedType)) {
                 return (T) new ProducerFunction<Object>() {
                     @Override
                     public Object produce(Instance<Object> lookup, String beanName) {
                          ROOT_LOGGER.info("Bean " + beanName + " of type " + expectedType + " has been produced");
                          WildFlyContentRetrieverConfig config = (WildFlyContentRetrieverConfig) beanData.get(getBeanPropertyName(beanName, BEAN_VALUE));
                          return (T) config.createContentRetriever(lookup);
+                    }
+                };
+            } else if (ChatMemoryProvider.class.isAssignableFrom(expectedType)) {
+                return (T) new ProducerFunction<Object>() {
+                    @Override
+                    public Object produce(Instance<Object> lookup, String beanName) {
+                         ROOT_LOGGER.info("Bean " + beanName + " of type " + expectedType + " has been produced");
+                         WildFlyChatMemoryProviderConfig config = (WildFlyChatMemoryProviderConfig) beanData.get(getBeanPropertyName(beanName, BEAN_VALUE));
+                         return (T) config.createChatMemory(lookup);
                     }
                 };
             } else {

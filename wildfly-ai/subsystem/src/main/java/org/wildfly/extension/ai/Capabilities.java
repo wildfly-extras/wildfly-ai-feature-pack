@@ -9,11 +9,15 @@ import dev.langchain4j.service.tool.ToolProvider;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import org.jboss.as.controller.capability.RuntimeCapability;
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
+import org.wildfly.extension.ai.injection.memory.WildFlyChatMemoryProviderConfig;
 import org.wildfly.extension.ai.mcp.client.WildFlyMcpClient;
 import org.wildfly.service.descriptor.UnaryServiceDescriptor;
 import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
 
 public interface Capabilities {
+    UnaryServiceDescriptor<WildFlyChatMemoryProviderConfig> CHAT_MEMORY_PROVIDER_DESCRIPTOR = UnaryServiceDescriptor.of("org.wildfly.ai.chatmemory", WildFlyChatMemoryProviderConfig.class);
+    RuntimeCapability<Void> CHAT_MEMORY_PROVIDER_CAPABILITY = RuntimeCapability.Builder.of(CHAT_MEMORY_PROVIDER_DESCRIPTOR).setAllowMultipleRegistrations(true).build();
+
     UnaryServiceDescriptor<WildFlyChatModelConfig> CHAT_MODEL_PROVIDER_DESCRIPTOR = UnaryServiceDescriptor.of("org.wildfly.ai.chatmodel", WildFlyChatModelConfig.class);
     RuntimeCapability<Void> CHAT_MODEL_PROVIDER_CAPABILITY = RuntimeCapability.Builder.of(CHAT_MODEL_PROVIDER_DESCRIPTOR).setAllowMultipleRegistrations(true).build();
 

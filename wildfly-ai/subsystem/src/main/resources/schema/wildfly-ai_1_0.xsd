@@ -56,6 +56,13 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="chat-memories" type="chatMemoryProvidersType">
+                <xs:annotation>
+                    <xs:documentation>
+                        The chat memory providers.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="mcp" type="mcpType">
                 <xs:annotation>
                     <xs:documentation>
@@ -147,6 +154,23 @@
                 <xs:annotation>
                     <xs:documentation>
                         A content retriever retrieving content from a web search definition element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="chatMemoryProvidersType">
+        <xs:annotation>
+            <xs:documentation>
+                The chat memory providers.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="chat-memory" type="chatMemoryProviderType">
+                <xs:annotation>
+                    <xs:documentation>
+                        A chat memory provider.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -1461,6 +1485,48 @@
                     <xs:enumeration value="advanced"/>
                 </xs:restriction>
             </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="chatMemoryProviderType">
+        <xs:annotation>
+            <xs:documentation>
+                A chat memory provider.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of this provider.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="size" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                   The size of the memory
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="type" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The type of memory.
+                </xs:documentation>
+            </xs:annotation>
+             <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="MESSAGE"/>
+                    <xs:enumeration value="TOKEN"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="use-http-session" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    If the HTTP Session is use to manage the chat memory id.
+                </xs:documentation>
+            </xs:annotation>
         </xs:attribute>
     </xs:complexType>
 
