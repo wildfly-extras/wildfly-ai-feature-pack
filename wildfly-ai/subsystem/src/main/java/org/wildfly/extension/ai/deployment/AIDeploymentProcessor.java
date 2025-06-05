@@ -22,6 +22,7 @@ import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.as.weld.WeldCapability;
 import org.wildfly.extension.ai.injection.WildFlyBeanRegistry;
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
+import org.wildfly.extension.ai.injection.memory.WildFlyChatMemoryProviderConfig;
 import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
 
 
@@ -51,6 +52,9 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
             List<String> requiredContentRetrieverNames = deploymentUnit.getAttachmentList(AIAttachments.CONTENT_RETRIEVER_KEYS);
             List<ToolProvider> requiredToolProviders = deploymentUnit.getAttachmentList(AIAttachments.TOOL_PROVIDERS);
             List<String> requiredToolProviderNames = deploymentUnit.getAttachmentList(AIAttachments.TOOL_PROVIDER_KEYS);
+            List<WildFlyChatMemoryProviderConfig> requiredChatMemoryProviders = deploymentUnit.getAttachmentList(AIAttachments.CHAT_MEMORY_PROVIDERS);
+            List<String> requiredChatMemoryProviderNames = deploymentUnit.getAttachmentList(AIAttachments.CHAT_MEMORY_PROVIDER_KEYS);
+
             if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty()) {
                 if (!requiredChatModels.isEmpty()) {
                     for (int i = 0; i < requiredChatModels.size(); i++) {
@@ -75,6 +79,11 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
                 if (!requiredToolProviders.isEmpty()) {
                     for (int i = 0; i < requiredToolProviders.size(); i++) {
                         WildFlyBeanRegistry.registerToolProvider(requiredToolProviderNames.get(i), requiredToolProviders.get(i));
+                    }
+                }
+                if (!requiredChatMemoryProviders.isEmpty()) {
+                    for (int i = 0; i < requiredChatMemoryProviders.size(); i++) {
+                        WildFlyBeanRegistry.registerChatMemoryProvider(requiredChatMemoryProviderNames.get(i), requiredChatMemoryProviders.get(i));
                     }
                 }
                 for (Extension extension : WildFlyBeanRegistry.getCDIExtensions()) {

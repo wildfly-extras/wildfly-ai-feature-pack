@@ -28,6 +28,7 @@ import org.wildfly.extension.ai.embedding.store.WeaviateEmbeddingStoreProviderRe
 import org.wildfly.extension.ai.mcp.client.McpClientSseProviderRegistrar;
 import org.wildfly.extension.ai.mcp.client.McpClientStdioProviderRegistrar;
 import org.wildfly.extension.ai.mcp.client.McpToolProviderProviderRegistrar;
+import org.wildfly.extension.ai.memory.ChatMemoryProviderRegistrar;
 import org.wildfly.extension.ai.rag.retriever.Neo4JContentRetrieverProviderRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrationContext;
@@ -57,6 +58,7 @@ class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
                 })
                 .build();
         ManagementResourceRegistrar.of(descriptor).register(registration);
+        new ChatMemoryProviderRegistrar(RESOLVER).register(registration, context);
         new GeminiChatLanguageModelProviderRegistrar(RESOLVER).register(registration, context);
         new GithubModelChatLanguageModelProviderRegistrar(RESOLVER).register(registration, context);
         new OllamaChatLanguageModelProviderRegistrar(RESOLVER).register(registration, context);

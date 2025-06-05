@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+~ Copyright The WildFly Authors
+~ SPDX-License-Identifier: Apache-2.0
+-->
+<layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="chat-memory-provider">
+    <props>
+        <prop name="org.wildfly.rule.configuration" value="https://raw.geminiusercontent.com/wildfly-extras/wildfly-ai-feature-pack/glow-layer-doc/gemini-chat-model/env.yaml"/>
+        <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
+        <prop name="org.wildfly.rule.add-on" value="ai-llm,chat-memory-provider"/>
+        <prop name="org.wildfly.rule.add-on-description" value="Chat Memory Provider to keep track of the exchanges with a LLM"/>
+        <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.memory.chat.ChatMemoryProvider,jakarta.inject.Named[value=chat-memory]"/>
+        <prop name="org.wildfly.rule.annotation.field.value" value="io.smallrye.llm.spi.RegisterAIService,chatMemoryProviderName=chat-memory"/>
+    </props>
+    <dependencies>
+        <layer name="ai"/>
+    </dependencies>
+    <feature spec="subsystem.ai">
+        <feature spec="subsystem.ai.chat-memory">
+            <param name="chat-memory" value="chat-memory"/>
+            <param name="use-http-session" value="${org.wildfly.ai.chat-memory.session,env.CHAT_MEMORY_SESSION:true}"/>
+            <param name="type" value="${org.wildfly.ai.chat-memory.type,env.CHAT_MEMORY_TYPE:MESSAGE}"/>
+            <param name="size" value="${org.wildfly.ai.chat-memory.size,env.CHAT_MEMORY_SIZE:5}"/>
+        </feature>
+    </feature>
+</layer-spec>

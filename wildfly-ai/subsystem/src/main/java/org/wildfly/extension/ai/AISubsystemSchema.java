@@ -30,6 +30,7 @@ import org.wildfly.extension.ai.embedding.store.WeaviateEmbeddingStoreProviderRe
 import org.wildfly.extension.ai.mcp.client.McpToolProviderProviderRegistrar;
 import org.wildfly.extension.ai.mcp.client.McpClientSseProviderRegistrar;
 import org.wildfly.extension.ai.mcp.client.McpClientStdioProviderRegistrar;
+import org.wildfly.extension.ai.memory.ChatMemoryProviderRegistrar;
 import org.wildfly.extension.ai.rag.retriever.Neo4JContentRetrieverProviderRegistrar;
 
 /**
@@ -58,6 +59,7 @@ enum AISubsystemSchema implements SubsystemResourceXMLSchema<AISubsystemSchema> 
                 .addElement(this.embeddingModels())
                 .addElement(this.embeddingStores())
                 .addElement(this.contentRetrievers())
+                .addElement(this.chatMemories())
                 .addElement(this.mcp())
                 .build();
         return this.factory.subsystemElement(AISubsystemRegistrar.REGISTRATION)
@@ -125,6 +127,17 @@ enum AISubsystemSchema implements SubsystemResourceXMLSchema<AISubsystemSchema> 
                 ).build();
     }
 
+
+    private ResourceXMLElement chatMemories() {
+        return this.factory.element(this.resolve("chat-memories"))
+                .withContent(
+                        this.factory
+                                .choice()
+                                .withCardinality(XMLCardinality.Unbounded.OPTIONAL)
+                                .addElement(this.factory.namedElement(ChatMemoryProviderRegistrar.REGISTRATION).addAttributes(ChatMemoryProviderRegistrar.ATTRIBUTES).build())
+                                .build()
+                ).build();
+    }
     private ResourceXMLElement mcp() {
         return this.factory.element(this.resolve("mcp"))
                 .withContent(

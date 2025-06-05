@@ -10,6 +10,7 @@ import dev.langchain4j.store.embedding.EmbeddingStore;
 import org.jboss.as.server.deployment.AttachmentKey;
 import org.jboss.as.server.deployment.AttachmentList;
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
+import org.wildfly.extension.ai.injection.memory.WildFlyChatMemoryProviderConfig;
 import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
 
 public class AIAttachments {
@@ -24,4 +25,6 @@ public class AIAttachments {
     static final AttachmentKey<AttachmentList<String>> CONTENT_RETRIEVER_KEYS = AttachmentKey.createList(String.class);
     static final AttachmentKey<AttachmentList<ToolProvider>> TOOL_PROVIDERS = AttachmentKey.createList(ToolProvider.class);
     static final AttachmentKey<AttachmentList<String>> TOOL_PROVIDER_KEYS = AttachmentKey.createList(String.class);
+    static final AttachmentKey<AttachmentList<WildFlyChatMemoryProviderConfig>> CHAT_MEMORY_PROVIDERS = AttachmentKey.createList(WildFlyChatMemoryProviderConfig.class);
+    static final AttachmentKey<AttachmentList<String>> CHAT_MEMORY_PROVIDER_KEYS = AttachmentKey.createList(String.class);
 }
