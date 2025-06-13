@@ -5,6 +5,9 @@
 -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="in-memory-embedding-model-all-minilm-l6-v2-q">
     <props>
+        <prop name="org.wildfly.category" value="AI"/>
+        <prop name="org.wildfly.description" value="Support for a quantized sentenceTransformers all-MiniLM-L6-v2 embedding model that runs within your Java application's process."/>
+        <prop name="org.wildfly.stability" value="experimental"/>
         <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
         <prop name="org.wildfly.rule.add-on" value="ai-embedding-model,in-memory-embedding-model-all-minilm-l6-v2-q"/>
         <prop name="org.wildfly.rule.add-on-description" value="Quantized SentenceTransformers all-MiniLM-L6-v2 embedding model that runs within your Java application's process."/>

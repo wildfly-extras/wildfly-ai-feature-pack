@@ -5,6 +5,9 @@
 -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="in-memory-embedding-model-bge-small-en-q">
     <props>
+        <prop name="org.wildfly.category" value="AI"/>
+        <prop name="org.wildfly.description" value="Support for quantized BAAI bge-small-en embedding model that runs within your Java application's process."/>
+        <prop name="org.wildfly.stability" value="experimental"/>
         <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
         <prop name="org.wildfly.rule.add-on" value="ai-embedding-model,in-memory-embedding-model-bge-small-en-q"/>
         <prop name="org.wildfly.rule.add-on-description" value="Quantized BAAI bge-small-en embedding model that runs within your Java application's process."/>

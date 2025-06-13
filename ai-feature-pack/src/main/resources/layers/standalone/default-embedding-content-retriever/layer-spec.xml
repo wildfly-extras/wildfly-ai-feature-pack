@@ -5,7 +5,10 @@
 -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="default-embedding-content-retriever">
     <props>
-        <prop name="org.wildfly.rule.configuration" value="https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/tags/0.5.0/doc/glow-layer-doc/default-embedding-content-retriever/env.yaml"/>
+        <prop name="org.wildfly.category" value="AI"/>
+        <prop name="org.wildfly.description" value="Defining a default in-memory content retriever for RAG"/>
+        <prop name="org.wildfly.stability" value="experimental"/>
+        <prop name="org.wildfly.rule.configuration" value="https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/heads/main/doc/glow-layer-doc/default-embedding-content-retriever/env.yaml"/>
         <prop name="org.wildfly.rule.add-on-depends-on" value="all-dependencies"/>
         <prop name="org.wildfly.rule.add-on" value="ai-content-retriever,default-embedding-content-retriever"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use embedding content retriever"/>

@@ -5,6 +5,9 @@
   -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="mcp">
     <props>
+        <prop name="org.wildfly.category" value="MCP"/>
+        <prop name="org.wildfly.description" value="Support for exposing MCP tools."/>
+        <prop name="org.wildfly.stability" value="experimental"/>
         <prop name="org.wildfly.rule.class" value="org.wildfly.mcp.api.*"/>
         <prop name="org.wildfly.rule.annotations" value="org.wildfly.mcp.api.*"/>
     </props>
