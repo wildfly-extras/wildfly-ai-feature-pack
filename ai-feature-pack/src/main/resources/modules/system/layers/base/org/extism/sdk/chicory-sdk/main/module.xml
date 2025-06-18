@@ -10,6 +10,7 @@
     </properties>
 
     <resources>
+        <artifact name="${com.dylibso.chicory:compiler}"/>
         <artifact name="${com.dylibso.chicory:log}"/>
         <artifact name="${com.dylibso.chicory:runtime}"/>
         <artifact name="${com.dylibso.chicory:wasi}"/>
@@ -22,6 +23,7 @@
         <module name="com.fasterxml.jackson.core.jackson-databind"/>
         <module name="java.logging"/>
         <module name="java.net.http"/>
+        <module name="asm.asm-commons"/>
     </dependencies>
 
 </module>
