@@ -5,6 +5,7 @@
 package org.wildfly.extension.ai.deployment;
 
 import static org.jboss.as.weld.Capabilities.WELD_CAPABILITY_NAME;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.AILogger.ROOT_LOGGER;
 import static org.wildfly.extension.ai.Capabilities.OPENTELEMETRY_CAPABILITY_NAME;
 
@@ -13,18 +14,20 @@ import dev.langchain4j.service.tool.ToolProvider;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import jakarta.enterprise.inject.spi.Extension;
 import java.util.List;
+import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.capability.CapabilityServiceSupport;
 import org.jboss.as.server.deployment.Attachments;
 import org.jboss.as.server.deployment.DeploymentPhaseContext;
+import org.jboss.as.server.deployment.DeploymentResourceSupport;
 import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.as.weld.WeldCapability;
+import org.wildfly.extension.ai.AIModelDeploymentRegistrar;
 import org.wildfly.extension.ai.injection.WildFlyBeanRegistry;
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.extension.ai.injection.memory.WildFlyChatMemoryProviderConfig;
 import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
-
 
 public class AIDeploymentProcessor implements DeploymentUnitProcessor {
 
@@ -38,7 +41,7 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
                 ROOT_LOGGER.cdiRequired();
             }
             List<WildFlyChatModelConfig> requiredChatModels = deploymentUnit.getAttachmentList(AIAttachments.CHAT_MODELS);
-            if (! support.hasCapability(OPENTELEMETRY_CAPABILITY_NAME)) {
+            if (!support.hasCapability(OPENTELEMETRY_CAPABILITY_NAME)) {
                 ROOT_LOGGER.info("No opentelemetry support available");
             } else {
                 ROOT_LOGGER.debug("OpenTelemetry is active for AI");
@@ -55,10 +58,18 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
             List<WildFlyChatMemoryProviderConfig> requiredChatMemoryProviders = deploymentUnit.getAttachmentList(AIAttachments.CHAT_MEMORY_PROVIDERS);
             List<String> requiredChatMemoryProviderNames = deploymentUnit.getAttachmentList(AIAttachments.CHAT_MEMORY_PROVIDER_KEYS);
 
+            final DeploymentResourceSupport deploymentResourceSupport = deploymentUnit.getAttachment(org.jboss.as.server.deployment.Attachments.DEPLOYMENT_RESOURCE_SUPPORT);
+
             if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty()) {
                 if (!requiredChatModels.isEmpty()) {
                     for (int i = 0; i < requiredChatModels.size(); i++) {
                         WildFlyBeanRegistry.registerChatModel(chatLanguageModelNames.get(i), requiredChatModels.get(i));
+                        try {
+                            deploymentResourceSupport.getDeploymentSubModel("ai", PathElement.pathElement(AIModelDeploymentRegistrar.NAME, chatLanguageModelNames.get(i)))
+                                    .get(STREAMING.getName()).set(requiredChatModels.get(i).isStreaming());
+                        } catch (Exception e) {
+                            ROOT_LOGGER.error(e);
+                        }
                     }
                 }
                 if (!requiredEmbeddingModels.isEmpty()) {

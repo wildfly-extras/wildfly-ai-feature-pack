@@ -34,7 +34,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <version.org.wildfly>36.0.1.Final</version.org.wildfly>
         <version.org.wildfly.core>28.0.0.Final</version.org.wildfly.core>
-        <version.org.wildfly.common>1.7.0.Final</version.org.wildfly.common>    
+        <version.org.wildfly.common>1.7.0.Final</version.org.wildfly.common>
         <version.org.wildfly.galleon-plugins>7.3.1.Final</version.org.wildfly.galleon-plugins>
 
         <version.ai.djl>0.31.1</version.ai.djl>
