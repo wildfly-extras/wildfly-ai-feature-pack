@@ -4,6 +4,8 @@
  */
 package org.wildfly.extension.ai;
 
+import static org.jboss.as.controller.PathElement.pathElement;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEPLOYMENT;
 import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.SubsystemRegistration;
 import org.jboss.as.controller.SubsystemResourceRegistration;
@@ -40,7 +42,7 @@ import org.wildfly.subsystem.resource.SubsystemResourceDefinitionRegistrar;
  */
 class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
 
-    static final String NAME = "ai"; 
+    public static final String NAME = "ai"; 
     static final SubsystemResourceRegistration REGISTRATION = SubsystemResourceRegistration.of(NAME);
     static final ParentResourceDescriptionResolver RESOLVER = new SubsystemResourceDescriptionResolver(NAME, AISubsystemRegistrar.class);
     private static final int PHASE_DEPENDENCIES_AI = 0x1930;
@@ -75,6 +77,9 @@ class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
         new McpToolProviderProviderRegistrar(RESOLVER).register(registration, context);
         new McpClientSseProviderRegistrar(RESOLVER).register(registration, context);
         new McpClientStdioProviderRegistrar(RESOLVER).register(registration, context);
+        ParentResourceDescriptionResolver deploymentResolver = RESOLVER.createChildResolver(pathElement(DEPLOYMENT));
+        ManagementResourceRegistration deploymentRegistration = parent.registerDeploymentModel(ResourceDefinition.builder(REGISTRATION, deploymentResolver).asRuntime().asNonFeature().build());
+        new AIModelDeploymentRegistrar(deploymentResolver).register(deploymentRegistration, context);
         return registration;
     }
 }
