@@ -50,6 +50,7 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         "io.smallrye.llm",
         "org.wildfly.extension.ai.injection"
     };
+
     @Override
     public void deploy(DeploymentPhaseContext deploymentPhaseContext) throws DeploymentUnitProcessingException {
         DeploymentUnit deploymentUnit = deploymentPhaseContext.getDeploymentUnit();
@@ -104,12 +105,12 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                             String contentRetrieverName = annotation.value().asString();
                             ROOT_LOGGER.debug("We need the ContentRetriever called " + contentRetrieverName);
                             requiredContentRetrievers.add(contentRetrieverName);
-                        } else if ( dev.langchain4j.service.tool.ToolProvider.class.isAssignableFrom(fieldClass)) {
+                        } else if (dev.langchain4j.service.tool.ToolProvider.class.isAssignableFrom(fieldClass)) {
                             ROOT_LOGGER.debug("We need the ToolProvider in the class " + field.declaringClass());
                             String toolProviderName = annotation.value().asString();
                             ROOT_LOGGER.debug("We need the ToolProvider called " + toolProviderName);
                             requiredToolProviders.add(toolProviderName);
-                        }else if (dev.langchain4j.memory.chat.ChatMemoryProvider.class.isAssignableFrom(fieldClass)) {
+                        } else if (dev.langchain4j.memory.chat.ChatMemoryProvider.class.isAssignableFrom(fieldClass)) {
                             ROOT_LOGGER.debug("We need the ChatMemoryProvider in the class " + field.declaringClass());
                             String chatMemoryProviderName = annotation.value().asString();
                             ROOT_LOGGER.debug("We need the ChatMemory called " + chatMemoryProviderName);
@@ -122,13 +123,25 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
             }
         }
         for (AnnotationInstance annotation : serviceAnnotations) {
-            String chatLanguageModelName = getAnnotationValue(annotation, "chatLanguageModelName");
+            String chatLanguageModelName = getAnnotationValue(annotation, "chatModelName");
+            if (!chatLanguageModelName.isBlank()) {
+                ROOT_LOGGER.debug("We need the ChatModel in the class " + annotation.target());
+                ROOT_LOGGER.debug("We need the ChatModel called " + chatLanguageModelName);
+                requiredChatModels.add(chatLanguageModelName);
+            }
+            chatLanguageModelName = getAnnotationValue(annotation, "chatLanguageModelName");
             if (!chatLanguageModelName.isBlank()) {
                 ROOT_LOGGER.debug("We need the ChatModel in the class " + annotation.target());
                 ROOT_LOGGER.debug("We need the ChatModel called " + chatLanguageModelName);
                 requiredChatModels.add(chatLanguageModelName);
             }
             chatLanguageModelName = getAnnotationValue(annotation, "streamingChatModelName");
+            if (!chatLanguageModelName.isBlank()) {
+                ROOT_LOGGER.debug("We need the StreamingChatModel in the class " + annotation.target());
+                ROOT_LOGGER.debug("We need the StreamingChatModel called " + chatLanguageModelName);
+                requiredChatModels.add(chatLanguageModelName);
+            }
+            chatLanguageModelName = getAnnotationValue(annotation, "streamingChatLanguageModelName");
             if (!chatLanguageModelName.isBlank()) {
                 ROOT_LOGGER.debug("We need the StreamingChatModel in the class " + annotation.target());
                 ROOT_LOGGER.debug("We need the StreamingChatModel called " + chatLanguageModelName);
