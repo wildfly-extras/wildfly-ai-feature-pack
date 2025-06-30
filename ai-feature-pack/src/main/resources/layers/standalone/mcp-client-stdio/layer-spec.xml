@@ -21,7 +21,7 @@
             <param name="mcp-tool-provider" value="mcp-stdio"/>
             <param name="mcp-clients" value="[mcp-stdio]"/>
         </feature>
-        <feature spec="subsystem.ai.mcp-stdio-client">
+        <feature spec="subsystem.ai.mcp-client-stdio">
             <param name="mcp-client-stdio" value="mcp-stdio"/>
             <param name="cmd" value="java"/>
             <param name="args" value="[]"/>
