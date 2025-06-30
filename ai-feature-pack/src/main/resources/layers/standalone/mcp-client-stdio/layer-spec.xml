@@ -23,6 +23,8 @@
         </feature>
         <feature spec="subsystem.ai.mcp-stdio-client">
             <param name="mcp-client-stdio" value="mcp-stdio"/>
+            <param name="cmd" value="java"/>
+            <param name="args" value="[]"/>
         </feature>
     </feature>
 </layer-spec>
