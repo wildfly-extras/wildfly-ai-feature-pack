@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.wildfly</groupId>
         <artifactId>wildfly-ai</artifactId>
-        <version>0.7.0</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>wildfly-ai-subsystem</artifactId>
     <name>WildFly: AI Subsystem</name>
