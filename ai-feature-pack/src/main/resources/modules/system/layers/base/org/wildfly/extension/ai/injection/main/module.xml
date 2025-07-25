@@ -12,7 +12,7 @@
     </properties>
 
     <resources>
-        <artifact name="${org.wildfly:wildfly-ai-injection}"/>
+        <artifact name="${org.wildfly.generative-ai:wildfly-ai-injection}"/>
         <artifact name="${io.smallrye.llm:smallrye-llm-langchain4j-telemetry}"/>
     </resources>
     <provides>

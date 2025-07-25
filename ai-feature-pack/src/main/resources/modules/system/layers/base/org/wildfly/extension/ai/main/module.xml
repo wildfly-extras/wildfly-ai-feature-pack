@@ -12,7 +12,7 @@
     </properties>
 
     <resources>
-        <artifact name="${org.wildfly:wildfly-ai-subsystem}"/>
+        <artifact name="${org.wildfly.generative-ai:wildfly-ai-subsystem}"/>
     </resources>
 
     <dependencies>
