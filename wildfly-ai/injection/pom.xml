@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.wildfly</groupId>
+        <groupId>org.wildfly.generative-ai</groupId>
         <artifactId>wildfly-ai</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
@@ -84,7 +84,7 @@
             <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.wildfly</groupId>
             <artifactId>wildfly-weld-common</artifactId>
         </dependency>
         <!-- CDI -->

@@ -6,7 +6,7 @@
         <artifactId>jboss-parent</artifactId>
         <version>49</version>
     </parent>
-    <groupId>org.wildfly</groupId>
+    <groupId>org.wildfly.generative-ai</groupId>
     <artifactId>wildfly-ai-feature-pack-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -74,7 +74,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.wildfly</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>wildfly-ai-feature-pack</artifactId>
                 <version>${project.version}</version>
                 <type>pom</type>
@@ -93,7 +93,7 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.wildfly</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>wildfly-ai-injection</artifactId>
                 <version>${project.version}</version>
                 <exclusions>
@@ -104,7 +104,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.wildfly</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>wildfly-ai-subsystem</artifactId>
                 <version>${project.version}</version>
                 <exclusions>
@@ -115,7 +115,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.wildfly</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>wildfly-mcp-api</artifactId>
                 <version>${project.version}</version>
                 <exclusions>
@@ -126,7 +126,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.wildfly</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>wildfly-mcp-injection</artifactId>
                 <version>${project.version}</version>
                 <exclusions>
@@ -137,7 +137,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.wildfly</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>wildfly-mcp-subsystem</artifactId>
                 <version>${project.version}</version>
                 <exclusions>
@@ -148,7 +148,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.wildfly</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>wildfly-wasm-api</artifactId>
                 <version>${project.version}</version>
                 <exclusions>
@@ -159,7 +159,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.wildfly</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>wildfly-wasm-injection</artifactId>
                 <version>${project.version}</version>
                 <exclusions>
@@ -170,7 +170,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.wildfly</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>wildfly-wasm-subsystem</artifactId>
                 <version>${project.version}</version>
                 <exclusions>

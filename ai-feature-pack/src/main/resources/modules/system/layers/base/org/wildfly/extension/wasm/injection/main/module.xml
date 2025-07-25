@@ -12,8 +12,8 @@
     </properties>
 
     <resources>
-        <artifact name="${org.wildfly:wildfly-wasm-injection}"/>
-        <artifact name="${org.wildfly:wildfly-wasm-api}"/>
+        <artifact name="${org.wildfly.generative-ai:wildfly-wasm-injection}"/>
+        <artifact name="${org.wildfly.generative-ai:wildfly-wasm-api}"/>
     </resources>
     <dependencies>
         <module name="io.smallrye.jandex"/>
