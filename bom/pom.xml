@@ -6,7 +6,7 @@
         <artifactId>wildfly-ai-feature-pack-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <groupId>org.wildfly</groupId>
+    <groupId>org.wildfly.generative-ai</groupId>
     <artifactId>wildfly-ai-bom</artifactId>
     <packaging>pom</packaging>
 
@@ -15,7 +15,7 @@
     <description>Bill of Materials POM for getting full, complete set of compatible versions of WildFly AI Feature Pack modules</description>
 
     <properties>
-        <version.dev.langchain4j>1.0.0-beta2</version.dev.langchain4j>
+        <version.dev.langchain4j>1.1.0</version.dev.langchain4j>
         <version.io.smallrye.llm>0.0.6</version.io.smallrye.llm>
         <version.org.wildfly>36.0.1.Final</version.org.wildfly>
     </properties>
