@@ -10,7 +10,7 @@
         <prop name="org.wildfly.rule.add-on" value="ai-llm,chat-memory-provider"/>
         <prop name="org.wildfly.rule.add-on-description" value="Chat Memory Provider to keep track of the exchanges with a LLM"/>
         <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.memory.chat.ChatMemoryProvider,jakarta.inject.Named[value=chat-memory]"/>
-        <prop name="org.wildfly.rule.annotation.field.value" value="io.smallrye.llm.spi.RegisterAIService,chatMemoryProviderName=chat-memory"/>
+        <prop name="org.wildfly.rule.annotation.field.value" value="dev.langchain4j.cdi.spi.RegisterAIService,chatMemoryProviderName=chat-memory"/>
     </props>
     <dependencies>
         <layer name="ai"/>

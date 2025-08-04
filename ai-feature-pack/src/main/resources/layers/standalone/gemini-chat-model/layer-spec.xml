@@ -10,7 +10,7 @@
         <prop name="org.wildfly.rule.add-on" value="ai-llm,gemini-chat-model"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use Github Models API for LLM interactions"/>
         <prop name="org.wildfly.rule.annotated.type" value="dev.langchain4j.model.chat.ChatModel,jakarta.inject.Named[value=gemini]"/>
-        <prop name="org.wildfly.rule.annotation.field.value" value="io.smallrye.llm.spi.RegisterAIService,chatModelName=gemini"/>
+        <prop name="org.wildfly.rule.annotation.field.value" value="dev.langchain4j.cdi.spi.RegisterAIService,chatModelName=gemini"/>
     </props>
     <dependencies>
         <layer name="ai"/>

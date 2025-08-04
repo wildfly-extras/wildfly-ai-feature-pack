@@ -9,7 +9,7 @@ import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILI
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_MODEL_PROVIDER_CAPABILITY;
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAPABILITY;
 
-import io.smallrye.llm.spi.RegisterAIService;
+import dev.langchain4j.cdi.spi.RegisterAIService;
 import jakarta.inject.Named;
 import java.util.HashSet;
 import java.util.List;

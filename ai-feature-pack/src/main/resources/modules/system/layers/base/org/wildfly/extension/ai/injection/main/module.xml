@@ -13,10 +13,10 @@
 
     <resources>
         <artifact name="${org.wildfly.generative-ai:wildfly-ai-injection}"/>
-        <artifact name="${io.smallrye.llm:smallrye-llm-langchain4j-telemetry}"/>
+        <artifact name="${dev.langchain4j.cdi:langchain4j-cdi-telemetry}"/>
     </resources>
     <provides>
-        <service name="io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig">
+        <service name="dev.langchain4j.cdi.core.config.spi.LLMConfig">
             <with-class name="org.wildfly.extension.ai.injection.WildFlyLLMConfig"/>
         </service>
     </provides>
@@ -31,7 +31,7 @@
         <module name="dev.langchain4j.neo4j" optional="true"/>
         <module name="dev.langchain4j.ollama" optional="true"/>
         <module name="dev.langchain4j.openai" optional="true"/>
-        <module name="io.smallrye.llm"/>
+        <module name="dev.langchain4j.cdi"/>
         <module name="jakarta.enterprise.api"/>
         <module name="jakarta.servlet.api"/>
         <module name="org.jboss.as.controller"/>

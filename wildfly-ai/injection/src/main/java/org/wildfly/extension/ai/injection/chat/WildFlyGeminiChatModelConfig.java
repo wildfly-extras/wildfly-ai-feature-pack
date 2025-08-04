@@ -75,7 +75,6 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
                     .apiKey(key)
                     .includeCodeExecutionOutput(includeCodeExecutionOutput)
                     .logRequestsAndResponses(logRequestsAndResponses)
-                    .maxRetries(5)
                     .maxOutputTokens(maxOutputTokens)
                     .modelName(modelName)
                     .stopSequences(stopSequences)
