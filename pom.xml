@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>49</version>
+        <version>50.beta1</version>
     </parent>
     <groupId>org.wildfly.generative-ai</groupId>
     <artifactId>wildfly-ai-feature-pack-parent</artifactId>
@@ -26,14 +26,15 @@
         <connection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</connection>
         <developerConnection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</developerConnection>
         <url>https://github.com/wildfly-extras/wildfly-ai-feature-pack</url>
-        <tag>0.5.0</tag>
+        <tag>0.7.0</tag>
     </scm>
 
     <properties>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
-        <version.org.wildfly>36.0.1.Final</version.org.wildfly>
-        <version.org.wildfly.core>28.0.0.Final</version.org.wildfly.core>
+        <maven.compiler.release>17</maven.compiler.release>
+        <version.org.wildfly>37.0.0.Final</version.org.wildfly>
+        <version.org.wildfly.core>29.0.0.Final</version.org.wildfly.core>
         <version.org.wildfly.common>1.7.0.Final</version.org.wildfly.common>
         <version.org.wildfly.galleon-plugins>7.3.1.Final</version.org.wildfly.galleon-plugins>
 
