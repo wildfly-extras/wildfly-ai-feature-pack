@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.wildfly.generative-ai</groupId>
         <artifactId>wildfly-wasm</artifactId>
-        <version>0.7.1</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <name>WildFly WASM Server API</name>
     <artifactId>wildfly-wasm-api</artifactId>
