@@ -221,3 +221,14 @@ Wasm binaries can be defined in the `wasm subsystem` to be injected as `org.wild
 
 You may want to take a look at [wildfly-weather](https://github.com/ehsavoie/wildfly-weather/compare/wasm_subsystem) example.
 
+
+Releasing
+==========================
+
+```
+mvn release:prepare 
+mvn release:perform -Pjboss-release
+git push origin main
+git push origin --tags
+nxrm3:staging-move
+```
