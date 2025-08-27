@@ -5,7 +5,7 @@
 -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="gemini-streaming-chat-model">
     <props>
-        <prop name="org.wildfly.rule.configuration" value="https://raw.geminiusercontent.com/wildfly-extras/wildfly-ai-feature-pack/glow-layer-doc/gemini-streaming-chat-model/env.yaml"/>
+        <prop name="org.wildfly.rule.configuration" value="https://raw.githubusercontent.com/wildfly-extras/wildfly-ai-feature-pack/refs/heads/main/doc/glow-layer-doc/gemini-streaming-chat-model/env.yaml"/>
         <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
         <prop name="org.wildfly.rule.add-on" value="ai-llm,gemini-chat-model"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use Github Models for LLM interactions"/>
@@ -22,7 +22,7 @@
         <feature spec="subsystem.ai.gemini-chat-model">
             <param name="gemini-chat-model" value="streaming-gemini"/>
             <param name="api-key" value="${env.GEMINI_API_KEY:YOUR_KEY_VALUE}"/>
-            <param name="model-name" value="${org.wildfly.ai.gemini.chat.model.name,env.GEMINI_CHAT_MODEL_NAME:gemini-1.5-flash}"/>
+            <param name="model-name" value="${org.wildfly.ai.gemini.chat.model.name,env.GEMINI_CHAT_MODEL_NAME:gemini-2.5-flash}"/>
             <param name="log-requests-responses" value="${org.wildfly.ai.gemini.chat.log,env.GEMINI_CHAT_LOG:true}"/>
             <param name="streaming" value="true"/>
         </feature>
