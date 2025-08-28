@@ -27,7 +27,7 @@
         <connection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</connection>
         <developerConnection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</developerConnection>
         <url>https://github.com/wildfly-extras/wildfly-ai-feature-pack</url>
-        <tag>0.7.0</tag>
+        <tag>0.7.1</tag>
     </scm>
 
     <developers>
@@ -84,6 +84,7 @@
         <!-- Nexus deployment settings -->
         <nexus.staging.tag>ai-feature-pack-${project.version}</nexus.staging.tag>
         <nexus.repository.staging>wildfly-extras-staging</nexus.repository.staging>
+        <nexus.repository.release>wildfly-extras</nexus.repository.release>
     </properties>
 
     <dependencyManagement>
