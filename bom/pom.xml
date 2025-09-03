@@ -15,9 +15,9 @@
     <description>Bill of Materials POM for getting full, complete set of compatible versions of WildFly AI Feature Pack modules</description>
 
     <properties>
-        <version.dev.langchain4j>1.1.0</version.dev.langchain4j>
-        <version.io.smallrye.llm>0.0.6</version.io.smallrye.llm>
-        <version.org.wildfly>36.0.1.Final</version.org.wildfly>
+        <version.dev.langchain4j>1.4.0</version.dev.langchain4j>
+        <version.dev.langchain4j.cdi>0.0.3</version.dev.langchain4j.cdi>
+        <version.org.wildfly>37.0.0.Final</version.org.wildfly>
     </properties>
 
     <dependencyManagement>
@@ -61,9 +61,9 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>io.smallrye.llm</groupId>
-                <artifactId>smallrye-llm-langchain4j-core</artifactId>
-                <version>${version.io.smallrye.llm}</version>
+                <groupId>dev.langchain4j.cdi</groupId>
+                <artifactId>langchain4j-cdi-core</artifactId>
+                <version>${version.dev.langchain4j.cdi}</version>
                 <scope>provided</scope>
                 <exclusions>
                     <exclusion>

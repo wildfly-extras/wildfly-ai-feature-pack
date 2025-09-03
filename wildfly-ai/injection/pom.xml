@@ -60,12 +60,12 @@
         </dependency>
         <!-- CDI -->
         <dependency>
-            <groupId>io.smallrye.llm</groupId>
-            <artifactId>smallrye-llm-langchain4j-core</artifactId>
+            <groupId>dev.langchain4j.cdi</groupId>
+            <artifactId>langchain4j-cdi-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.smallrye.llm</groupId>
-            <artifactId>smallrye-llm-langchain4j-portable-extension</artifactId>
+            <groupId>dev.langchain4j.cdi</groupId>
+            <artifactId>langchain4j-cdi-portable-ext</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.annotation</groupId>

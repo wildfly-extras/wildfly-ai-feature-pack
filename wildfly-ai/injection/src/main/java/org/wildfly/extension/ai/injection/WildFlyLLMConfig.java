@@ -4,8 +4,8 @@
  */
 package org.wildfly.extension.ai.injection;
 
-import static io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig.PRODUCER;
-import static io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig.getBeanPropertyName;
+import static dev.langchain4j.cdi.core.config.spi.LLMConfig.PRODUCER;
+import static dev.langchain4j.cdi.core.config.spi.LLMConfig.getBeanPropertyName;
 import static org.wildfly.extension.ai.injection.AILogger.ROOT_LOGGER;
 
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
@@ -13,8 +13,8 @@ import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
-import io.smallrye.llm.core.langchain4j.core.config.spi.LLMConfig;
-import io.smallrye.llm.core.langchain4j.core.config.spi.ProducerFunction;
+import dev.langchain4j.cdi.core.config.spi.LLMConfig;
+import dev.langchain4j.cdi.core.config.spi.ProducerFunction;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.Instance.Handle;

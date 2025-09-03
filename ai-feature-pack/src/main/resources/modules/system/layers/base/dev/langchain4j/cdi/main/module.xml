@@ -3,15 +3,15 @@
   ~ Copyright The WildFly Authors
   ~ SPDX-License-Identifier: Apache-2.0
   -->
-<module name="io.smallrye.llm" xmlns="urn:jboss:module:1.9">
+<module name="dev.langchain4j.cdi" xmlns="urn:jboss:module:1.9">
 
     <properties>
         <property name="jboss.api" value="private"/>
     </properties>
 
     <resources>
-        <artifact name="${io.smallrye.llm:smallrye-llm-langchain4j-core}"/>
-        <artifact name="${io.smallrye.llm:smallrye-llm-langchain4j-portable-extension}"/>
+        <artifact name="${dev.langchain4j.cdi:langchain4j-cdi-core}"/>
+        <artifact name="${dev.langchain4j.cdi:langchain4j-cdi-portable-ext}"/>
     </resources>
 
     <exports>

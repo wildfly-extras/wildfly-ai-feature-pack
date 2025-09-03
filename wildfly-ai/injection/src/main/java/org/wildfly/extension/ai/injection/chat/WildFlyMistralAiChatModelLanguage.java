@@ -4,6 +4,7 @@
  */
 package org.wildfly.extension.ai.injection.chat;
 
+import static dev.langchain4j.model.chat.request.ResponseFormat.JSON;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
@@ -47,7 +48,7 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
                     .timeout(connectTimeOut)
                     .topP(topP);
             if (isJson) {
-                builder.responseFormat("json_object");
+                builder.responseFormat(JSON);
             }
             if (observable) {
 //            builder.listeners(Collections.singletonList(new OpenTelemetryChatModelListener()));
@@ -73,7 +74,7 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
                     .timeout(connectTimeOut)
                     .topP(topP);
             if (isJson) {
-                builder.responseFormat("json_object");
+                builder.responseFormat(JSON);
             }
             instance = builder.build();
         }
