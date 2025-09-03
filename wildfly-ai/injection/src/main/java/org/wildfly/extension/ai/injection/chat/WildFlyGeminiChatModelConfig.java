@@ -11,6 +11,7 @@ import dev.langchain4j.model.chat.request.ResponseFormat;
 import dev.langchain4j.model.googleai.GeminiHarmBlockThreshold;
 import dev.langchain4j.model.googleai.GeminiHarmCategory;
 import dev.langchain4j.model.googleai.GeminiSafetySetting;
+import dev.langchain4j.model.googleai.GeminiThinkingConfig;
 import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
 import dev.langchain4j.model.googleai.GoogleAiGeminiStreamingChatModel;
 import java.time.Duration;
@@ -27,13 +28,23 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
     private Boolean allowCodeExecution;
     private String key;
     private Boolean includeCodeExecutionOutput;
-    private Boolean logRequestsAndResponses;
+    private Double frequencyPenalty;
+    private Boolean logRequests;
+    private Boolean logResponses;
     private Integer maxOutputTokens;
     private String modelName;
     private Double temperature;
     private Duration connectTimeOut;
     private Integer topK;
     private Double topP;
+    private Integer seed;
+    private Double presencePenalty;
+    private Boolean includeThoughts;
+    private Integer thinkingBudget;
+    private Boolean returnThinking;
+    private Boolean responseLogprobs;
+    private Boolean enableEnhancedCivicAnswers;
+    private Integer logprobs;
     private boolean isJson;
     private boolean streaming;
     private boolean observable;
@@ -45,14 +56,26 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
             GoogleAiGeminiChatModel.GoogleAiGeminiChatModelBuilder builder = GoogleAiGeminiChatModel.builder()
                     .allowCodeExecution(allowCodeExecution)
                     .apiKey(key)
+                    .enableEnhancedCivicAnswers(enableEnhancedCivicAnswers)
+                    .frequencyPenalty(frequencyPenalty)
                     .includeCodeExecutionOutput(includeCodeExecutionOutput)
-                    .logRequestsAndResponses(logRequestsAndResponses)
-                    .maxRetries(5)
+                    .logprobs(logprobs)
+                    .logRequests(logRequests)
+                    .logResponses(logResponses)
                     .maxOutputTokens(maxOutputTokens)
+                    .maxRetries(5)
                     .modelName(modelName)
+                    .presencePenalty(presencePenalty)
+                    .responseLogprobs(responseLogprobs)
+                    .returnThinking(returnThinking)
                     .safetySettings(safetySettings)
+                    .seed(seed)
                     .stopSequences(stopSequences)
                     .temperature(temperature)
+                    .thinkingConfig(GeminiThinkingConfig.builder()
+                            .includeThoughts(includeThoughts)
+                            .thinkingBudget(thinkingBudget)
+                            .build())
                     .timeout(connectTimeOut)
                     .topK(topK)
                     .topP(topP);
@@ -73,12 +96,25 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
             GoogleAiGeminiStreamingChatModel.GoogleAiGeminiStreamingChatModelBuilder builder = GoogleAiGeminiStreamingChatModel.builder()
                     .allowCodeExecution(allowCodeExecution)
                     .apiKey(key)
+                    .enableEnhancedCivicAnswers(enableEnhancedCivicAnswers)
+                    .frequencyPenalty(frequencyPenalty)
                     .includeCodeExecutionOutput(includeCodeExecutionOutput)
-                    .logRequestsAndResponses(logRequestsAndResponses)
+                    .logprobs(logprobs)
+                    .logRequests(logRequests)
+                    .logResponses(logResponses)
                     .maxOutputTokens(maxOutputTokens)
                     .modelName(modelName)
+                    .presencePenalty(presencePenalty)
+                    .responseLogprobs(responseLogprobs)
+                    .returnThinking(returnThinking)
+                    .safetySettings(safetySettings)
+                    .seed(seed)
                     .stopSequences(stopSequences)
                     .temperature(temperature)
+                    .thinkingConfig(GeminiThinkingConfig.builder()
+                            .includeThoughts(includeThoughts)
+                            .thinkingBudget(thinkingBudget)
+                            .build())
                     .timeout(connectTimeOut)
                     .topK(topK)
                     .topP(topP);
@@ -103,13 +139,38 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
         return this;
     }
 
+    public WildFlyGeminiChatModelConfig enableEnhancedCivicAnswers(Boolean enableEnhancedCivicAnswers) {
+        this.enableEnhancedCivicAnswers = enableEnhancedCivicAnswers;
+        return this;
+    }
+
+    public WildFlyGeminiChatModelConfig frequencyPenalty(Double frequencyPenalty) {
+        this.frequencyPenalty = frequencyPenalty;
+        return this;
+    }
+
     public WildFlyGeminiChatModelConfig includeCodeExecutionOutput(Boolean includeCodeExecutionOutput) {
         this.includeCodeExecutionOutput = includeCodeExecutionOutput;
         return this;
     }
 
-    public WildFlyGeminiChatModelConfig logRequestsAndResponses(Boolean logRequestsAndResponses) {
-        this.logRequestsAndResponses = logRequestsAndResponses;
+    public WildFlyGeminiChatModelConfig includeThoughts(Boolean includeThoughts) {
+        this.includeThoughts = includeThoughts;
+        return this;
+    }
+
+    public WildFlyGeminiChatModelConfig logprobs(Integer logprobs) {
+        this.logprobs = logprobs;
+        return this;
+    }
+
+    public WildFlyGeminiChatModelConfig logRequests(Boolean logRequests) {
+        this.logRequests = logRequests;
+        return this;
+    }
+
+    public WildFlyGeminiChatModelConfig logResponses(Boolean logResponses) {
+        this.logResponses = logResponses;
         return this;
     }
 
@@ -123,8 +184,18 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
         return this;
     }
 
-    public WildFlyGeminiChatModelConfig stopSequences(List<String> stopSequences) {
-        this.stopSequences = stopSequences;
+    public WildFlyGeminiChatModelConfig presencePenalty(Double presencePenalty) {
+        this.presencePenalty = presencePenalty;
+        return this;
+    }
+
+    public WildFlyGeminiChatModelConfig responseLogprobs(Boolean responseLogprobs) {
+        this.responseLogprobs = responseLogprobs;
+        return this;
+    }
+
+    public WildFlyGeminiChatModelConfig returnThinking(Boolean returnThinking) {
+        this.returnThinking = returnThinking;
         return this;
     }
 
@@ -142,8 +213,38 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
         return this;
     }
 
+    public WildFlyGeminiChatModelConfig seed(Integer seed) {
+        this.seed = seed;
+        return this;
+    }
+
+    public WildFlyGeminiChatModelConfig setJson(boolean isJson) {
+        this.isJson = isJson;
+        return this;
+    }
+
+    public WildFlyGeminiChatModelConfig setObservable(boolean observable) {
+        this.observable = observable;
+        return this;
+    }
+
+    public WildFlyGeminiChatModelConfig setStreaming(boolean streaming) {
+        this.streaming = streaming;
+        return this;
+    }
+
+    public WildFlyGeminiChatModelConfig stopSequences(List<String> stopSequences) {
+        this.stopSequences = stopSequences;
+        return this;
+    }
+
     public WildFlyGeminiChatModelConfig temperature(Double temperature) {
         this.temperature = temperature;
+        return this;
+    }
+
+    public WildFlyGeminiChatModelConfig thinkingBudget(Integer thinkingBudget) {
+        this.thinkingBudget = thinkingBudget;
         return this;
     }
 
@@ -163,21 +264,6 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
 
     public WildFlyGeminiChatModelConfig topP(Double topP) {
         this.topP = topP;
-        return this;
-    }
-
-    public WildFlyGeminiChatModelConfig setJson(boolean isJson) {
-        this.isJson = isJson;
-        return this;
-    }
-
-    public WildFlyGeminiChatModelConfig setStreaming(boolean streaming) {
-        this.streaming = streaming;
-        return this;
-    }
-
-    public WildFlyGeminiChatModelConfig setObservable(boolean observable) {
-        this.observable = observable;
         return this;
     }
 

@@ -68,6 +68,9 @@ public class AIAttributeDefinitions {
             .setValidator(EnumValidator.create(ResponseFormat.class))
             .setAllowExpression(true)
             .build();
+    public static final SimpleAttributeDefinition SEED = new SimpleAttributeDefinitionBuilder("seed", ModelType.INT, true)
+            .setAllowExpression(true)
+            .build();
     public static final SimpleAttributeDefinition SSL_ENABLED = SimpleAttributeDefinitionBuilder.create("ssl-enabled", ModelType.BOOLEAN, true)
             .setAllowExpression(true)
             .setDefaultValue(ModelNode.FALSE)

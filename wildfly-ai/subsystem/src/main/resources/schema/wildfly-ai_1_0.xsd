@@ -295,6 +295,20 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="enable-enhanced-civic-answers" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Enable enhanced civic answers.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="frequency-penalty" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The frequency penalty of the chat model.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="dangerous-content" type="threshold" use="optional">
             <xs:annotation>
                 <xs:documentation>
@@ -323,10 +337,31 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="log-requests-responses" type="xs:boolean" use="optional">
+        <xs:attribute name="include-thoughts" type="xs:boolean" use="optional">
             <xs:annotation>
                 <xs:documentation>
-                    Whether to log API requests / responses.
+                    Include thoughts in the model configuration.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-requests" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API requests.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-responses" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API responses.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-probs" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The number of log probabilities to include in the response.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -344,6 +379,13 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="presence-penalty" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The presence penalty of the chat model.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="response-format" use="optional">
             <xs:simpleType>
                 <xs:restriction base="xs:string">
@@ -352,10 +394,38 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
+        <xs:attribute name="response-log-probs" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to include log probabilities in the response.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="return-thinking" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to return thinking process in the response.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="seed" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The seed for deterministic generation.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="sexually-explicit" type="threshold" use="optional">
             <xs:annotation>
                 <xs:documentation>
                     The threshold to filter out sexually explicit content.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="stop-sequences" type="stringList" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    A list of strings to stop generation at.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -370,6 +440,13 @@
             <xs:annotation>
                 <xs:documentation>
                     The temperature of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="thinking-budget" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The budget for thinking tokens.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>

@@ -14,12 +14,12 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_TOKEN;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.PRESENCE_PENALTY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.SEED;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
 import static org.wildfly.extension.ai.Capabilities.OPENTELEMETRY_CAPABILITY_NAME;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.ORGANIZATION_ID;
-import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.SEED;
 
 import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
