@@ -32,6 +32,7 @@ import org.jboss.dmr.ModelType;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
+import static org.wildfly.extension.ai.chat.GithubModelChatLanguageModelProviderRegistrar.SEED;
 
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.service.capture.ValueExecutorRegistry;
@@ -45,11 +46,6 @@ public class OpenAIChatLanguageModelProviderRegistrar implements ChildResourceDe
     public static final SimpleAttributeDefinition ORGANIZATION_ID = new SimpleAttributeDefinitionBuilder("organization-id", ModelType.STRING, true)
             .setAllowExpression(true)
             .build();
-    public static final SimpleAttributeDefinition SEED = new SimpleAttributeDefinitionBuilder("seed", ModelType.INT, true)
-            .setAllowExpression(true)
-            .build();
-
-
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(API_KEY, BASE_URL, CONNECT_TIMEOUT,
             FREQUENCY_PENALTY, LOG_REQUESTS, LOG_RESPONSES, MAX_TOKEN, MODEL_NAME, ORGANIZATION_ID, PRESENCE_PENALTY, 
             RESPONSE_FORMAT, SEED, STREAMING, TEMPERATURE, TOP_P);

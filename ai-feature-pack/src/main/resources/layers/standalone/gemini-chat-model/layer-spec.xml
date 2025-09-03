@@ -23,7 +23,8 @@
             <param name="gemini-chat-model" value="gemini"/>
             <param name="api-key" value="${env.GEMINI_API_KEY:YOUR_KEY_VALUE}"/>
             <param name="model-name" value="${org.wildfly.ai.gemini.chat.model.name,env.GEMINI_CHAT_MODEL_NAME:gemini-2.5-flash}"/>
-            <param name="log-requests-responses" value="${org.wildfly.ai.gemini.chat.log,env.GEMINI_CHAT_LOG:true}"/>
+            <param name="log-requests" value="${org.wildfly.ai.gemini.chat.log,env.GEMINI_CHAT_LOG:true}"/>
+            <param name="log-responses" value="${org.wildfly.ai.gemini.chat.log,env.GEMINI_CHAT_LOG:true}"/>
         </feature>
     </feature>
 </layer-spec>
