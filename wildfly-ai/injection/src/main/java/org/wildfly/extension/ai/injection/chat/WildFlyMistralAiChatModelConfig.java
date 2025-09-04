@@ -13,7 +13,7 @@ import dev.langchain4j.model.mistralai.MistralAiStreamingChatModel;
 import java.time.Duration;
 import java.util.List;
 
-public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig {
+public class WildFlyMistralAiChatModelConfig implements WildFlyChatModelConfig {
 
     private String key;
     private String baseUrl;
@@ -26,6 +26,10 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
     private Double temperature;
     private Duration connectTimeOut;
     private Double topP;
+    private List<String> stopSequences;
+    private Double presencePenalty;
+    private Double frequencyPenalty;
+    private Integer maxRetries;
     private boolean isJson;
     private boolean streaming;
     private boolean observable;
@@ -39,7 +43,7 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
                     .baseUrl(baseUrl)
                     .logRequests(logRequests)
                     .logResponses(logResponses)
-                    .maxRetries(5)
+                    .maxRetries(maxRetries != null ? maxRetries : 5)
                     .maxTokens(maxTokens)
                     .modelName(modelName)
                     .randomSeed(randomSeed)
@@ -47,11 +51,20 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
                     .temperature(temperature)
                     .timeout(connectTimeOut)
                     .topP(topP);
+            if (stopSequences != null) {
+                builder.stopSequences(stopSequences);
+            }
+            if (presencePenalty != null) {
+                builder.presencePenalty(presencePenalty);
+            }
+            if (frequencyPenalty != null) {
+                builder.frequencyPenalty(frequencyPenalty);
+            }
             if (isJson) {
                 builder.responseFormat(JSON);
             }
-            if (observable) {
-//            builder.listeners(Collections.singletonList(new OpenTelemetryChatModelListener()));
+            if (observable && listeners != null && !listeners.isEmpty()) {
+                builder.listeners(listeners);
             }
             instance = builder.build();
         }
@@ -73,6 +86,15 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
                     .temperature(temperature)
                     .timeout(connectTimeOut)
                     .topP(topP);
+            if (stopSequences != null) {
+                builder.stopSequences(stopSequences);
+            }
+            if (presencePenalty != null) {
+                builder.presencePenalty(presencePenalty);
+            }
+            if (frequencyPenalty != null) {
+                builder.frequencyPenalty(frequencyPenalty);
+            }
             if (isJson) {
                 builder.responseFormat(JSON);
             }
@@ -81,57 +103,87 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
         return (StreamingChatModel) instance;
     }
 
-    public WildFlyMistralAiChatModelLanguage apiKey(String key) {
+    public WildFlyMistralAiChatModelConfig apiKey(String key) {
         this.key = key;
         return this;
     }
 
-    public WildFlyMistralAiChatModelLanguage baseUrl(String baseUrl) {
+    public WildFlyMistralAiChatModelConfig baseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
         return this;
     }
 
-    public WildFlyMistralAiChatModelLanguage logRequests(Boolean logRequests) {
+    public WildFlyMistralAiChatModelConfig frequencyPenalty(Double frequencyPenalty) {
+        this.frequencyPenalty = frequencyPenalty;
+        return this;
+    }
+
+    public WildFlyMistralAiChatModelConfig logRequests(Boolean logRequests) {
         this.logRequests = logRequests;
         return this;
     }
 
-    public WildFlyMistralAiChatModelLanguage logResponses(Boolean logResponses) {
+    public WildFlyMistralAiChatModelConfig logResponses(Boolean logResponses) {
         this.logResponses = logResponses;
         return this;
     }
 
-    public WildFlyMistralAiChatModelLanguage maxTokens(Integer maxTokens) {
+    public WildFlyMistralAiChatModelConfig maxRetries(Integer maxRetries) {
+        this.maxRetries = maxRetries;
+        return this;
+    }
+
+    public WildFlyMistralAiChatModelConfig maxTokens(Integer maxTokens) {
         this.maxTokens = maxTokens;
         return this;
     }
 
-    public WildFlyMistralAiChatModelLanguage modelName(String modelName) {
+    public WildFlyMistralAiChatModelConfig modelName(String modelName) {
         this.modelName = modelName;
         return this;
     }
 
-    public WildFlyMistralAiChatModelLanguage randomSeed(Integer randomSeed) {
+    public WildFlyMistralAiChatModelConfig presencePenalty(Double presencePenalty) {
+        this.presencePenalty = presencePenalty;
+        return this;
+    }
+
+    public WildFlyMistralAiChatModelConfig randomSeed(Integer randomSeed) {
         this.randomSeed = randomSeed;
         return this;
     }
 
-    public WildFlyMistralAiChatModelLanguage safePrompt(Boolean safePrompt) {
+    public WildFlyMistralAiChatModelConfig safePrompt(Boolean safePrompt) {
         this.safePrompt = safePrompt;
         return this;
     }
 
-    public WildFlyMistralAiChatModelLanguage setJson(boolean isJson) {
+    public WildFlyMistralAiChatModelConfig setJson(boolean isJson) {
         this.isJson = isJson;
         return this;
     }
 
-    public WildFlyMistralAiChatModelLanguage temperature(Double temperature) {
+    public WildFlyMistralAiChatModelConfig setObservable(boolean observable) {
+        this.observable = observable;
+        return this;
+    }
+
+    public WildFlyMistralAiChatModelConfig stopSequences(List<String> stopSequences) {
+        this.stopSequences = stopSequences;
+        return this;
+    }
+
+    public WildFlyMistralAiChatModelConfig streaming(boolean streaming) {
+        this.streaming = streaming;
+        return this;
+    }
+
+    public WildFlyMistralAiChatModelConfig temperature(Double temperature) {
         this.temperature = temperature;
         return this;
     }
 
-    public WildFlyMistralAiChatModelLanguage timeout(long timeOut) {
+    public WildFlyMistralAiChatModelConfig timeout(long timeOut) {
         if (timeOut <= 0L) {
             this.connectTimeOut = null;
             return this;
@@ -140,13 +192,8 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
         return this;
     }
 
-    public WildFlyMistralAiChatModelLanguage topP(Double topP) {
+    public WildFlyMistralAiChatModelConfig topP(Double topP) {
         this.topP = topP;
-        return this;
-    }
-
-    public WildFlyMistralAiChatModelLanguage streaming(boolean streaming) {
-        this.streaming = streaming;
         return this;
     }
 
@@ -157,6 +204,6 @@ public class WildFlyMistralAiChatModelLanguage implements WildFlyChatModelConfig
 
     @Override
     public boolean isObservable() {
-        return false;
+        return observable;
     }
 }
