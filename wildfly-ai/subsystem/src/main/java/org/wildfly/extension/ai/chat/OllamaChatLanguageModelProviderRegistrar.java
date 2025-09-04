@@ -10,7 +10,9 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_RETRIES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.SEED;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
 import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILITY;
 
 import java.util.Collection;
@@ -19,11 +21,15 @@ import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.ResourceRegistration;
+import org.jboss.as.controller.SimpleAttributeDefinition;
+import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.controller.registry.RuntimePackageDependency;
+import org.jboss.dmr.ModelType;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.STOP_SEQUENCES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
@@ -36,8 +42,19 @@ import org.wildfly.subsystem.resource.operation.ResourceOperationRuntimeHandler;
 
 public class OllamaChatLanguageModelProviderRegistrar implements ChildResourceDefinitionRegistrar {
 
+    public static final SimpleAttributeDefinition NUM_PREDICT = new SimpleAttributeDefinitionBuilder("num-predict", ModelType.INT, true)
+            .setAllowExpression(true)
+            .build();
+    public static final SimpleAttributeDefinition REPEAT_PENALTY = new SimpleAttributeDefinitionBuilder("repeat-penalty", ModelType.DOUBLE, true)
+            .setAllowExpression(true)
+            .build();
+    public static final SimpleAttributeDefinition TOP_K = new SimpleAttributeDefinitionBuilder("top-k", ModelType.INT, true)
+            .setAllowExpression(true)
+            .build();
+
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(BASE_URL, CONNECT_TIMEOUT,
-            LOG_REQUESTS, LOG_RESPONSES, MAX_RETRIES, MODEL_NAME, RESPONSE_FORMAT, STREAMING, TEMPERATURE);
+            LOG_REQUESTS, LOG_RESPONSES, MAX_RETRIES, MODEL_NAME, NUM_PREDICT, REPEAT_PENALTY, RESPONSE_FORMAT,
+            SEED, STOP_SEQUENCES, STREAMING, TEMPERATURE, TOP_K, TOP_P);
 
     private final ResourceDescriptor descriptor;
     static final String NAME = "ollama-chat-model";

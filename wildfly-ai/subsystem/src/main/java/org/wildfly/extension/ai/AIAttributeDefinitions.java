@@ -7,6 +7,7 @@ package org.wildfly.extension.ai;
 import org.jboss.as.controller.ObjectTypeAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
+import org.jboss.as.controller.StringListAttributeDefinition;
 import org.jboss.as.controller.access.management.SensitiveTargetAccessConstraintDefinition;
 import org.jboss.as.controller.client.helpers.MeasurementUnit;
 import org.jboss.as.controller.operations.validation.EnumValidator;
@@ -74,6 +75,12 @@ public class AIAttributeDefinitions {
     public static final SimpleAttributeDefinition SSL_ENABLED = SimpleAttributeDefinitionBuilder.create("ssl-enabled", ModelType.BOOLEAN, true)
             .setAllowExpression(true)
             .setDefaultValue(ModelNode.FALSE)
+            .setRestartAllServices()
+            .build();
+    public static final StringListAttributeDefinition STOP_SEQUENCES = StringListAttributeDefinition.Builder.of("stop-sequences")
+            .setRequired(false)
+            .setMinSize(0)
+            .setAllowExpression(true)
             .setRestartAllServices()
             .build();
     public static final SimpleAttributeDefinition STREAMING = new SimpleAttributeDefinitionBuilder("streaming", ModelType.BOOLEAN, true)

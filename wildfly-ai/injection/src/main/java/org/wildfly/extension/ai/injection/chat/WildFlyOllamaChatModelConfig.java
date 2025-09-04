@@ -20,7 +20,13 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
     private Boolean logResponses;
     private boolean isJson;
     private Integer maxRetries;
+    private Integer numPredict;
+    private Double repeatPenalty;
+    private Integer seed;
+    private List<String> stopSequences;
     private Double temperature;
+    private Integer topK;
+    private Double topP;
     private Duration connectTimeOut;
     private String modelName;
     private boolean streaming;
@@ -35,9 +41,15 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
                     .logRequests(logRequests)
                     .logResponses(logResponses)
                     .maxRetries(maxRetries)
+                    .modelName(modelName)
+                    .numPredict(numPredict)
+                    .repeatPenalty(repeatPenalty)
+                    .seed(seed)
+                    .stop(stopSequences)
                     .temperature(temperature)
                     .timeout(connectTimeOut)
-                    .modelName(modelName);
+                    .topK(topK)
+                    .topP(topP);
             if (isJson) {
                 builder.responseFormat(ResponseFormat.JSON);
             }
@@ -56,9 +68,15 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
                     .baseUrl(baseUrl)
                     .logRequests(logRequests)
                     .logResponses(logResponses)
+                    .modelName(modelName)
+                    .numPredict(numPredict)
+                    .repeatPenalty(repeatPenalty)
+                    .seed(seed)
+                    .stop(stopSequences)
                     .temperature(temperature)
                     .timeout(connectTimeOut)
-                    .modelName(modelName);
+                    .topK(topK)
+                    .topP(topP);
             if (isJson) {
                 builder.responseFormat(ResponseFormat.JSON);
             }
@@ -114,8 +132,38 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
         return this;
     }
 
+    public WildFlyOllamaChatModelConfig numPredict(Integer numPredict) {
+        this.numPredict = numPredict;
+        return this;
+    }
+
+    public WildFlyOllamaChatModelConfig repeatPenalty(Double repeatPenalty) {
+        this.repeatPenalty = repeatPenalty;
+        return this;
+    }
+
+    public WildFlyOllamaChatModelConfig seed(Integer seed) {
+        this.seed = seed;
+        return this;
+    }
+
     public WildFlyOllamaChatModelConfig setStreaming(boolean streaming) {
         this.streaming = streaming;
+        return this;
+    }
+
+    public WildFlyOllamaChatModelConfig stopSequences(List<String> stopSequences) {
+        this.stopSequences = stopSequences;
+        return this;
+    }
+
+    public WildFlyOllamaChatModelConfig topK(Integer topK) {
+        this.topK = topK;
+        return this;
+    }
+
+    public WildFlyOllamaChatModelConfig topP(Double topP) {
+        this.topP = topP;
         return this;
     }
 

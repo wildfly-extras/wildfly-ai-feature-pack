@@ -13,6 +13,7 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.PRESENCE_PENALTY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.SEED;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.STOP_SEQUENCES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
@@ -27,7 +28,6 @@ import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.ResourceRegistration;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.controller.StringListAttributeDefinition;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.controller.registry.RuntimePackageDependency;
@@ -71,6 +71,9 @@ public class GeminiChatLanguageModelProviderRegistrar implements ChildResourceDe
     public static final SimpleAttributeDefinition INCLUDE_THOUGHTS = new SimpleAttributeDefinitionBuilder("include-thoughts", ModelType.BOOLEAN, true)
             .setAllowExpression(true)
             .build();
+    public static final SimpleAttributeDefinition LOG_PROBS = new SimpleAttributeDefinitionBuilder("log-probs", ModelType.INT, true)
+            .setAllowExpression(true)
+            .build();
     public static final SimpleAttributeDefinition MAX_OUTPUT_TOKEN = new SimpleAttributeDefinitionBuilder("max-output-token", ModelType.INT, true)
             .setAllowExpression(true)
             .build();
@@ -84,12 +87,6 @@ public class GeminiChatLanguageModelProviderRegistrar implements ChildResourceDe
             .setAllowedValues(THRESHOLDS)
             .setAllowExpression(true)
             .build();
-        public static final StringListAttributeDefinition STOP_SEQUENCES = StringListAttributeDefinition.Builder.of("stop-sequences")
-            .setRequired(false)
-            .setMinSize(0)
-            .setAllowExpression(true)
-            .setRestartAllServices()
-            .build();
     public static final SimpleAttributeDefinition THINKING_BUDGET = new SimpleAttributeDefinitionBuilder("thinking-budget", ModelType.INT, true)
             .setAllowExpression(true)
             .build();
@@ -100,7 +97,7 @@ public class GeminiChatLanguageModelProviderRegistrar implements ChildResourceDe
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(ALLOWED_CODE_EXECUTION, API_KEY,
             CIVIC_INTEGRITY, CONNECT_TIMEOUT, DANGEROUS_CONTENT, ENABLE_ENHANCED_CIVIC_ANSWERS, FREQUENCY_PENALTY,
-            HARASSMENT, HATE_SPEECH, INCLUDE_CODE_EXECUTION_OUTPUT, INCLUDE_THOUGHTS, LOG_REQUESTS, LOG_RESPONSES,
+            HARASSMENT, HATE_SPEECH, INCLUDE_CODE_EXECUTION_OUTPUT, INCLUDE_THOUGHTS, LOG_PROBS, LOG_REQUESTS, LOG_RESPONSES,
             MAX_OUTPUT_TOKEN, MODEL_NAME, PRESENCE_PENALTY, RESPONSE_FORMAT, RESPONSE_LOG_PROBS, RETURN_THINKING, SEED,
             SEXUALLY_EXPLICIT, STOP_SEQUENCES, STREAMING, TEMPERATURE, THINKING_BUDGET, TOP_K, TOP_P);
 

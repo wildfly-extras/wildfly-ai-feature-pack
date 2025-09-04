@@ -10,8 +10,11 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_RETRIES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.SEED;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.jboss.as.controller.OperationContext;
@@ -20,8 +23,12 @@ import org.jboss.dmr.ModelNode;
 import org.wildfly.extension.ai.AIAttributeDefinitions;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.STOP_SEQUENCES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.Capabilities.OPENTELEMETRY_CAPABILITY_NAME;
+import static org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar.NUM_PREDICT;
+import static org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar.REPEAT_PENALTY;
+import static org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar.TOP_K;
 
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.extension.ai.injection.chat.WildFlyOllamaChatModelConfig;
@@ -48,9 +55,15 @@ public class OllamaChatModelProviderServiceConfigurator extends AbstractChatMode
         Boolean logResponses = LOG_RESPONSES.resolveModelAttribute(context, model).asBooleanOrNull();
         Integer maxRetries = MAX_RETRIES.resolveModelAttribute(context, model).asIntOrNull();
         String modelName = MODEL_NAME.resolveModelAttribute(context, model).asString();
-        boolean isJson = AIAttributeDefinitions.ResponseFormat.isJson(RESPONSE_FORMAT.resolveModelAttribute(context, model).asStringOrNull());
+        Integer numPredict = NUM_PREDICT.resolveModelAttribute(context, model).asIntOrNull();
+        Double repeatPenalty = REPEAT_PENALTY.resolveModelAttribute(context, model).asDoubleOrNull();
+        Integer seed = SEED.resolveModelAttribute(context, model).asIntOrNull();
+        List<String> stopSequences = STOP_SEQUENCES.unwrap(context, model);
         Boolean streaming = STREAMING.resolveModelAttribute(context, model).asBooleanOrNull();
         Double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDoubleOrNull();
+        Integer topK = TOP_K.resolveModelAttribute(context, model).asIntOrNull();
+        Double topP = TOP_P.resolveModelAttribute(context, model).asDoubleOrNull();
+        boolean isJson = AIAttributeDefinitions.ResponseFormat.isJson(RESPONSE_FORMAT.resolveModelAttribute(context, model).asStringOrNull());
         boolean isObservable= context.getCapabilityServiceSupport().hasCapability(OPENTELEMETRY_CAPABILITY_NAME);
         final ServiceDependency<WildFlyOpenTelemetryConfig> openTelemetryConfig;
         if(isObservable) {
@@ -66,12 +79,18 @@ public class OllamaChatModelProviderServiceConfigurator extends AbstractChatMode
                         .logRequests(logRequests)
                         .logResponses(logResponses)
                         .maxRetries(maxRetries)
+                        .modelName(modelName)
+                        .numPredict(numPredict)
+                        .repeatPenalty(repeatPenalty)
+                        .seed(seed)
                         .setJson(isJson)
                         .setObservable(isObservable)
                         .setStreaming(streaming)
+                        .stopSequences(stopSequences)
                         .temperature(temperature)
                         .timeout(connectTimeOut)
-                        .modelName(modelName);
+                        .topK(topK)
+                        .topP(topP);
             }
         };
         if(isObservable) {

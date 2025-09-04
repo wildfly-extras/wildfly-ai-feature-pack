@@ -41,25 +41,19 @@ public class WildFlyMistralAiChatModelConfig implements WildFlyChatModelConfig {
             MistralAiChatModel.MistralAiChatModelBuilder builder = MistralAiChatModel.builder()
                     .apiKey(key)
                     .baseUrl(baseUrl)
+                    .frequencyPenalty(frequencyPenalty)
                     .logRequests(logRequests)
                     .logResponses(logResponses)
                     .maxRetries(maxRetries != null ? maxRetries : 5)
                     .maxTokens(maxTokens)
                     .modelName(modelName)
+                    .presencePenalty(presencePenalty)
                     .randomSeed(randomSeed)
                     .safePrompt(safePrompt)
+                    .stopSequences(stopSequences)
                     .temperature(temperature)
                     .timeout(connectTimeOut)
                     .topP(topP);
-            if (stopSequences != null) {
-                builder.stopSequences(stopSequences);
-            }
-            if (presencePenalty != null) {
-                builder.presencePenalty(presencePenalty);
-            }
-            if (frequencyPenalty != null) {
-                builder.frequencyPenalty(frequencyPenalty);
-            }
             if (isJson) {
                 builder.responseFormat(JSON);
             }
@@ -77,24 +71,18 @@ public class WildFlyMistralAiChatModelConfig implements WildFlyChatModelConfig {
             MistralAiStreamingChatModel.MistralAiStreamingChatModelBuilder builder = MistralAiStreamingChatModel.builder()
                     .apiKey(key)
                     .baseUrl(baseUrl)
+                    .frequencyPenalty(frequencyPenalty)
                     .logRequests(logRequests)
                     .logResponses(logResponses)
                     .maxTokens(maxTokens)
                     .modelName(modelName)
+                    .presencePenalty(presencePenalty)
                     .randomSeed(randomSeed)
                     .safePrompt(safePrompt)
+                    .stopSequences(stopSequences)
                     .temperature(temperature)
                     .timeout(connectTimeOut)
                     .topP(topP);
-            if (stopSequences != null) {
-                builder.stopSequences(stopSequences);
-            }
-            if (presencePenalty != null) {
-                builder.presencePenalty(presencePenalty);
-            }
-            if (frequencyPenalty != null) {
-                builder.frequencyPenalty(frequencyPenalty);
-            }
             if (isJson) {
                 builder.responseFormat(JSON);
             }
