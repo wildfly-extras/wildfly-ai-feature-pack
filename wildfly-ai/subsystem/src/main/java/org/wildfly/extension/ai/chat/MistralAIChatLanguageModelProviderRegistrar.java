@@ -15,6 +15,7 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_TOKEN;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.PRESENCE_PENALTY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.STOP_SEQUENCES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
@@ -28,7 +29,6 @@ import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.ResourceRegistration;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.controller.StringListAttributeDefinition;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.controller.registry.RuntimePackageDependency;
@@ -50,15 +50,10 @@ public class MistralAIChatLanguageModelProviderRegistrar implements ChildResourc
     public static final SimpleAttributeDefinition SAFE_PROMPT = SimpleAttributeDefinitionBuilder.create("safe-prompt", ModelType.BOOLEAN, true)
             .setAllowExpression(true)
             .build();
-    public static final StringListAttributeDefinition STOP_SEQUENCES = StringListAttributeDefinition.Builder.of("stop-sequences")
-            .setRequired(false)
-            .setMinSize(0)
-            .setAllowExpression(true)
-            .setRestartAllServices()
-            .build();
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(API_KEY, BASE_URL, CONNECT_TIMEOUT,
-            FREQUENCY_PENALTY, LOG_REQUESTS, LOG_RESPONSES, MAX_RETRIES, MAX_TOKEN, MODEL_NAME, PRESENCE_PENALTY, RANDOM_SEED, RESPONSE_FORMAT, SAFE_PROMPT, STOP_SEQUENCES, STREAMING, TEMPERATURE, TOP_P);
+            FREQUENCY_PENALTY, LOG_REQUESTS, LOG_RESPONSES, MAX_RETRIES, MAX_TOKEN, MODEL_NAME, PRESENCE_PENALTY,
+            RANDOM_SEED, RESPONSE_FORMAT, SAFE_PROMPT, STOP_SEQUENCES, STREAMING, TEMPERATURE, TOP_P);
 
     private final ResourceDescriptor descriptor;
     static final String NAME = "mistral-ai-chat-model";

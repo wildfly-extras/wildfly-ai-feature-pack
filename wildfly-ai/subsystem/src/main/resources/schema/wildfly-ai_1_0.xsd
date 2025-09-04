@@ -658,6 +658,20 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="num-predict" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The maximum number of tokens to predict
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="repeat-penalty" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Penalty for token repetition
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="response-format" use="optional">
             <xs:simpleType>
                 <xs:restriction base="xs:string">
@@ -673,10 +687,38 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="seed" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The seed for deterministic generation
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="stop-sequences" type="stringList" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    A list of strings to stop generation at
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="temperature" type="xs:double" use="optional">
             <xs:annotation>
                 <xs:documentation>
                     The temperature of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="top-k" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The number of highest probability tokens to consider
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="top-p" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Controls token diversity using nucleus sampling
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -837,6 +879,13 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="frequency-penalty" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The frequency penalty of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="log-requests" type="xs:boolean" use="optional">
             <xs:annotation>
                 <xs:documentation>
@@ -851,6 +900,13 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="max-retries" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The maximum number of retries for API requests
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="max-token" type="xs:int" use="optional">
             <xs:annotation>
                 <xs:documentation>
@@ -862,6 +918,13 @@
             <xs:annotation>
                 <xs:documentation>
                     The name of the model to use
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="presence-penalty" type="xs:double" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The presence penalty of the chat model
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -884,6 +947,13 @@
             <xs:annotation>
                 <xs:documentation>
                     Whether to inject a safety prompt before all conversations.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="stop-sequences" type="stringList" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    A list of strings to stop generation at.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>

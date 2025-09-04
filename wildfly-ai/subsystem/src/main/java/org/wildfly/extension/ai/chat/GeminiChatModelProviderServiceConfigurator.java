@@ -13,6 +13,7 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.MODEL_NAME;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.PRESENCE_PENALTY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.SEED;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.STOP_SEQUENCES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
@@ -21,10 +22,10 @@ import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegis
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.ENABLE_ENHANCED_CIVIC_ANSWERS;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.INCLUDE_CODE_EXECUTION_OUTPUT;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.INCLUDE_THOUGHTS;
+import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.LOG_PROBS;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.MAX_OUTPUT_TOKEN;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.RESPONSE_LOG_PROBS;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.RETURN_THINKING;
-import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.STOP_SEQUENCES;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.THINKING_BUDGET;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.TOP_K;
 
@@ -59,6 +60,7 @@ public class GeminiChatModelProviderServiceConfigurator extends AbstractChatMode
         Double frequencyPenalty = FREQUENCY_PENALTY.resolveModelAttribute(context, model).asDoubleOrNull();
         Boolean includeCodeExecutionOutput = INCLUDE_CODE_EXECUTION_OUTPUT.resolveModelAttribute(context, model).asBooleanOrNull();
         Boolean includeThoughts = INCLUDE_THOUGHTS.resolveModelAttribute(context, model).asBooleanOrNull();
+        Integer logProbs = LOG_PROBS.resolveModelAttribute(context, model).asIntOrNull();
         Boolean logRequests = LOG_REQUESTS.resolveModelAttribute(context, model).asBooleanOrNull();
         Boolean logResponses = LOG_RESPONSES.resolveModelAttribute(context, model).asBooleanOrNull();
         Integer maxOutputTokens = MAX_OUTPUT_TOKEN.resolveModelAttribute(context, model).asIntOrNull();
@@ -85,6 +87,7 @@ public class GeminiChatModelProviderServiceConfigurator extends AbstractChatMode
                         .frequencyPenalty(frequencyPenalty)
                         .includeCodeExecutionOutput(includeCodeExecutionOutput)
                         .includeThoughts(includeThoughts)
+                        .logprobs(logProbs)
                         .logRequests(logRequests)
                         .logResponses(logResponses)
                         .maxOutputTokens(maxOutputTokens)
