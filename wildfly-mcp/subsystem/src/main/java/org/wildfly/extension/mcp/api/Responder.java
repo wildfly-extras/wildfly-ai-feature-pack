@@ -12,6 +12,8 @@ import jakarta.json.JsonObjectBuilder;
 
 public interface Responder {
 
+    int lastEventId();
+
     void send(JsonObject message);
 
     default void sendResult(String id, JsonObjectBuilder result) {
@@ -19,7 +21,7 @@ public interface Responder {
     }
 
     default void sendError(String id, int code, String message) {
-        send(newError(id, code, message));
+        send(newError(id, code,message));
     }
 
     default void sendInternalError(String id) {

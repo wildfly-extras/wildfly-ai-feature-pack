@@ -35,8 +35,11 @@ public class McpEndpointConfigurationProviderRegistrar implements ChildResourceD
             .setAllowExpression(true)
             .setRestartAllServices()
             .build();
-
-    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(SSE_PATH, MESSAGES_PATH);
+    public static final SimpleAttributeDefinition STREAMABLE_PATH = SimpleAttributeDefinitionBuilder.create("streamable-path", ModelType.STRING, false)
+            .setAllowExpression(true)
+            .setRestartAllServices()
+            .build();
+    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of( MESSAGES_PATH, SSE_PATH, STREAMABLE_PATH);
 
     private final ResourceDescriptor descriptor;
     static final String NAME = "mcp-server";

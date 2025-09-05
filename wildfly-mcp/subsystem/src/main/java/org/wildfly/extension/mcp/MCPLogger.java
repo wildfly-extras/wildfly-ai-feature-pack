@@ -5,6 +5,7 @@
 
 package org.wildfly.extension.mcp;
 
+import static org.jboss.logging.Logger.Level.ERROR;
 import static org.jboss.logging.Logger.Level.INFO;
 import static org.jboss.logging.Logger.Level.WARN;
 
@@ -33,16 +34,24 @@ public interface MCPLogger extends BasicLogger {
 
     @Message(id = 3, value = "Couldn't access the Chat Language Model called %s")
     OperationFailedException chatLanguageModelServiceUnavailable(String chatLanguageModelName);
-    
+
     @LogMessage(level = INFO)
-    @Message(id = 4, value = "Registered MicroProfile MCP endpoint '%s' for host '%s'")
+    @Message(id = 4, value = "Registered MCP endpoint '%s' for host '%s'")
     void endpointRegistered(String path, String hostName);
 
     @LogMessage(level = INFO)
-    @Message(id = 5, value = "Unregistered MicroProfile MCP endpoint '%s' for host '%s'")
+    @Message(id = 5, value = "Unregistered MCP endpoint '%s' for host '%s'")
     void endpointUnregistered(String path, String hostName);
 
     @Message(id = 6, value = "Failed to resolve module for deployment %s")
     DeploymentUnitProcessingException failedToResolveModule(DeploymentUnit deploymentUnit);
+
+    @LogMessage(level = ERROR)
+    @Message(id = 7, value = "Invalid Method: %s")
+    void invalidHttpMethod(String method);
+
+    @LogMessage(level = ERROR)
+    @Message(id = 8, value = "Invalid Accept header: %s")
+    void invalidAcceptHeaders(String header);
 
 }

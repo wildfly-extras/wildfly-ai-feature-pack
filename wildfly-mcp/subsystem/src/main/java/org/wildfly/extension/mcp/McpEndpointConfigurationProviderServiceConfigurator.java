@@ -8,6 +8,7 @@ import static org.wildfly.extension.mcp.Capabilities.MCP_SERVER_PROVIDER_CAPABIL
 import static org.wildfly.extension.mcp.McpEndpointConfigurationProviderRegistrar.MESSAGES_PATH;
 import static org.wildfly.extension.mcp.McpEndpointConfigurationProviderRegistrar.SSE_PATH;
 
+import static org.wildfly.extension.mcp.McpEndpointConfigurationProviderRegistrar.STREAMABLE_PATH;
 import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
@@ -22,10 +23,11 @@ public class McpEndpointConfigurationProviderServiceConfigurator implements Reso
     public ResourceServiceInstaller configure(OperationContext context, ModelNode model) throws OperationFailedException {
         final String ssePath = SSE_PATH.resolveModelAttribute(context, model).asString("sse");
         final String messagesPath = MESSAGES_PATH.resolveModelAttribute(context, model).asString("messages");
+        final String streamablePath = STREAMABLE_PATH.resolveModelAttribute(context, model).asString("streamable");
         Supplier<McpEndpointConfiguration> factory = new Supplier<>() {
             @Override
             public McpEndpointConfiguration get() {
-                return new McpEndpointConfiguration(ssePath, messagesPath);
+                return new McpEndpointConfiguration(ssePath, messagesPath,streamablePath);
             }
         };
         return CapabilityServiceInstaller.builder(MCP_SERVER_PROVIDER_CAPABILITY, factory)

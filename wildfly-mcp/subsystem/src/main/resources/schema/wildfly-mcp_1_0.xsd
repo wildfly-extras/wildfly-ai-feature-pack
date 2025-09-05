@@ -65,5 +65,12 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="streamable-path" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>
+                    The streamable path on the server.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
     </xs:complexType>
 </xs:schema>

@@ -4,6 +4,7 @@
  */
 package org.wildfly.extension.mcp.server;
 
+import static org.wildfly.extension.mcp.api.ConnectionManager.MCP_SESSION_ID_HEADER;
 import io.undertow.server.handlers.sse.ServerSentEventConnection;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -25,6 +26,7 @@ public class ServerSentEventResponder implements Responder, McpConnection {
     private final JsonWriterFactory jsonWriterFactory = Json.createWriterFactory(Collections.emptyMap());
     private final ServerSentEventConnection connection;
     private final String id;
+    private int lastEventId = -1;
     private final AtomicReference<Status> status;
     private final AtomicReference<InitializeRequest> initializeRequest;
     private Future future;
@@ -73,14 +75,16 @@ public class ServerSentEventResponder implements Responder, McpConnection {
 
     public void send(String name, String message) {
         MCPLogger.ROOT_LOGGER.debug("Sending message of type " + name + " with content " + message);
-        connection.send(message, name, id, new ServerSentEventConnection.EventCallback() {
+        connection.getResponseHeaders().add(MCP_SESSION_ID_HEADER, id);
+        connection.send(message, name,""+ lastEventId(), new ServerSentEventConnection.EventCallback() {
             @Override
             public void done(ServerSentEventConnection connection, String data, String event, String id) {
-                MCPLogger.ROOT_LOGGER.debug("Message sent: " + data);
+                MCPLogger.ROOT_LOGGER.warn("Message sent: " + data);
             }
 
             @Override
             public void failed(ServerSentEventConnection connection, String data, String event, String id, IOException e) {
+                MCPLogger.ROOT_LOGGER.warn("Failed to send event to client: %s".formatted(data));
                 close();
             }
         });
@@ -115,5 +119,10 @@ public class ServerSentEventResponder implements Responder, McpConnection {
             task.cancel(true);
         }
 
+    }
+
+    @Override
+    public int lastEventId() {
+        return lastEventId++;
     }
 }
