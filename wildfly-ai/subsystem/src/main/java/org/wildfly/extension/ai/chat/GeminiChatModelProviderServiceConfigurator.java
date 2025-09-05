@@ -19,18 +19,26 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
 import static org.wildfly.extension.ai.Capabilities.OPENTELEMETRY_CAPABILITY_NAME;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.ALLOWED_CODE_EXECUTION;
+import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.CIVIC_INTEGRITY;
+import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.DANGEROUS_CONTENT;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.ENABLE_ENHANCED_CIVIC_ANSWERS;
+import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.HARASSMENT;
+import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.HATE_SPEECH;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.INCLUDE_CODE_EXECUTION_OUTPUT;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.INCLUDE_THOUGHTS;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.LOG_PROBS;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.MAX_OUTPUT_TOKEN;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.RESPONSE_LOG_PROBS;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.RETURN_THINKING;
+import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.SEXUALLY_EXPLICIT;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.THINKING_BUDGET;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.TOP_K;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
+import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.dmr.ModelNode;
@@ -46,6 +54,14 @@ import org.wildfly.subsystem.service.ResourceServiceInstaller;
  * Configures an aggregate ChatModel provider service.
  */
 public class GeminiChatModelProviderServiceConfigurator extends AbstractChatModelProviderServiceConfigurator {
+
+    private static final Map<String, String> HARM_CATEGORIES = Map.of(
+            HATE_SPEECH.getName(), "HARM_CATEGORY_HATE_SPEECH",
+            SEXUALLY_EXPLICIT.getName(), "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            DANGEROUS_CONTENT.getName(), "HARM_CATEGORY_DANGEROUS_CONTENT",
+            HARASSMENT.getName(), "HARM_CATEGORY_HARASSMENT",
+            CIVIC_INTEGRITY.getName(), "HARM_CATEGORY_CIVIC_INTEGRITY"
+    );
 
     public GeminiChatModelProviderServiceConfigurator(ValueRegistry<String, WildFlyChatModelConfig> registry) {
         super(registry);
@@ -77,6 +93,7 @@ public class GeminiChatModelProviderServiceConfigurator extends AbstractChatMode
         Integer topK = TOP_K.resolveModelAttribute(context, model).asIntOrNull();
         Double topP = TOP_P.resolveModelAttribute(context, model).asDoubleOrNull();
         boolean isObservable = context.getCapabilityServiceSupport().hasCapability(OPENTELEMETRY_CAPABILITY_NAME);
+        Map<String, String> safetySettingsConfig = safetySettingConfig(context, model);
         Supplier<WildFlyChatModelConfig> factory = new Supplier<>() {
             @Override
             public WildFlyChatModelConfig get() {
@@ -98,6 +115,7 @@ public class GeminiChatModelProviderServiceConfigurator extends AbstractChatMode
                         .seed(seed)
                         .setJson(isJson)
                         .setObservable(isObservable)
+                        .safetySettings(safetySettingsConfig)
                         .setStreaming(streaming)
                         .stopSequences(stopSequences)
                         .thinkingBudget(thinkingBudget)
@@ -108,5 +126,22 @@ public class GeminiChatModelProviderServiceConfigurator extends AbstractChatMode
             }
         };
         return installService(context.getCurrentAddressValue(), factory);
+    }
+
+    private Map<String, String> safetySettingConfig(OperationContext context, ModelNode model) throws OperationFailedException {
+        Map<String, String> safetySettings = new HashMap<>();
+        setSafetySettingConfig(safetySettings, HATE_SPEECH, context, model);
+        setSafetySettingConfig(safetySettings, SEXUALLY_EXPLICIT, context, model);
+        setSafetySettingConfig(safetySettings, DANGEROUS_CONTENT, context, model);
+        setSafetySettingConfig(safetySettings, HARASSMENT, context, model);
+        setSafetySettingConfig(safetySettings, CIVIC_INTEGRITY, context, model);
+        return safetySettings;
+    }
+
+    private void setSafetySettingConfig(Map<String, String> safetySettings, AttributeDefinition att, OperationContext context, ModelNode model) throws OperationFailedException {
+        String value = att.resolveModelAttribute(context, model).asStringOrNull();
+        if(value != null) {
+            safetySettings.put(HARM_CATEGORIES.get(att.getName()), value);
+        }
     }
 }
