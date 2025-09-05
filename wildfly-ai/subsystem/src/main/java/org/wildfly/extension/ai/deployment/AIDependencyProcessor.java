@@ -47,7 +47,7 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
     };
     public static final String[] EXPORTED_MODULES = {
         "dev.langchain4j",
-        "io.smallrye.llm",
+        "dev.langchain4j.cdi",
         "org.wildfly.extension.ai.injection"
     };
 
