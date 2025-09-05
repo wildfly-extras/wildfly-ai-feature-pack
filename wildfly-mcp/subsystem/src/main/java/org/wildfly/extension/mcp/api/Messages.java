@@ -13,7 +13,7 @@ public class Messages {
     public static JsonObject newResult(String id, JsonObjectBuilder result) {
         JsonObjectBuilder response = Json.createObjectBuilder();
         response.add("jsonrpc", JsonRPC.VERSION);
-        response.add("id", id);
+        response.add("id", Integer.parseInt(id));
         response.add("result", result);
         return response.build();
     }
@@ -22,7 +22,7 @@ public class Messages {
         String msg = message == null ? "" : message;
         JsonObjectBuilder response = Json.createObjectBuilder();
         response.add("jsonrpc", JsonRPC.VERSION);
-        response.add("id", id);
+        response.add("id", Integer.parseInt(id));
         response.add("error",
                     Json.createObjectBuilder()
                             .add("code", code)
@@ -41,7 +41,7 @@ public class Messages {
     public static JsonObject newPing(String id) {
         return Json.createObjectBuilder()
                 .add("jsonrpc", JsonRPC.VERSION)
-                .add("id", id)
+                .add("id", Integer.parseInt(id))
                 .add("method", "ping")
                 .build();
     }

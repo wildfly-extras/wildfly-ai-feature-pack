@@ -41,7 +41,7 @@ public class McpMessageHandler {
         this.connectionManager = connectionManager;
         this.serverInfo = new HashMap<>();
         this.serverInfo.put("serverInfo", Map.of("name", serverName, "version", serverVersion));
-        this.serverInfo.put("protocolVersion", "2024-11-05");
+        this.serverInfo.put("protocolVersion", "2025-03-26");
         Map<String, Map<String, Object>> capabilities = new HashMap<>();
         capabilities.put("prompts", Map.of());
         capabilities.put("tools", Map.of());

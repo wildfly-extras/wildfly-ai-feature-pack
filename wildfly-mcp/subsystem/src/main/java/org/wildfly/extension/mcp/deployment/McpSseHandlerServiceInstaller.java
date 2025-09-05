@@ -14,6 +14,7 @@ import io.undertow.Handlers;
 import io.undertow.security.handlers.AuthenticationCallHandler;
 import io.undertow.security.handlers.AuthenticationConstraintHandler;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.sse.ServerSentEventHandler;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
@@ -32,7 +33,9 @@ import org.wildfly.extension.mcp.Capabilities;
 import org.wildfly.extension.mcp.api.ConnectionManager;
 import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 import org.wildfly.extension.mcp.server.McpServerSentConnectionCallBack;
+import org.wildfly.extension.mcp.server.McpStreamableConnectionCallBack;
 import org.wildfly.extension.mcp.server.MessagesHttpHandler;
+import org.wildfly.extension.mcp.server.StreamableHttpHandler;
 import org.wildfly.extension.undertow.DeploymentDefinition;
 import org.wildfly.extension.undertow.Host;
 import org.wildfly.extension.undertow.UndertowExtension;
@@ -75,11 +78,15 @@ public class McpSseHandlerServiceInstaller implements DeploymentServiceInstaller
             securityDomain = null;
         }
         final McpEndpointConfiguration configuration = deploymentUnit.getAttachment(MCPAttachements.MCP_ENDPOINT_CONFIGURATION);
-        final String messagesEndpoint = "/".equals(webContext) ? webContext + configuration.getMessagesPath() : webContext + '/' + configuration.getMessagesPath();
+        final String messagesEndpoint = "/".equals(webContext) ? webContext + configuration.messagesPath() : webContext + '/' + configuration.messagesPath();
         final ConnectionManager connectionManager = new ConnectionManager();
         final McpServerSentConnectionCallBack mcpServerSentConnectionCallBack = new McpServerSentConnectionCallBack(messagesEndpoint, connectionManager);
+        final McpStreamableConnectionCallBack mcpStreamableConnectionCallBack = new McpStreamableConnectionCallBack(connectionManager);
         final MessagesHttpHandler messagesHttpHandler = new MessagesHttpHandler(connectionManager, registry, classLoader, serverName, deploymentUnit.getName());
-        final String ssePath = "/".equals(webContext) ? webContext + configuration.getSsePath() : webContext + '/' + configuration.getSsePath();
+        final String ssePath = "/".equals(webContext) ? webContext + configuration.ssePath() : webContext + '/' + configuration.ssePath();
+        final String streamableEndpoint = "/".equals(webContext) ? webContext + configuration.streamablePath() : webContext + '/' + configuration.streamablePath();
+        final ServerSentEventHandler sseHandler = Handlers.serverSentEvents(mcpServerSentConnectionCallBack);
+        final StreamableHttpHandler streamableHttpHandler = new StreamableHttpHandler(connectionManager, registry, classLoader, serverName, deploymentUnit.getName(), Handlers.serverSentEvents(mcpStreamableConnectionCallBack));
         Runnable start = new Runnable() {
             @Override
             public void run() {
@@ -89,13 +96,16 @@ public class McpSseHandlerServiceInstaller implements DeploymentServiceInstaller
                             .setSecurityDomain(securityDomain.get())
                             .setMechanismConfigurationSelector(MechanismConfigurationSelector.constantSelector(MechanismConfiguration.EMPTY))
                             .build();
-                    host.get().registerHandler(ssePath, secureHandler(Handlers.serverSentEvents(mcpServerSentConnectionCallBack), httpAuthenticationFactory));
+                    host.get().registerHandler(ssePath, secureHandler(sseHandler, httpAuthenticationFactory));
                     host.get().registerHandler(messagesEndpoint, secureHandler(messagesHttpHandler, httpAuthenticationFactory));
+                    host.get().registerHandler(streamableEndpoint, secureHandler(streamableHttpHandler, httpAuthenticationFactory));
                 } else {
-                    host.get().registerHandler(ssePath, Handlers.serverSentEvents(mcpServerSentConnectionCallBack));
+                    host.get().registerHandler(ssePath, sseHandler);
                     host.get().registerHandler(messagesEndpoint, messagesHttpHandler);
+                    host.get().registerHandler(streamableEndpoint, streamableHttpHandler);
                 }
                 ROOT_LOGGER.endpointRegistered(ssePath, host.get().getName());
+                ROOT_LOGGER.endpointRegistered(streamableEndpoint, host.get().getName());
             }
         };
         Runnable stop = new Runnable() {
@@ -104,6 +114,7 @@ public class McpSseHandlerServiceInstaller implements DeploymentServiceInstaller
                 host.get().unregisterHandler(ssePath);
                 host.get().unregisterHandler(messagesEndpoint);
                 ROOT_LOGGER.endpointUnregistered(ssePath, host.get().getName());
+                ROOT_LOGGER.endpointUnregistered(streamableEndpoint, host.get().getName());
             }
         };
         if (oidcSecured) {
