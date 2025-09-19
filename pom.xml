@@ -66,13 +66,13 @@
         <version.com.squareup.okio-jvm>3.6.0</version.com.squareup.okio-jvm>
         <version.com.squareup.retrofit2>2.9.0</version.com.squareup.retrofit2>
         <version.commons-compress>1.27.1</version.commons-compress>
-        <version.dev.langchain4j>1.4.0-beta10</version.dev.langchain4j>
-        <version.dev.langchain4j.embeddings>1.4.0-beta10</version.dev.langchain4j.embeddings>
-        <version.dev.langchain4j.community>1.4.0-beta10</version.dev.langchain4j.community>
-        <version.dev.langchain4j.core>1.4.0</version.dev.langchain4j.core>
+        <version.dev.langchain4j>1.5.0-beta11</version.dev.langchain4j>
+        <version.dev.langchain4j.cdi>0.0.4</version.dev.langchain4j.cdi>
+        <version.dev.langchain4j.community>1.5.0-beta11</version.dev.langchain4j.community>
+        <version.dev.langchain4j.core>1.5.0</version.dev.langchain4j.core>
+        <version.dev.langchain4j.embeddings>1.5.0-beta11</version.dev.langchain4j.embeddings>
         <version.io.projectreactor.netty>1.0.45</version.io.projectreactor.netty>
         <version.io.projectreactor.reactor-core>3.4.38</version.io.projectreactor.reactor-core>
-        <version.dev.langchain4j.cdi>0.0.3</version.dev.langchain4j.cdi>
         <version.io.weaviate.client>5.3.0</version.io.weaviate.client>
         <version.net.java.dev.jna>5.13.0</version.net.java.dev.jna>
         <version.org.extism.sdk.chicory-sdk>0.1.7</version.org.extism.sdk.chicory-sdk>
