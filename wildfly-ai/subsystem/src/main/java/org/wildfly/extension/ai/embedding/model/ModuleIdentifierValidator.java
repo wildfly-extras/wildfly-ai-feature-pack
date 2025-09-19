@@ -23,7 +23,7 @@ public class ModuleIdentifierValidator extends ModelTypeValidator {
         if (value.isDefined()) {
             String module = value.asString();
             try {
-                ModuleIdentifierUtil.canonicalModuleIdentifier(module);
+                ModuleIdentifierUtil.parseCanonicalModuleIdentifier(module);
             } catch (IllegalArgumentException e) {
                 throw new OperationFailedException(e.getMessage() + ": " + module, e);
             }

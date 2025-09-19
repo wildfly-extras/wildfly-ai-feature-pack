@@ -4,8 +4,8 @@
  */
 package org.wildfly.extension.ai.injection;
 
-import static org.wildfly.extension.ai.injection.WildFlyLLMConfig.registerBean;
 
+import dev.langchain4j.cdi.core.config.spi.LLMConfigProvider;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
@@ -31,14 +31,15 @@ public class WildFlyBeanRegistry {
     private static final Map<String, WildFlyContentRetrieverConfig> contentRetrievers = new HashMap<>();
     private static final Map<String, ToolProvider> toolProviders = new HashMap<>();
     private static final Map<String, WildFlyChatMemoryProviderConfig> chatMemoryProviders = new HashMap<>();
+    private static final WildFlyLLMConfig config = (WildFlyLLMConfig) LLMConfigProvider.getLlmConfig();
 
     public static final void registerChatModel(String id, WildFlyChatModelConfig chatModel) {
         if (!chatModels.containsKey(id)) {
             chatModels.put(id, chatModel);
             if (chatModel.isStreaming()) {
-                registerBean(id, chatModel, StreamingChatModel.class);
+                config.registerBean(id, chatModel, StreamingChatModel.class);
             } else {
-                registerBean(id, chatModel, ChatModel.class);
+                config.registerBean(id, chatModel, ChatModel.class);
             }
         }
     }
@@ -46,32 +47,32 @@ public class WildFlyBeanRegistry {
     public static void registerEmbeddingModel(String id, EmbeddingModel embeddingModel) {
         if (!embeddingModels.containsKey(id)) {
             embeddingModels.put(id, embeddingModel);
-            registerBean(id, embeddingModel, EmbeddingModel.class);
+            config.registerBean(id, embeddingModel, EmbeddingModel.class);
         }
     }
 
     public static void registerEmbeddingStore(String id, EmbeddingStore<?> embeddingStore) {
         if (!embeddingStores.containsKey(id)) {
             embeddingStores.put(id, embeddingStore);
-            registerBean(id, embeddingStore, EmbeddingStore.class);
+            config.registerBean(id, embeddingStore, EmbeddingStore.class);
         }
     }
 
     public static void registerContentRetriever(String id, WildFlyContentRetrieverConfig contentRetriever) {
         if (!contentRetrievers.containsKey(id)) {
             contentRetrievers.put(id, contentRetriever);
-            registerBean(id, contentRetriever, ContentRetriever.class);
+            config.registerBean(id, contentRetriever, ContentRetriever.class);
         }
     }
 
     public static void registerToolProvider(String id, ToolProvider toolProvider) {
         toolProviders.put(id, toolProvider);
-        registerBean(id, toolProvider, ToolProvider.class);
+        config.registerBean(id, toolProvider, ToolProvider.class);
     }
 
     public static void registerChatMemoryProvider(String id, WildFlyChatMemoryProviderConfig chatMemoryProvider) {
         chatMemoryProviders.put(id, chatMemoryProvider);
-        registerBean(id, chatMemoryProvider, ChatMemoryProvider.class);
+        config.registerBean(id, chatMemoryProvider, ChatMemoryProvider.class);
     }
 
     public static final List<Extension> getCDIExtensions() {
