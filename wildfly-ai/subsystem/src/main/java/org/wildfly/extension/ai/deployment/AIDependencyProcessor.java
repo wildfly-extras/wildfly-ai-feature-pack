@@ -35,6 +35,7 @@ import org.wildfly.extension.ai.Capabilities;
 public class AIDependencyProcessor implements DeploymentUnitProcessor {
 
     public static final String[] OPTIONAL_MODULES = {
+        "dev.langchain4j.chroma",
         "dev.langchain4j.gemini",
         "dev.langchain4j.github-models",
         "dev.langchain4j.ollama",
