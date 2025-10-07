@@ -104,6 +104,13 @@
             </xs:documentation>
         </xs:annotation>
         <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="chroma-embedding-store" type="chromaEmbeddingStoreType">
+                <xs:annotation>
+                    <xs:documentation>
+                        A Chroma embedding-store provider definition element.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="in-memory-embedding-store" type="inMemoryEmbeddingStoreType">
                 <xs:annotation>
                     <xs:documentation>
@@ -1369,6 +1376,83 @@
             <xs:annotation>
                 <xs:documentation>
                     The list of metadata fields to get from the weaviate store.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="chromaEmbeddingStoreType">
+        <xs:annotation>
+            <xs:documentation>
+                A provider of Chroma embedding store.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of this provider.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="api-version" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The API version to use on the Chroma server.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="V1"/>
+                    <xs:enumeration value="V2"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="base-url" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The base URL to the Chroma server.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="collection-name" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of the collection in Chroma database.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="connect-timeout" type="xs:long" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The connection timeout for connecting to the Chroma server.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="database-name" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of the database in Chroma database.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-requests" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API requests to the Chroma server.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="log-responses" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    Whether to log API responses from the Chroma server.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="tenant-name" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of the tenant in Chroma database.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>

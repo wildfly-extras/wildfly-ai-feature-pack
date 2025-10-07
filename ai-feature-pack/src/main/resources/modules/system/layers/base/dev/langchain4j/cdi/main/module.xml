@@ -12,6 +12,7 @@
     <resources>
         <artifact name="${dev.langchain4j.cdi:langchain4j-cdi-core}"/>
         <artifact name="${dev.langchain4j.cdi:langchain4j-cdi-portable-ext}"/>
+        <artifact name="${dev.langchain4j.cdi:langchain4j-cdi-telemetry}"/>
     </resources>
 
     <exports>
@@ -20,6 +21,7 @@
 
     <dependencies>
         <module name="dev.langchain4j"/>
+        <module name="dev.langchain4j.chroma" optional="true"/>
         <module name="dev.langchain4j.mcp-client" optional="true"/>
         <module name="dev.langchain4j.mistral-ai" optional="true"/>
         <module name="dev.langchain4j.neo4j" optional="true"/>

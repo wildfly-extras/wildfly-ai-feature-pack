@@ -6,6 +6,7 @@ package org.wildfly.extension.ai;
 
 import static org.jboss.as.controller.PathElement.pathElement;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEPLOYMENT;
+
 import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.SubsystemRegistration;
 import org.jboss.as.controller.SubsystemResourceRegistration;
@@ -22,6 +23,7 @@ import org.wildfly.extension.ai.deployment.AIDependencyProcessor;
 import org.wildfly.extension.ai.deployment.AIDeploymentProcessor;
 import org.wildfly.extension.ai.embedding.model.InMemoryEmbeddingModelProviderRegistrar;
 import org.wildfly.extension.ai.embedding.model.OllamaEmbeddingModelProviderRegistrar;
+import org.wildfly.extension.ai.embedding.store.ChromaEmbeddingStoreProviderRegistrar;
 import org.wildfly.extension.ai.embedding.store.InMemoryEmbeddingStoreProviderRegistrar;
 import org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegistrar;
 import org.wildfly.extension.ai.rag.retriever.EmbeddingStoreContentRetrieverProviderRegistrar;
@@ -61,22 +63,29 @@ class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
                 .build();
         ManagementResourceRegistrar.of(descriptor).register(registration);
         new ChatMemoryProviderRegistrar(RESOLVER).register(registration, context);
+
         new GeminiChatLanguageModelProviderRegistrar(RESOLVER).register(registration, context);
         new GithubModelChatLanguageModelProviderRegistrar(RESOLVER).register(registration, context);
         new OllamaChatLanguageModelProviderRegistrar(RESOLVER).register(registration, context);
         new OpenAIChatLanguageModelProviderRegistrar(RESOLVER).register(registration, context);
         new MistralAIChatLanguageModelProviderRegistrar(RESOLVER).register(registration, context);
+
         new InMemoryEmbeddingModelProviderRegistrar(RESOLVER).register(registration, context);
         new OllamaEmbeddingModelProviderRegistrar(RESOLVER).register(registration, context);
+
+        new ChromaEmbeddingStoreProviderRegistrar(RESOLVER).register(registration, context);
         new InMemoryEmbeddingStoreProviderRegistrar(RESOLVER).register(registration, context);
         new Neo4jEmbeddingStoreProviderRegistrar(RESOLVER).register(registration, context);
         new WeaviateEmbeddingStoreProviderRegistrar(RESOLVER).register(registration, context);
+
         new EmbeddingStoreContentRetrieverProviderRegistrar(RESOLVER).register(registration, context);
         new Neo4JContentRetrieverProviderRegistrar(RESOLVER).register(registration, context);
         new WebSearchContentContentRetrieverProviderRegistrar(RESOLVER).register(registration, context);
+
         new McpToolProviderProviderRegistrar(RESOLVER).register(registration, context);
         new McpClientSseProviderRegistrar(RESOLVER).register(registration, context);
         new McpClientStdioProviderRegistrar(RESOLVER).register(registration, context);
+
         ParentResourceDescriptionResolver deploymentResolver = RESOLVER.createChildResolver(pathElement(DEPLOYMENT));
         ManagementResourceRegistration deploymentRegistration = parent.registerDeploymentModel(ResourceDefinition.builder(REGISTRATION, deploymentResolver).asRuntime().asNonFeature().build());
         new AIModelDeploymentRegistrar(deploymentResolver).register(deploymentRegistration, context);

@@ -5,6 +5,7 @@
 package org.wildfly.extension.ai;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CREDENTIAL_REFERENCE;
+
 import org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar;
 import org.jboss.as.controller.SubsystemSchema;
 import org.jboss.as.controller.persistence.xml.ResourceXMLChoice;
@@ -21,6 +22,7 @@ import org.wildfly.extension.ai.chat.MistralAIChatLanguageModelProviderRegistrar
 import org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar;
 import org.wildfly.extension.ai.embedding.model.InMemoryEmbeddingModelProviderRegistrar;
 import org.wildfly.extension.ai.embedding.model.OllamaEmbeddingModelProviderRegistrar;
+import org.wildfly.extension.ai.embedding.store.ChromaEmbeddingStoreProviderRegistrar;
 import org.wildfly.extension.ai.embedding.store.InMemoryEmbeddingStoreProviderRegistrar;
 import org.wildfly.extension.ai.embedding.store.Neo4jEmbeddingStoreProviderRegistrar;
 
@@ -100,6 +102,7 @@ enum AISubsystemSchema implements SubsystemResourceXMLSchema<AISubsystemSchema> 
                         this.factory
                                 .choice()
                                 .withCardinality(XMLCardinality.Unbounded.OPTIONAL)
+                                .addElement(this.factory.namedElement(ChromaEmbeddingStoreProviderRegistrar.REGISTRATION).addAttributes(ChromaEmbeddingStoreProviderRegistrar.ATTRIBUTES).build())
                                 .addElement(this.factory.namedElement(InMemoryEmbeddingStoreProviderRegistrar.REGISTRATION).addAttributes(InMemoryEmbeddingStoreProviderRegistrar.ATTRIBUTES).build())
                                 .addElement(this.factory.namedElement(Neo4jEmbeddingStoreProviderRegistrar.REGISTRATION).addAttributes(Neo4jEmbeddingStoreProviderRegistrar.ATTRIBUTES)
                                         .withContent(this.factory.choice().withCardinality(XMLCardinality.Single.OPTIONAL).addElement(CREDENTIAL_REFERENCE).build()).build())
