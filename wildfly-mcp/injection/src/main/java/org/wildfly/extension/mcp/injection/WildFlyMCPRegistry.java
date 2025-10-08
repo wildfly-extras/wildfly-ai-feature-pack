@@ -79,7 +79,29 @@ public class WildFlyMCPRegistry {
     public void prepareTool(String toolName, Class<?> clazz) {
         try {
             MethodMetadata method = tools.get(toolName).method();
-            MethodType mt = MethodType.methodType(Class.forName(method.returnType(), true, clazz.getClassLoader()), method.argumentTypes());
+            Class returnClass;
+            switch (method.returnType()) {
+                case "int":
+                    returnClass = int.class;
+                    break;
+                case "float":
+                    returnClass = float.class;
+                    break;
+                case "long":
+                    returnClass = long.class;
+                    break;
+                case "double":
+                    returnClass = double.class;
+                    break;
+                case "char":
+                    returnClass = char.class;
+                    break;
+                default:
+                    returnClass = Class.forName(method.returnType(), true, clazz.getClassLoader());
+                    break;
+
+            }
+            MethodType mt = MethodType.methodType(returnClass, method.argumentTypes());
             MethodHandles.Lookup privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
             MethodHandle handle = privateLookup.findVirtual(clazz, method.name(), mt);
             toolInvokers.put(toolName, handle);
