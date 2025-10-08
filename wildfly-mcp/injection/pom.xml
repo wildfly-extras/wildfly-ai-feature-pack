@@ -79,7 +79,6 @@
             <!-- This is a compile-time dependency of this project, but is not needed at compile or runtime by other
             projects that depend on this project.-->
             <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
@@ -87,7 +86,6 @@
             <!-- This is a compile-time dependency of this project, but is not needed at compile or runtime by other
             projects that depend on this project.-->
             <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>
