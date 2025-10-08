@@ -22,7 +22,7 @@ jobs:
         java:
           - 17
           - 21
-          - 24
+          - 25
     steps:
       - name: Checkout
         uses: actions/checkout@v5
