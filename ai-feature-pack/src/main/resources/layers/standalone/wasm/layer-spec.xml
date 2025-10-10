@@ -5,6 +5,9 @@
   -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="wasm">
     <props>
+        <prop name="org.wildfly.category" value="WASM"/>
+        <prop name="org.wildfly.description" value="Support for WASM WASI subsystem"/>
+        <prop name="org.wildfly.stability" value="experimental"/>
         <prop name="org.wildfly.rule.class" value="org.wildfly.wasm.api.*"/>
         <prop name="org.wildfly.rule.annotations" value="org.wildfly.wasm.api.*"/>
     </props>
