@@ -5,6 +5,9 @@
 -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="mcp-client-stdio">
     <props>
+        <prop name="org.wildfly.category" value="Generative AI"/>
+        <prop name="org.wildfly.description" value="Support for MCP stdio client"/>
+        <prop name="org.wildfly.stability" value="experimental"/>
         <prop name="org.wildfly.rule.add-on-depends-on" value="only:ai"/>
         <prop name="org.wildfly.rule.add-on" value="ai-mcp-client,mcp-client-sse"/>
         <prop name="org.wildfly.rule.add-on-description" value="Use MCP SSE client as tool provider LLM interactions"/>
