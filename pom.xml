@@ -76,7 +76,7 @@
         <version.io.weaviate.client>5.3.0</version.io.weaviate.client>
         <version.net.java.dev.jna>5.13.0</version.net.java.dev.jna>
         <version.org.extism.sdk.chicory-sdk>0.1.7</version.org.extism.sdk.chicory-sdk>
-        <version.org.jetbrains.kotlin>2.1.21</version.org.jetbrains.kotlin>
+        <version.org.jetbrains.kotlin>2.2.21</version.org.jetbrains.kotlin>
         <version.org.ow2.asm>9.7.1</version.org.ow2.asm>
         <version.org.neo4j.cypher>2024.7.3</version.org.neo4j.cypher>
         <version.org.neo4j.driver>5.28.9</version.org.neo4j.driver>
