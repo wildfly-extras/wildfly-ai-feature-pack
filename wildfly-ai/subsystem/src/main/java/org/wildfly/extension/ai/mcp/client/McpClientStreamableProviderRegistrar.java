@@ -1,0 +1,73 @@
+/*
+ * Copyright The WildFly Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+package org.wildfly.extension.ai.mcp.client;
+
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SOCKET_BINDING;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.SSL_ENABLED;
+import static org.wildfly.extension.ai.Capabilities.MCP_CLIENT_CAPABILITY;
+import static org.wildfly.extension.ai.Capabilities.OUTBOUND_SOCKET_BINDING_CAPABILITY_NAME;
+
+import java.util.Collection;
+import java.util.List;
+import org.jboss.as.controller.AttributeDefinition;
+import org.jboss.as.controller.PathElement;
+import org.jboss.as.controller.ResourceDefinition;
+import org.jboss.as.controller.ResourceRegistration;
+import org.jboss.as.controller.SimpleAttributeDefinition;
+import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
+import org.jboss.as.controller.access.management.SensitiveTargetAccessConstraintDefinition;
+import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
+import org.jboss.as.controller.registry.ManagementResourceRegistration;
+import org.jboss.dmr.ModelType;
+import org.wildfly.subsystem.resource.ChildResourceDefinitionRegistrar;
+import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
+import org.wildfly.subsystem.resource.ManagementResourceRegistrationContext;
+import org.wildfly.subsystem.resource.ResourceDescriptor;
+import org.wildfly.subsystem.resource.operation.ResourceOperationRuntimeHandler;
+
+public class McpClientStreamableProviderRegistrar implements ChildResourceDefinitionRegistrar {
+
+    public static final SimpleAttributeDefinition STREAM_SOCKET_BINDING = SimpleAttributeDefinitionBuilder.create(SOCKET_BINDING, ModelType.STRING, false)
+            .setAllowExpression(true)
+            .setCapabilityReference(OUTBOUND_SOCKET_BINDING_CAPABILITY_NAME)
+            .addAccessConstraint(SensitiveTargetAccessConstraintDefinition.SOCKET_BINDING_REF)
+            .setRestartAllServices()
+            .build();
+    public static final SimpleAttributeDefinition STREAM_PATH = SimpleAttributeDefinitionBuilder.create("stream-path", ModelType.STRING, false)
+            .setAllowExpression(true)
+            .setRestartAllServices()
+            .build();
+
+    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(CONNECT_TIMEOUT, LOG_REQUESTS, LOG_RESPONSES, STREAM_PATH, SSL_ENABLED, STREAM_SOCKET_BINDING);
+
+    private final ResourceDescriptor descriptor;
+    static final String NAME = "mcp-client-stream";
+    public static final PathElement PATH = PathElement.pathElement(NAME);
+    public static final ResourceRegistration REGISTRATION = ResourceRegistration.of(PATH);
+
+    public McpClientStreamableProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
+        this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
+                .addCapability(MCP_CLIENT_CAPABILITY)
+                .addAttributes(ATTRIBUTES)
+                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new McpClientStreamableServiceConfigurator()))
+                .build();
+    }
+
+    @Override
+    public ManagementResourceRegistration register(ManagementResourceRegistration parent, ManagementResourceRegistrationContext mrrc) {
+        ResourceDefinition definition = ResourceDefinition.builder(REGISTRATION, this.descriptor.getResourceDescriptionResolver()).build();
+        ManagementResourceRegistration resourceRegistration = parent.registerSubModel(definition);
+        ManagementResourceRegistrar.of(this.descriptor).register(resourceRegistration);
+        return resourceRegistration;
+    }
+
+    private enum SseScheme {
+        http, https;
+    }
+
+}
