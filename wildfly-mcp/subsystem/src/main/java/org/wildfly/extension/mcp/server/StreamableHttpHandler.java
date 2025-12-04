@@ -50,8 +50,7 @@ public class StreamableHttpHandler implements HttpHandler {
             return;
         }
         HeaderValues accepts = exchange.getRequestHeaders().get(Headers.ACCEPT);
-        if (!accepts.contains("application/json")
-                || !accepts.contains("text/event-stream")) {
+        if (!isValideAcceptHeader(accepts)) {
             MCPLogger.ROOT_LOGGER.invalidAcceptHeaders(Arrays.toString(accepts.toArray()));
             exchange.setStatusCode(400);
             exchange.endExchange();
@@ -90,4 +89,12 @@ public class StreamableHttpHandler implements HttpHandler {
         handler.handle(content, connection, connection);
     }
 
+    private boolean isValideAcceptHeader(HeaderValues accepts) {
+        for (String accept : accepts) {
+            if (accept.contains("application/json") && accept.contains("text/event-stream")) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

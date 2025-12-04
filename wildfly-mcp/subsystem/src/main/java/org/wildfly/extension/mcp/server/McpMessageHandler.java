@@ -46,7 +46,7 @@ public class McpMessageHandler {
         capabilities.put("prompts", Map.of());
         capabilities.put("tools", Map.of());
         capabilities.put("resources", Map.of());
-        capabilities.put("logging", Map.of());
+//        capabilities.put("logging", Map.of());
         this.serverInfo.put("capabilities", capabilities);
     }
 
