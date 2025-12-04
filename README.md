@@ -52,11 +52,13 @@ For each AI type it supports, the feature-pack provides several Galleon layers t
   * `in-memory-embedding-store`
   * `neo4j-embedding-store`
   * `weaviate-embedding-store`
+  * `chroma-embedding-store`
 * Support for content retriever for RAG:
   * `default-embedding-content-retriever`: default content retriever using an `in-memory-embedding-store` and `in-memory-embedding-model-all-minilm-l6-v2` for embedding model.
   * `neo4j-content-retriever`
   * `web-search-engines`
 * Support for [Model Context Protocol (MCP)](https://modelcontextprotocol.io/): 
+  * `mcp-stream`: MCP Client using the Streamable (stream) transport
   * `mcp-sse`: MCP Client using the Server-Sent Events (SSE) transport
   * `mcp-stdio`: MCP Client using the Standard Input/Output (stdio) transport
   
