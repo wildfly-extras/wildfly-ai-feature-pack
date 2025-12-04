@@ -8,7 +8,7 @@
     </parent>
     <groupId>org.wildfly.generative-ai</groupId>
     <artifactId>wildfly-ai-feature-pack-parent</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Parent AI integration for WildFly</name>
@@ -27,7 +27,7 @@
         <connection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</connection>
         <developerConnection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</developerConnection>
         <url>https://github.com/wildfly-extras/wildfly-ai-feature-pack</url>
-        <tag>0.9.0</tag>
+        <tag>0.8.1</tag>
     </scm>
 
     <developers>

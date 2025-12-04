@@ -15,7 +15,7 @@
         Maintain separation between the artifact id and the version to help prevent
         merge conflicts between commits changing the GA and those changing the V.
         -->
-        <version>0.9.0</version>
+        <version>0.9.1-SNAPSHOT</version>
     </parent>
     <artifactId>wildfly-mcp-injection</artifactId>
     <name>WildFly: MCP Server Injection</name>
