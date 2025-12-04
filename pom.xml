@@ -27,7 +27,7 @@
         <connection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</connection>
         <developerConnection>scm:git:git@github.com:wildfly-extras/wildfly-ai-feature-pack.git</developerConnection>
         <url>https://github.com/wildfly-extras/wildfly-ai-feature-pack</url>
-        <tag>0.7.2</tag>
+        <tag>0.8.1</tag>
     </scm>
 
     <developers>
@@ -66,11 +66,11 @@
         <version.com.squareup.okio-jvm>3.6.0</version.com.squareup.okio-jvm>
         <version.com.squareup.retrofit2>2.9.0</version.com.squareup.retrofit2>
         <version.commons-compress>1.27.1</version.commons-compress>
-        <version.dev.langchain4j>1.8.0-beta15</version.dev.langchain4j>
+        <version.dev.langchain4j>1.9.1-beta17</version.dev.langchain4j>
         <version.dev.langchain4j.cdi>0.0.7</version.dev.langchain4j.cdi>
-        <version.dev.langchain4j.community>1.8.0-beta15</version.dev.langchain4j.community>
-        <version.dev.langchain4j.core>1.8.0</version.dev.langchain4j.core>
-        <version.dev.langchain4j.embeddings>1.8.0-beta15</version.dev.langchain4j.embeddings>
+        <version.dev.langchain4j.community>1.9.1-beta17</version.dev.langchain4j.community>
+        <version.dev.langchain4j.core>1.9.1</version.dev.langchain4j.core>
+        <version.dev.langchain4j.embeddings>1.9.1-beta17</version.dev.langchain4j.embeddings>
         <version.io.projectreactor.netty>1.0.45</version.io.projectreactor.netty>
         <version.io.projectreactor.reactor-core>3.4.38</version.io.projectreactor.reactor-core>
         <version.io.weaviate.client>5.3.0</version.io.weaviate.client>
@@ -78,8 +78,8 @@
         <version.org.extism.sdk.chicory-sdk>0.1.7</version.org.extism.sdk.chicory-sdk>
         <version.org.jetbrains.kotlin>2.1.21</version.org.jetbrains.kotlin>
         <version.org.ow2.asm>9.7.1</version.org.ow2.asm>
-        <version.org.neo4j.cypher>2024.7.3</version.org.neo4j.cypher>
-        <version.org.neo4j.driver>5.28.9</version.org.neo4j.driver>
+        <version.org.neo4j.cypher>2025.2.0</version.org.neo4j.cypher>
+        <version.org.neo4j.driver>6.0.2</version.org.neo4j.driver>
         <version.org.reactivestreams.reactive-streams>1.0.4</version.org.reactivestreams.reactive-streams>
 
         <!-- Nexus deployment settings -->
