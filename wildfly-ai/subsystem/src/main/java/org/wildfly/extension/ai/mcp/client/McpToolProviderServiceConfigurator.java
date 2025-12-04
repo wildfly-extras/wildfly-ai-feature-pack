@@ -24,6 +24,8 @@ import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
 
 import static org.wildfly.extension.ai.Capabilities.TOOL_PROVIDER_CAPABILITY;
 
+import org.wildfly.service.Installer;
+
 public class McpToolProviderServiceConfigurator implements ResourceServiceConfigurator {
 
     @Override
@@ -41,7 +43,7 @@ public class McpToolProviderServiceConfigurator implements ResourceServiceConfig
         return CapabilityServiceInstaller.builder(TOOL_PROVIDER_CAPABILITY, factory)
                 .requires(mcpClientDeps)
                 .blocking()
-                .asActive()
+                .startWhen(Installer.StartWhen.INSTALLED)
                 .build();
     }
 

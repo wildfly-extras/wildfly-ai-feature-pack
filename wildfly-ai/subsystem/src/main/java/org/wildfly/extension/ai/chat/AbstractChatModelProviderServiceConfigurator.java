@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.extension.opentelemetry.api.WildFlyOpenTelemetryConfig;
+import org.wildfly.service.Installer;
 import org.wildfly.service.capture.ValueRegistry;
 import org.wildfly.subsystem.service.ResourceServiceConfigurator;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
@@ -29,7 +30,7 @@ public abstract class AbstractChatModelProviderServiceConfigurator implements Re
         Consumer<WildFlyChatModelConfig> captor = registry.add(name);
         ResourceServiceInstaller installer = CapabilityServiceInstaller.builder(CHAT_MODEL_PROVIDER_CAPABILITY, factory)
                 .withCaptor(captor)
-                .asActive()
+                .startWhen(Installer.StartWhen.INSTALLED)
                 .build();
         Consumer<OperationContext> remover = ctx -> registry.remove(ctx.getCurrentAddressValue());
         return new ResourceServiceInstaller() {
@@ -45,7 +46,7 @@ public abstract class AbstractChatModelProviderServiceConfigurator implements Re
         ResourceServiceInstaller installer = CapabilityServiceInstaller.builder(CHAT_MODEL_PROVIDER_CAPABILITY, factory)
                 .requires(openTelemetryConfig)
                 .withCaptor(captor)
-                .asActive()
+                .startWhen(Installer.StartWhen.INSTALLED)
                 .build();
         Consumer<OperationContext> remover = ctx -> registry.remove(ctx.getCurrentAddressValue());
         return new ResourceServiceInstaller() {

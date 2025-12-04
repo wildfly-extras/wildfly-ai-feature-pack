@@ -25,6 +25,7 @@ import org.wildfly.subsystem.service.ResourceServiceInstaller;
 import org.wildfly.subsystem.service.ServiceDependency;
 import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
 import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
+import org.wildfly.service.Installer;
 
 public class EmbeddingStoreContentRetrieverProviderServiceConfigurator implements ResourceServiceConfigurator {
 
@@ -53,7 +54,7 @@ public class EmbeddingStoreContentRetrieverProviderServiceConfigurator implement
                 .requires(embeddingStore)
                 .requires(embeddingModel)
                 .blocking()
-                .asActive()
+                .startWhen(Installer.StartWhen.INSTALLED)
                 .build();
     }
 

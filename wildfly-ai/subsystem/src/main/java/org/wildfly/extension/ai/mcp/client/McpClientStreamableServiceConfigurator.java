@@ -14,10 +14,11 @@ import static org.wildfly.extension.ai.mcp.client.McpClientSseProviderRegistrar.
 
 import dev.langchain4j.mcp.client.DefaultMcpClient;
 import dev.langchain4j.mcp.client.transport.McpTransport;
-import dev.langchain4j.mcp.client.transport.http.HttpMcpTransport;
+import dev.langchain4j.mcp.client.transport.http.StreamableHttpMcpTransport;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
@@ -29,7 +30,7 @@ import org.wildfly.subsystem.service.ResourceServiceInstaller;
 import org.wildfly.subsystem.service.ServiceDependency;
 import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
 
-public class McpClientSseServiceConfigurator implements ResourceServiceConfigurator {
+public class McpClientStreamableServiceConfigurator implements ResourceServiceConfigurator {
 
     @Override
     public ResourceServiceInstaller configure(OperationContext context, ModelNode model) throws OperationFailedException {
@@ -41,16 +42,18 @@ public class McpClientSseServiceConfigurator implements ResourceServiceConfigura
         Boolean logResponses = LOG_RESPONSES.resolveModelAttribute(context, model).asBooleanOrNull();
         String socketBindingName = SSE_SOCKET_BINDING.resolveModelAttribute(context, model).asString();
         ServiceDependency<OutboundSocketBinding> outboundSocketBinding = ServiceDependency.on(OutboundSocketBinding.SERVICE_DESCRIPTOR, socketBindingName);
+        ServiceDependency<ExecutorService> executorService = ServiceDependency.on("org.wildfly.ee.concurrent.executor", ExecutorService.class, "default");
         Supplier<WildFlyMcpClient> factory = new Supplier<>() {
             @Override
             public WildFlyMcpClient get() {
                 try {
                     URI url = new URI(scheme, null, outboundSocketBinding.get().getUnresolvedDestinationAddress(), outboundSocketBinding.get().getDestinationPort(), path, null, null);
-                    McpTransport transport = new HttpMcpTransport.Builder()
+                    McpTransport transport = new StreamableHttpMcpTransport.Builder()
                             .logRequests(logRequests)
                             .logResponses(logResponses)
                             .timeout(connectTimeOut > 0L ? Duration.ofMillis(connectTimeOut) : null)
-                            .sseUrl(url.toString())
+                            .url(url.toString())
+                            .executor(executorService.get())
                             .build();
                     return new WildFlyMcpClient(new DefaultMcpClient.Builder()
                             .transport(transport)

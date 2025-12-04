@@ -9,6 +9,7 @@ import static org.wildfly.extension.ai.Capabilities.CHAT_MEMORY_PROVIDER_CAPABIL
 import static org.wildfly.extension.ai.memory.ChatMemoryProviderRegistrar.SIZE;
 import static org.wildfly.extension.ai.memory.ChatMemoryProviderRegistrar.TYPE;
 import static org.wildfly.extension.ai.memory.ChatMemoryProviderRegistrar.USE_HTTP_SESSION;
+
 import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
@@ -16,6 +17,7 @@ import org.jboss.dmr.ModelNode;
 
 
 import org.wildfly.extension.ai.injection.memory.WildFlyChatMemoryProviderConfig;
+import org.wildfly.service.Installer;
 import org.wildfly.subsystem.service.ResourceServiceConfigurator;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
 import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
@@ -37,6 +39,9 @@ public class ChatMemoryProviderServiceConfigurator implements ResourceServiceCon
                         .useHttpSession(useHttpSession);
             }
         };
-        return CapabilityServiceInstaller.builder(CHAT_MEMORY_PROVIDER_CAPABILITY, factory).blocking().asActive().build();
+        return CapabilityServiceInstaller.builder(CHAT_MEMORY_PROVIDER_CAPABILITY, factory)
+                .blocking()
+                .startWhen(Installer.StartWhen.INSTALLED)
+                .build();
     }
 }
