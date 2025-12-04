@@ -23,14 +23,11 @@ import org.jboss.dmr.ModelNode;
 import org.wildfly.extension.ai.injection.retriever.GoogleWebSearchContentRetrieverConfig;
 import org.wildfly.extension.ai.injection.retriever.TavilyWebSearchContentRetrieverConfig;
 import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
+import org.wildfly.service.Installer;
 import org.wildfly.subsystem.service.ResourceServiceConfigurator;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
 import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
 
-/**
- *
- * @author Emmanuel Hugonnet (c) 2024 Red Hat, Inc.
- */
 public class WebSearchContentRetrieverProviderServiceConfigurator implements ResourceServiceConfigurator {
 
     @Override
@@ -70,7 +67,7 @@ public class WebSearchContentRetrieverProviderServiceConfigurator implements Res
         };
         return CapabilityServiceInstaller.builder(CONTENT_RETRIEVER_PROVIDER_CAPABILITY, factory)
                 .blocking()
-                .asActive()
+                .startWhen(Installer.StartWhen.INSTALLED)
                 .build();
     }
 

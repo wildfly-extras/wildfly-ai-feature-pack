@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.dmr.ModelNode;
+import org.wildfly.service.Installer;
 import org.wildfly.subsystem.service.ResourceServiceConfigurator;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
 import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
@@ -47,6 +48,8 @@ public class OllamaEmbeddingModelProviderServiceConfigurator implements Resource
                         .build();
             }
         };
-        return CapabilityServiceInstaller.builder(EMBEDDING_MODEL_PROVIDER_CAPABILITY, factory).asActive().build();
+        return CapabilityServiceInstaller.builder(EMBEDDING_MODEL_PROVIDER_CAPABILITY, factory)
+                .startWhen(Installer.StartWhen.INSTALLED)
+                .build();
     }
 }

@@ -30,6 +30,7 @@ import org.wildfly.subsystem.service.ResourceServiceInstaller;
 import org.wildfly.subsystem.service.ServiceDependency;
 import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
 import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
+import org.wildfly.service.Installer;
 
 public class Neo4JContentRetrieverProviderServiceConfigurator implements ResourceServiceConfigurator {
 
@@ -64,7 +65,7 @@ public class Neo4JContentRetrieverProviderServiceConfigurator implements Resourc
                 .requires(credentialRef)
                 .requires(chatLanguageModel)
                 .blocking()
-                .asActive()
+                .startWhen(Installer.StartWhen.INSTALLED)
                 .build();
     }
 

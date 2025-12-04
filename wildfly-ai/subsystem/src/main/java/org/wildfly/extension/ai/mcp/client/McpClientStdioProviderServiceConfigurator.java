@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.dmr.ModelNode;
+import org.wildfly.service.Installer;
 import org.wildfly.subsystem.service.ResourceServiceConfigurator;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
 import org.wildfly.subsystem.service.capability.CapabilityServiceInstaller;
@@ -46,7 +47,7 @@ public class McpClientStdioProviderServiceConfigurator implements ResourceServic
         };
         return CapabilityServiceInstaller.builder(MCP_CLIENT_CAPABILITY, factory)
                 .blocking()
-                .asActive()
+                .startWhen(Installer.StartWhen.INSTALLED)
                 .build();
     }
 
