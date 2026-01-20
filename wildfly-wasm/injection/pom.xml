@@ -42,10 +42,6 @@
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>wildfly-wasm-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-weld-common</artifactId>
         </dependency>
