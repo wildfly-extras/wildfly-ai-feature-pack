@@ -78,7 +78,7 @@ You need to define a Galleon provisioning configuration file such as:
 ```xml
 <?xml version="1.0" ?>
 <installation xmlns="urn:jboss:galleon:provisioning:3.0">
-  <feature-pack location="org.wildfly:wildfly-galleon-pack:34.0.0.Final">
+  <feature-pack location="org.wildfly:wildfly-galleon-pack:39.0.0.Final">
     <default-configs inherit="false"/>
     <packages inherit="false"/>
   </feature-pack>
@@ -114,7 +114,7 @@ You need to include the AI feature-pack and layers in the Maven Plugin configura
 ...
 <feature-packs>
   <feature-pack>
-    <location>org.wildfly:wildfly-galleon-pack:36.0.0.Final</location>
+    <location>org.wildfly:wildfly-galleon-pack:39.0.0.Final</location>
   </feature-pack>
   <feature-pack>
     <location>org.wildfly:wildfly-ai-galleon-pack:1.0.0-SNAPSHOT</location>

@@ -17,7 +17,7 @@
     <properties>
         <version.dev.langchain4j>1.4.0</version.dev.langchain4j>
         <version.dev.langchain4j.cdi>0.0.3</version.dev.langchain4j.cdi>
-        <version.org.wildfly>37.0.0.Final</version.org.wildfly>
+        <version.org.wildfly>39.0.0.Final</version.org.wildfly>
     </properties>
 
     <dependencyManagement>
