@@ -13,7 +13,7 @@
 
     <resources>
         <artifact name="${org.wildfly.generative-ai:wildfly-ai-injection}"/>
-        <artifact name="${dev.langchain4j.cdi:langchain4j-cdi-telemetry}"/>
+        <artifact name="${dev.langchain4j.cdi.mp:langchain4j-cdi-telemetry}"/>
     </resources>
     <provides>
         <service name="dev.langchain4j.cdi.core.config.spi.LLMConfig">

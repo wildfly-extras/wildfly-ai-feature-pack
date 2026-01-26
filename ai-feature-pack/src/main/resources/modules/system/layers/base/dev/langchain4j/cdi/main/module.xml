@@ -12,7 +12,7 @@
     <resources>
         <artifact name="${dev.langchain4j.cdi:langchain4j-cdi-core}"/>
         <artifact name="${dev.langchain4j.cdi:langchain4j-cdi-portable-ext}"/>
-        <artifact name="${dev.langchain4j.cdi:langchain4j-cdi-telemetry}"/>
+        <artifact name="${dev.langchain4j.cdi.mp:langchain4j-cdi-telemetry}"/>
     </resources>
 
     <exports>
