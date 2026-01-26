@@ -77,7 +77,7 @@
         <version.org.extism.sdk.chicory-sdk>0.1.7</version.org.extism.sdk.chicory-sdk>
         <version.org.jetbrains.kotlin>2.1.21</version.org.jetbrains.kotlin>
         <version.org.ow2.asm>9.7.1</version.org.ow2.asm>
-        <version.org.neo4j.cypher>2025.2.0</version.org.neo4j.cypher>
+        <version.org.neo4j.cypher>2025.2.3</version.org.neo4j.cypher>
         <version.org.neo4j.driver>6.0.2</version.org.neo4j.driver>
         <version.org.reactivestreams.reactive-streams>1.0.4</version.org.reactivestreams.reactive-streams>
 
