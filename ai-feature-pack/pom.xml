@@ -318,7 +318,24 @@
 
         <dependency>
             <groupId>org.extism.sdk</groupId>
-            <artifactId>chicory-sdk</artifactId>
+            <artifactId>chicory-sdk-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.extism.sdk</groupId>
+            <artifactId>http-config-generic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.extism.sdk</groupId>
+            <artifactId>http-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.extism.sdk</groupId>
+            <artifactId>http-client-javanet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.extism.sdk</groupId>
+            <artifactId>http-json-jackson</artifactId>
         </dependency>
 
         <dependency>
