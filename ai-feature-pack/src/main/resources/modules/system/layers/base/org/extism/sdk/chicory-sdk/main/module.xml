@@ -15,7 +15,11 @@
         <artifact name="${com.dylibso.chicory:runtime}"/>
         <artifact name="${com.dylibso.chicory:wasi}"/>
         <artifact name="${com.dylibso.chicory:wasm}"/>
-        <artifact name="${org.extism.sdk:chicory-sdk}"/>
+        <artifact name="${org.extism.sdk:chicory-sdk-core}"/>
+        <artifact name="${org.extism.sdk:http-api}"/>
+        <artifact name="${org.extism.sdk:http-client-javanet}"/>
+        <artifact name="${org.extism.sdk:http-config-generic}"/>
+        <artifact name="${org.extism.sdk:http-json-jackson}"/>
     </resources>
     <dependencies>
         <module name="com.fasterxml.jackson.core.jackson-annotations"/>

@@ -69,7 +69,7 @@
         </dependency>
         <dependency>
             <groupId>org.extism.sdk</groupId>
-            <artifactId>chicory-sdk</artifactId>
+            <artifactId>chicory-sdk-core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
