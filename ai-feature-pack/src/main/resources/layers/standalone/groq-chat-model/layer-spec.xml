@@ -26,6 +26,7 @@
             <param name="openai-chat-model" value="groq"/>
             <param name="base-url" value="${org.wildfly.ai.openai.chat.url,env.GROQ_CHAT_URL:https://api.groq.com/openai/v1}"/>
             <param name="api-key" value="${env.GROQ_API_KEY:YOUR_KEY_VALUE}"/>
+            <param name="executor-service" value="default"/>
             <param name="model-name" value="${org.wildfly.ai.groq.chat.model.name,env.GROQ_CHAT_MODEL_NAME:llama3-8b-8192}"/>
             <param name="log-requests" value="${org.wildfly.ai.groq.chat.log.request,env.GROQ_CHAT_LOG_REQUEST:true}"/>
             <param name="log-responses" value="${org.wildfly.ai.groq.chat.log.response,env.GROQ_CHAT_LOG_RESPONSE:true}"/>

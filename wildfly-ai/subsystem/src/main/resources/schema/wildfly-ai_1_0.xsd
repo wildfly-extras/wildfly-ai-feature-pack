@@ -309,6 +309,13 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="executor-service" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of the ManagedExecutorService to use for process request.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="frequency-penalty" type="xs:double" use="optional">
             <xs:annotation>
                 <xs:documentation>
@@ -637,6 +644,13 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="executor-service" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of the ManagedExecutorService to use for process request.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="log-requests" type="xs:boolean" use="optional">
             <xs:annotation>
                 <xs:documentation>
@@ -765,6 +779,13 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="executor-service" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of the ManagedExecutorService to use for process request.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="frequency-penalty" type="xs:double" use="optional">
             <xs:annotation>
                 <xs:documentation>
@@ -883,6 +904,13 @@
             <xs:annotation>
                 <xs:documentation>
                     The connection timeout of the chat model
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="executor-service" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The name of the ManagedExecutorService to use for process request.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>

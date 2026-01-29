@@ -6,6 +6,7 @@ package org.wildfly.extension.ai.chat;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.EXECUTOR_SERVICE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_RETRIES;
@@ -25,14 +26,17 @@ import org.wildfly.extension.ai.AIAttributeDefinitions;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.RESPONSE_FORMAT;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.STOP_SEQUENCES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
+import static org.wildfly.extension.ai.Capabilities.MANAGED_EXECUTOR_CAPABILITY_NAME;
 import static org.wildfly.extension.ai.Capabilities.OPENTELEMETRY_CAPABILITY_NAME;
 import static org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar.NUM_PREDICT;
 import static org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar.REPEAT_PENALTY;
 import static org.wildfly.extension.ai.chat.OllamaChatLanguageModelProviderRegistrar.TOP_K;
 
+import dev.langchain4j.http.client.jdk.JdkHttpClientBuilderFactory;
+import java.net.http.HttpClient;
+import org.jboss.as.ee.concurrent.adapter.ManagedExecutorServiceAdapter;
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.extension.ai.injection.chat.WildFlyOllamaChatModelConfig;
-import org.wildfly.extension.opentelemetry.api.WildFlyOpenTelemetryConfig;
 
 import org.wildfly.service.capture.ValueRegistry;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
@@ -65,17 +69,14 @@ public class OllamaChatModelProviderServiceConfigurator extends AbstractChatMode
         Double topP = TOP_P.resolveModelAttribute(context, model).asDoubleOrNull();
         boolean isJson = AIAttributeDefinitions.ResponseFormat.isJson(RESPONSE_FORMAT.resolveModelAttribute(context, model).asStringOrNull());
         boolean isObservable= context.getCapabilityServiceSupport().hasCapability(OPENTELEMETRY_CAPABILITY_NAME);
-        final ServiceDependency<WildFlyOpenTelemetryConfig> openTelemetryConfig;
-        if(isObservable) {
-            openTelemetryConfig = ServiceDependency.on(WildFlyOpenTelemetryConfig.SERVICE_DESCRIPTOR);
-        } else {
-            openTelemetryConfig = null;
-        }
+        final String executorServiceName= EXECUTOR_SERVICE.resolveModelAttribute(context, model).asString();
+        final ServiceDependency<ManagedExecutorServiceAdapter> executorAdapter = ServiceDependency.on(MANAGED_EXECUTOR_CAPABILITY_NAME, ManagedExecutorServiceAdapter.class, executorServiceName);
         Supplier<WildFlyChatModelConfig> factory = new Supplier<>() {
             @Override
             public WildFlyChatModelConfig get() {
                 return new WildFlyOllamaChatModelConfig()
                         .baseUrl(baseUrl)
+                        .httpClientBuilder(new JdkHttpClientBuilderFactory().create().httpClientBuilder(HttpClient.newBuilder().executor(executorAdapter.get())))
                         .logRequests(logRequests)
                         .logResponses(logResponses)
                         .maxRetries(maxRetries)
@@ -93,9 +94,7 @@ public class OllamaChatModelProviderServiceConfigurator extends AbstractChatMode
                         .topP(topP);
             }
         };
-        if(isObservable) {
-            return installService(context.getCurrentAddressValue(), factory, openTelemetryConfig);
-        }
-        return installService(context.getCurrentAddressValue(), factory);
+        
+        return installService(context.getCurrentAddressValue(), factory, isObservable, executorAdapter);
     }
 }

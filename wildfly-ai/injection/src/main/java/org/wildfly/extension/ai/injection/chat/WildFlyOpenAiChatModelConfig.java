@@ -4,6 +4,7 @@
  */
 package org.wildfly.extension.ai.injection.chat;
 
+import dev.langchain4j.http.client.HttpClientBuilder;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
@@ -27,7 +28,8 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
     private Double temperature;
     private Duration connectTimeOut;
     private Double topP;
-    private boolean isJson;
+    private boolean isJson;;
+    private HttpClientBuilder httpClientBuilder;
     private boolean streaming;
     private boolean observable;
     private Object instance = null;
@@ -39,6 +41,7 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
                     .apiKey(key)
                     .baseUrl(baseUrl)
                     .frequencyPenalty(frequencyPenalty)
+                    .httpClientBuilder(httpClientBuilder)
                     .logRequests(logRequests)
                     .logResponses(logResponses)
                     .maxRetries(5)
@@ -55,6 +58,9 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
             }
             if (observable) {
                 builder.listeners(listeners);
+            }
+            if(httpClientBuilder != null) {
+                builder.httpClientBuilder(httpClientBuilder);
             }
             instance = builder.build();
         }
@@ -84,6 +90,9 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
             if (observable) {
                 builder.listeners(listeners);
             }
+            if(httpClientBuilder != null) {
+                builder.httpClientBuilder(httpClientBuilder);
+            }
             instance = builder.build();
         }
         return (StreamingChatModel) instance;
@@ -101,6 +110,11 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
 
     public WildFlyOpenAiChatModelConfig frequencyPenalty(Double frequencyPenalty) {
         this.frequencyPenalty = frequencyPenalty;
+        return this;
+    }
+
+    public WildFlyOpenAiChatModelConfig httpClientBuilder(HttpClientBuilder httpClientBuilder) {
+        this.httpClientBuilder = httpClientBuilder;
         return this;
     }
 

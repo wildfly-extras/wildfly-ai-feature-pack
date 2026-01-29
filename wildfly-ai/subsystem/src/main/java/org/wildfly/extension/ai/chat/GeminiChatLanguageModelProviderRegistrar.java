@@ -6,6 +6,7 @@ package org.wildfly.extension.ai.chat;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.API_KEY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.EXECUTOR_SERVICE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.FREQUENCY_PENALTY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
@@ -96,7 +97,7 @@ public class GeminiChatLanguageModelProviderRegistrar implements ChildResourceDe
 
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(ALLOWED_CODE_EXECUTION, API_KEY,
-            CIVIC_INTEGRITY, CONNECT_TIMEOUT, DANGEROUS_CONTENT, ENABLE_ENHANCED_CIVIC_ANSWERS, FREQUENCY_PENALTY,
+            CIVIC_INTEGRITY, CONNECT_TIMEOUT, DANGEROUS_CONTENT, ENABLE_ENHANCED_CIVIC_ANSWERS, EXECUTOR_SERVICE, FREQUENCY_PENALTY,
             HARASSMENT, HATE_SPEECH, INCLUDE_CODE_EXECUTION_OUTPUT, INCLUDE_THOUGHTS, LOG_PROBS, LOG_REQUESTS, LOG_RESPONSES,
             MAX_OUTPUT_TOKEN, MODEL_NAME, PRESENCE_PENALTY, RESPONSE_FORMAT, RESPONSE_LOG_PROBS, RETURN_THINKING, SEED,
             SEXUALLY_EXPLICIT, STOP_SEQUENCES, STREAMING, TEMPERATURE, THINKING_BUDGET, TOP_K, TOP_P);

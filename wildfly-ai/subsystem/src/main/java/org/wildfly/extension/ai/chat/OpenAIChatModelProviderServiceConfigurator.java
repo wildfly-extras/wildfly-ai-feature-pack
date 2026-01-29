@@ -7,6 +7,7 @@ package org.wildfly.extension.ai.chat;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.API_KEY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.EXECUTOR_SERVICE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.FREQUENCY_PENALTY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
@@ -18,12 +19,16 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.SEED;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
+import static org.wildfly.extension.ai.Capabilities.MANAGED_EXECUTOR_CAPABILITY_NAME;
 import static org.wildfly.extension.ai.Capabilities.OPENTELEMETRY_CAPABILITY_NAME;
 import static org.wildfly.extension.ai.chat.OpenAIChatLanguageModelProviderRegistrar.ORGANIZATION_ID;
 
+import dev.langchain4j.http.client.jdk.JdkHttpClientBuilderFactory;
+import java.net.http.HttpClient;
 import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.ee.concurrent.adapter.ManagedExecutorServiceAdapter;
 import org.jboss.dmr.ModelNode;
 import org.wildfly.extension.ai.AIAttributeDefinitions;
 
@@ -32,6 +37,7 @@ import org.wildfly.extension.ai.injection.chat.WildFlyOpenAiChatModelConfig;
 
 import org.wildfly.service.capture.ValueRegistry;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
+import org.wildfly.subsystem.service.ServiceDependency;
 
 /**
  * Configures an aggregate ChatModel provider service.
@@ -60,6 +66,8 @@ public class OpenAIChatModelProviderServiceConfigurator extends AbstractChatMode
         Double temperature = TEMPERATURE.resolveModelAttribute(context, model).asDoubleOrNull();
         Double topP = TOP_P.resolveModelAttribute(context, model).asDoubleOrNull();
         boolean isObservable= context.getCapabilityServiceSupport().hasCapability(OPENTELEMETRY_CAPABILITY_NAME);
+        final String executorServiceName= EXECUTOR_SERVICE.resolveModelAttribute(context, model).asString();
+        final ServiceDependency<ManagedExecutorServiceAdapter> executorAdapter = ServiceDependency.on(MANAGED_EXECUTOR_CAPABILITY_NAME, ManagedExecutorServiceAdapter.class, executorServiceName);
         Supplier<WildFlyChatModelConfig> factory = new Supplier<>() {
             @Override
             public WildFlyChatModelConfig get() {
@@ -67,6 +75,7 @@ public class OpenAIChatModelProviderServiceConfigurator extends AbstractChatMode
                         .apiKey(key)
                         .baseUrl(baseUrl)
                         .frequencyPenalty(frequencyPenalty)
+                        .httpClientBuilder(new JdkHttpClientBuilderFactory().create().httpClientBuilder(HttpClient.newBuilder().executor(executorAdapter.get())))
                         .logRequests(logRequests)
                         .logResponses(logResponses)
                         .maxTokens(maxToken)
@@ -82,6 +91,6 @@ public class OpenAIChatModelProviderServiceConfigurator extends AbstractChatMode
                         .topP(topP);
             }
         };
-        return installService(context.getCurrentAddressValue(), factory);
+        return installService(context.getCurrentAddressValue(), factory, isObservable, executorAdapter);
     }
 }

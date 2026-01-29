@@ -4,6 +4,7 @@
  */
 package org.wildfly.extension.ai.injection.chat;
 
+import dev.langchain4j.http.client.HttpClientBuilder;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
@@ -44,7 +45,8 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
     private Boolean returnThinking;
     private Boolean responseLogprobs;
     private Boolean enableEnhancedCivicAnswers;
-    private Integer logprobs;
+    private Integer logprobs;;
+    private HttpClientBuilder httpClientBuilder;
     private boolean isJson;
     private boolean streaming;
     private boolean observable;
@@ -81,6 +83,9 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
                     .topP(topP);
             if (isJson) {
                 builder.responseFormat(ResponseFormat.JSON);
+            }
+            if(httpClientBuilder != null) {
+                builder.httpClientBuilder(httpClientBuilder);
             }
             if (observable) {
                 builder.listeners(listeners);
@@ -121,6 +126,9 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
             if (isJson) {
                 builder.responseFormat(ResponseFormat.JSON);
             }
+            if(httpClientBuilder != null) {
+                builder.httpClientBuilder(httpClientBuilder);
+            }
             if (observable) {
                 builder.listeners(listeners);
             }
@@ -146,6 +154,11 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
 
     public WildFlyGeminiChatModelConfig frequencyPenalty(Double frequencyPenalty) {
         this.frequencyPenalty = frequencyPenalty;
+        return this;
+    }
+
+    public WildFlyGeminiChatModelConfig httpClientBuilder(HttpClientBuilder httpClientBuilder) {
+        this.httpClientBuilder = httpClientBuilder;
         return this;
     }
 

@@ -7,6 +7,7 @@ package org.wildfly.extension.ai.chat;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.API_KEY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.EXECUTOR_SERVICE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.FREQUENCY_PENALTY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
@@ -47,8 +48,8 @@ public class OpenAIChatLanguageModelProviderRegistrar implements ChildResourceDe
             .setAllowExpression(true)
             .build();
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(API_KEY, BASE_URL, CONNECT_TIMEOUT,
-            FREQUENCY_PENALTY, LOG_REQUESTS, LOG_RESPONSES, MAX_TOKEN, MODEL_NAME, ORGANIZATION_ID, PRESENCE_PENALTY, 
-            RESPONSE_FORMAT, SEED, STREAMING, TEMPERATURE, TOP_P);
+            EXECUTOR_SERVICE, FREQUENCY_PENALTY, LOG_REQUESTS, LOG_RESPONSES, MAX_TOKEN, MODEL_NAME, ORGANIZATION_ID,
+            PRESENCE_PENALTY, RESPONSE_FORMAT, SEED, STREAMING, TEMPERATURE, TOP_P);
 
     private final ResourceDescriptor descriptor;
     static final String NAME = "openai-chat-model";

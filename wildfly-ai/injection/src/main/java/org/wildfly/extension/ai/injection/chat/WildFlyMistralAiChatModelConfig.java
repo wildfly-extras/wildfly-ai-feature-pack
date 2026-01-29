@@ -5,6 +5,8 @@
 package org.wildfly.extension.ai.injection.chat;
 
 import static dev.langchain4j.model.chat.request.ResponseFormat.JSON;
+
+import dev.langchain4j.http.client.HttpClientBuilder;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
@@ -29,7 +31,8 @@ public class WildFlyMistralAiChatModelConfig implements WildFlyChatModelConfig {
     private List<String> stopSequences;
     private Double presencePenalty;
     private Double frequencyPenalty;
-    private Integer maxRetries;
+    private Integer maxRetries;;
+    private HttpClientBuilder httpClientBuilder;
     private boolean isJson;
     private boolean streaming;
     private boolean observable;
@@ -60,6 +63,9 @@ public class WildFlyMistralAiChatModelConfig implements WildFlyChatModelConfig {
             if (observable && listeners != null && !listeners.isEmpty()) {
                 builder.listeners(listeners);
             }
+            if(httpClientBuilder != null) {
+                builder.httpClientBuilder(httpClientBuilder);
+            }
             instance = builder.build();
         }
         return (ChatModel) instance;
@@ -86,6 +92,9 @@ public class WildFlyMistralAiChatModelConfig implements WildFlyChatModelConfig {
             if (isJson) {
                 builder.responseFormat(JSON);
             }
+            if(httpClientBuilder != null) {
+                builder.httpClientBuilder(httpClientBuilder);
+            }
             instance = builder.build();
         }
         return (StreamingChatModel) instance;
@@ -103,6 +112,11 @@ public class WildFlyMistralAiChatModelConfig implements WildFlyChatModelConfig {
 
     public WildFlyMistralAiChatModelConfig frequencyPenalty(Double frequencyPenalty) {
         this.frequencyPenalty = frequencyPenalty;
+        return this;
+    }
+
+    public WildFlyMistralAiChatModelConfig httpClientBuilder(HttpClientBuilder httpClientBuilder) {
+        this.httpClientBuilder = httpClientBuilder;
         return this;
     }
 
