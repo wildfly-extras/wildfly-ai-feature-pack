@@ -8,8 +8,10 @@ The Galleon layers defined in these feature-packs are decorator layers. This mea
 in addition to a WildFly base layer. The WildFly [Installation Guide](https://docs.wildfly.org/33/#installation-guides) covers the 
 [base layers](https://docs.wildfly.org/33/Galleon_Guide.html#wildfly_foundational_galleon_layers) that WildFly defines.
 
-NOTE: The base layer `ai` (that provisions WildFly AI subsystem) is the minimal base layer to use when provisioning Galleon layers that these 
+NOTE: The base layer `ai` (that provisions WildFly AI subsystem) is the minimal base layer to use when provisioning Galleon layers that these
 feature-packs define.
+
+Full documentation for each layer, including required environment variables, can be found in the `doc/glow-layer-doc/` directory.
 
 Resources:
 
@@ -19,26 +21,28 @@ Resources:
 Galleon feature-pack compatible with WildFly
 ========================
 
-The Maven coordinates to use is: `org.wildfly:wildfly-ai-galleon-pack:<version>`
+The Maven coordinates to use is: `org.wildfly:wildfly-ai-galleon-pack:0.9.1-SNAPSHOT`
+
+The feature pack is compatible with WildFly 39.0.0.Final and WildFly Preview.
 
 Supported AI types
 ========================
 
-For each AI type it supports, the feature-pack provides several Galleon layers that build upon each other :
+The feature pack provides 37 Galleon layers organized by functionality. For each AI type it supports, the feature-pack provides several Galleon layers that build upon each other:
 * Support for chat models to interact with a LLM:
-  * `gemini-chat-model` 
-  * `github-chat-model` 
+  * `gemini-chat-model`
+  * `github-chat-model`
   * `groq-chat-model` (same as openai-chat-model but targeting Groq)
   * `mistral-ai-chat-model`
   * `ollama-chat-model`
-  * `openai-chat-model` 
+  * `openai-chat-model`
 * Support for streaming chat models to interact with a LLM:
-  * `github-streaming-chat-model` 
-  * `groq-streaming-chat-model` (same as openai-chat-model but targeting Groq)
+  * `gemini-streaming-chat-model`
+  * `groq-streaming-chat-model` (same as openai-streaming-chat-model but targeting Groq)
   * `mistral-ai-streaming-chat-model`
   * `ollama-streaming-chat-model`
-  * `openai-streaming-chat-model` 
-* Support for embedding models: 
+  * `openai-streaming-chat-model`
+* Support for embedding models:
   * `in-memory-embedding-model-all-minilm-l6-v2`
   * `in-memory-embedding-model-all-minilm-l6-v2-q`
   * `in-memory-embedding-model-bge-small-en`
@@ -47,22 +51,45 @@ For each AI type it supports, the feature-pack provides several Galleon layers t
   * `in-memory-embedding-model-bge-small-en-v15-q`
   * `in-memory-embedding-model-e5-small-v2`
   * `in-memory-embedding-model-e5-small-v2-q`
-  * `ollama-embedding-model`
 * Support for embedding stores:
   * `in-memory-embedding-store`
   * `neo4j-embedding-store`
   * `weaviate-embedding-store`
   * `chroma-embedding-store`
-* Support for content retriever for RAG:
+* Support for content retrievers for RAG:
   * `default-embedding-content-retriever`: default content retriever using an `in-memory-embedding-store` and `in-memory-embedding-model-all-minilm-l6-v2` for embedding model.
   * `neo4j-content-retriever`
-  * `web-search-engines`
-* Support for [Model Context Protocol (MCP)](https://modelcontextprotocol.io/): 
-  * `mcp-stream`: MCP Client using the Streamable (stream) transport
-  * `mcp-sse`: MCP Client using the Server-Sent Events (SSE) transport
-  * `mcp-stdio`: MCP Client using the Standard Input/Output (stdio) transport
+  * `ollama-neo4j-content-retriever`
+  * `openai-neo4j-content-retriever`
+* Support for chat memory:
+  * `chat-memory-provider`: Provides chat memory functionality
+* Support for web search:
+  * `web-search-engines`: Web search engine integration
+* Support for [Model Context Protocol (MCP)](https://modelcontextprotocol.io/):
+  * `mcp`: Base MCP support layer
+  * `mcp-client-sse`: MCP Client using the Server-Sent Events (SSE) transport
+  * `mcp-client-stdio`: MCP Client using the Standard Input/Output (stdio) transport
+  * `mcp-client-streable`: MCP Client using the Streamable transport
+  * `mcp-server`: MCP Server support for exposing Jakarta EE applications as MCP servers
+* Support for WebAssembly:
+  * `wasm`: WebAssembly WASI module support
   
 For more details on these you can take a look at [LangChain4J](https://docs.langchain4j.dev/) and [Smallrye-llm](https://github.com/smallrye/smallrye-llm).
+
+The feature pack currently uses:
+* LangChain4j 1.10.0-beta18
+* LangChain4j-CDI 1.0.0
+* WildFly 39.0.0.Final
+* Chicory (WASM runtime) 1.6.1
+* Extism SDK 0.3.0
+
+Recent Features
+========================
+
+* **Async Execution Support**: All chat model layers now support the `executor-service` attribute, allowing you to configure a ManagedExecutorService for asynchronous AI operations.
+* **WildFly Preview Support**: The feature pack is now compatible with WildFly Preview releases.
+* **Enhanced MCP Support**: Added MCP server capabilities and multiple transport options (SSE, stdio, streamable).
+* **Neo4j Content Retrievers**: Added specialized content retrievers for Neo4j with Ollama and OpenAI integration.
 
 Using the WildFly AI Feature Pack
 ==========================
@@ -82,7 +109,7 @@ You need to define a Galleon provisioning configuration file such as:
     <default-configs inherit="false"/>
     <packages inherit="false"/>
   </feature-pack>
-  <feature-pack location="org.wildfly:wildfly-ai-galleon-pack:1.0.0-SNAPSHOT">
+  <feature-pack location="org.wildfly:wildfly-ai-galleon-pack:0.9.1-SNAPSHOT">
     <default-configs inherit="false"/>
     <packages inherit="false"/>
   </feature-pack>
@@ -117,7 +144,7 @@ You need to include the AI feature-pack and layers in the Maven Plugin configura
     <location>org.wildfly:wildfly-galleon-pack:39.0.0.Final</location>
   </feature-pack>
   <feature-pack>
-    <location>org.wildfly:wildfly-ai-galleon-pack:1.0.0-SNAPSHOT</location>
+    <location>org.wildfly:wildfly-ai-galleon-pack:0.9.1-SNAPSHOT</location>
   </feature-pack>
 </feature-packs>
 <layers>
@@ -166,10 +193,21 @@ You need to include the AI feature-pack and layers in the Maven Plugin configura
 This [example](https://github.com/ehsavoie/webchat/) contains a complete WildFly Maven Plugin configuration.
 
 
-[EXPERIMENTAL] Model Context Protocol Server
+[EXPERIMENTAL] Model Context Protocol
 ==========================
 
-The feature pack supports also in a very experimental way the expose of your JakartaEE application as a [Model Context Protocol Server](https://spec.modelcontextprotocol.io/specification/2024-11-05/).
+The feature pack provides comprehensive support for the [Model Context Protocol (MCP)](https://spec.modelcontextprotocol.io/specification/2024-11-05/), both as a client and server.
+
+## MCP Client Support
+
+The feature pack can act as an MCP client with support for multiple transports:
+* `mcp-client-sse`: Server-Sent Events transport
+* `mcp-client-stdio`: Standard Input/Output transport
+* `mcp-client-srteamable`: Streamable transport
+
+## MCP Server Support
+
+The feature pack also supports exposing your Jakarta EE application as an MCP Server using the `mcp-server` Galleon layer.
 What you need to do in that case is to use the `org.wildfly:wildfly-mcp-api` artifact as a provided dependency and annotate the code you want to expose with the annotations provided by the API.
 
 You may want to take a look at [wildfly-weather](https://github.com/ehsavoie/wildfly-weather) example.
@@ -216,10 +254,11 @@ curl -X POST http://localhost:8080/realms/myrealm/protocol/openid-connect/token 
 [EXPERIMENTAL] WASM Support
 ==========================
 
-
-The feature pack supports also in a very experimental way [Wasm Wasi](https://wasi.dev/) modules.
+The feature pack supports also in a very experimental way [Wasm Wasi](https://wasi.dev/) modules using the Chicory Java WASM runtime (version 1.6.1) and Extism SDK (version 0.3.0).
 What you need to do in that case is to use the `org.wildfly:wildfly-wasm-api` artifact as a provided dependency and annotate the code you want to expose with the annotations provided by the API.
 Wasm binaries can be defined in the `wasm subsystem` to be injected as `org.wildfly.wasm.api.WasmInvoker` via CDI. You can even expose `org.wildfly.wasm.api.WasmToolService` as MCP tools.
+
+To use WASM support, include the `wasm` Galleon layer when provisioning your WildFly server.
 
 You may want to take a look at [wildfly-weather](https://github.com/ehsavoie/wildfly-weather/compare/wasm_subsystem) example.
 
