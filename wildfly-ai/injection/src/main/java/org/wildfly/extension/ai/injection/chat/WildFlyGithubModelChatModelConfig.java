@@ -44,7 +44,7 @@ public class WildFlyGithubModelChatModelConfig implements WildFlyChatModelConfig
     @Override
     public ChatModel createLanguageModel(List<ChatModelListener> listeners) {
         ModelServiceVersion modelServiceVersion;
-        if(isNullOrBlank(serviceVersion)) {
+        if (isNullOrBlank(serviceVersion)) {
             modelServiceVersion = ModelServiceVersion.getLatest();
         } else {
             modelServiceVersion = ModelServiceVersion.valueOf(serviceVersion);
@@ -79,8 +79,9 @@ public class WildFlyGithubModelChatModelConfig implements WildFlyChatModelConfig
     }
 
     @Override
-    public StreamingChatModel createStreamingLanguageModel(List<ChatModelListener> listeners) {ModelServiceVersion modelServiceVersion;
-        if(isNullOrBlank(serviceVersion)) {
+    public StreamingChatModel createStreamingLanguageModel(List<ChatModelListener> listeners) {
+        ModelServiceVersion modelServiceVersion;
+        if (isNullOrBlank(serviceVersion)) {
             modelServiceVersion = ModelServiceVersion.getLatest();
         } else {
             modelServiceVersion = ModelServiceVersion.valueOf(serviceVersion);
@@ -166,7 +167,6 @@ public class WildFlyGithubModelChatModelConfig implements WildFlyChatModelConfig
         this.serviceVersion = serviceVersion;
         return this;
     }
-
 
     public WildFlyGithubModelChatModelConfig temperature(Double temperature) {
         this.temperature = temperature;

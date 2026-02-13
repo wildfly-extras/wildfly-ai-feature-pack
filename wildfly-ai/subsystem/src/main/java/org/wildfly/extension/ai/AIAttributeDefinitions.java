@@ -4,6 +4,9 @@
  */
 package org.wildfly.extension.ai;
 
+
+import static org.wildfly.extension.ai.Capabilities.MANAGED_EXECUTOR_CAPABILITY_NAME;
+
 import org.jboss.as.controller.ObjectTypeAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
@@ -39,6 +42,10 @@ public class AIAttributeDefinitions {
             .build();
     public static final ObjectTypeAttributeDefinition CREDENTIAL_REFERENCE = CredentialReference.getAttributeBuilder(true, true)
             .addAccessConstraint(SensitiveTargetAccessConstraintDefinition.CREDENTIAL)
+            .build();
+    public static final SimpleAttributeDefinition EXECUTOR_SERVICE = new SimpleAttributeDefinitionBuilder("executor-service", ModelType.STRING, false)
+            .setCapabilityReference(MANAGED_EXECUTOR_CAPABILITY_NAME)
+            .setAllowExpression(true)
             .build();
     public static final SimpleAttributeDefinition FREQUENCY_PENALTY = new SimpleAttributeDefinitionBuilder("frequency-penalty", ModelType.DOUBLE, true)
             .setAllowExpression(true)

@@ -36,6 +36,7 @@ public interface Capabilities {
     UnaryServiceDescriptor<WildFlyMcpClient> MCP_CLIENT_DESCRIPTOR = UnaryServiceDescriptor.of("org.wildfly.ai.mcp.client", WildFlyMcpClient.class);
     RuntimeCapability<Void> MCP_CLIENT_CAPABILITY = RuntimeCapability.Builder.of(MCP_CLIENT_DESCRIPTOR).setAllowMultipleRegistrations(true).build();
 
+    String MANAGED_EXECUTOR_CAPABILITY_NAME = "org.wildfly.ee.concurrent.executor";
     String OPENTELEMETRY_CAPABILITY_NAME = "org.wildfly.extension.opentelemetry";
     String OPENTELEMETRY_CONFIG_CAPABILITY_NAME = "org.wildfly.extension.opentelemetry.config";
     String OUTBOUND_SOCKET_BINDING_CAPABILITY_NAME = "org.wildfly.network.outbound-socket-binding";

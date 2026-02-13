@@ -6,6 +6,7 @@ package org.wildfly.extension.ai.chat;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.API_KEY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.EXECUTOR_SERVICE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.FREQUENCY_PENALTY;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
@@ -17,6 +18,7 @@ import static org.wildfly.extension.ai.AIAttributeDefinitions.STOP_SEQUENCES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.STREAMING;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TEMPERATURE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.TOP_P;
+import static org.wildfly.extension.ai.Capabilities.MANAGED_EXECUTOR_CAPABILITY_NAME;
 import static org.wildfly.extension.ai.Capabilities.OPENTELEMETRY_CAPABILITY_NAME;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.ALLOWED_CODE_EXECUTION;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.CIVIC_INTEGRITY;
@@ -34,6 +36,8 @@ import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegis
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.THINKING_BUDGET;
 import static org.wildfly.extension.ai.chat.GeminiChatLanguageModelProviderRegistrar.TOP_K;
 
+import dev.langchain4j.http.client.jdk.JdkHttpClientBuilderFactory;
+import java.net.http.HttpClient;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +45,7 @@ import java.util.function.Supplier;
 import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.ee.concurrent.adapter.ManagedExecutorServiceAdapter;
 import org.jboss.dmr.ModelNode;
 import org.wildfly.extension.ai.AIAttributeDefinitions;
 
@@ -49,6 +54,7 @@ import org.wildfly.extension.ai.injection.chat.WildFlyGeminiChatModelConfig;
 
 import org.wildfly.service.capture.ValueRegistry;
 import org.wildfly.subsystem.service.ResourceServiceInstaller;
+import org.wildfly.subsystem.service.ServiceDependency;
 
 /**
  * Configures an aggregate ChatModel provider service.
@@ -93,6 +99,8 @@ public class GeminiChatModelProviderServiceConfigurator extends AbstractChatMode
         Integer topK = TOP_K.resolveModelAttribute(context, model).asIntOrNull();
         Double topP = TOP_P.resolveModelAttribute(context, model).asDoubleOrNull();
         boolean isObservable = context.getCapabilityServiceSupport().hasCapability(OPENTELEMETRY_CAPABILITY_NAME);
+        final String executorServiceName= EXECUTOR_SERVICE.resolveModelAttribute(context, model).asString();
+        final ServiceDependency<ManagedExecutorServiceAdapter> executorAdapter = ServiceDependency.on(MANAGED_EXECUTOR_CAPABILITY_NAME, ManagedExecutorServiceAdapter.class, executorServiceName);
         Map<String, String> safetySettingsConfig = safetySettingConfig(context, model);
         Supplier<WildFlyChatModelConfig> factory = new Supplier<>() {
             @Override
@@ -104,6 +112,7 @@ public class GeminiChatModelProviderServiceConfigurator extends AbstractChatMode
                         .frequencyPenalty(frequencyPenalty)
                         .includeCodeExecutionOutput(includeCodeExecutionOutput)
                         .includeThoughts(includeThoughts)
+                        .httpClientBuilder(new JdkHttpClientBuilderFactory().create().httpClientBuilder(HttpClient.newBuilder().executor(executorAdapter.get())))
                         .logprobs(logProbs)
                         .logRequests(logRequests)
                         .logResponses(logResponses)
@@ -125,7 +134,7 @@ public class GeminiChatModelProviderServiceConfigurator extends AbstractChatMode
                         .topP(topP);
             }
         };
-        return installService(context.getCurrentAddressValue(), factory);
+        return installService(context.getCurrentAddressValue(), factory, isObservable, executorAdapter);
     }
 
     private Map<String, String> safetySettingConfig(OperationContext context, ModelNode model) throws OperationFailedException {

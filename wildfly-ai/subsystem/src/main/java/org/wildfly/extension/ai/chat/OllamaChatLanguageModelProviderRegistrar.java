@@ -6,6 +6,7 @@ package org.wildfly.extension.ai.chat;
 
 import static org.wildfly.extension.ai.AIAttributeDefinitions.BASE_URL;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.CONNECT_TIMEOUT;
+import static org.wildfly.extension.ai.AIAttributeDefinitions.EXECUTOR_SERVICE;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_REQUESTS;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.LOG_RESPONSES;
 import static org.wildfly.extension.ai.AIAttributeDefinitions.MAX_RETRIES;
@@ -53,8 +54,8 @@ public class OllamaChatLanguageModelProviderRegistrar implements ChildResourceDe
             .build();
 
     public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(BASE_URL, CONNECT_TIMEOUT,
-            LOG_REQUESTS, LOG_RESPONSES, MAX_RETRIES, MODEL_NAME, NUM_PREDICT, REPEAT_PENALTY, RESPONSE_FORMAT,
-            SEED, STOP_SEQUENCES, STREAMING, TEMPERATURE, TOP_K, TOP_P);
+            EXECUTOR_SERVICE, LOG_REQUESTS, LOG_RESPONSES, MAX_RETRIES, MODEL_NAME, NUM_PREDICT, REPEAT_PENALTY,
+            RESPONSE_FORMAT, SEED, STOP_SEQUENCES, STREAMING, TEMPERATURE, TOP_K, TOP_P);
 
     private final ResourceDescriptor descriptor;
     static final String NAME = "ollama-chat-model";

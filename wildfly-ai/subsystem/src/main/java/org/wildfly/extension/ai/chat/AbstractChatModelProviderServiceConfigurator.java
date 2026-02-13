@@ -9,6 +9,7 @@ import static org.wildfly.extension.ai.Capabilities.CHAT_MODEL_PROVIDER_CAPABILI
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.jboss.as.controller.OperationContext;
+import org.jboss.as.ee.concurrent.adapter.ManagedExecutorServiceAdapter;
 import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.extension.opentelemetry.api.WildFlyOpenTelemetryConfig;
 import org.wildfly.service.Installer;
@@ -27,27 +28,28 @@ public abstract class AbstractChatModelProviderServiceConfigurator implements Re
     }
 
     ResourceServiceInstaller installService(final String name, Supplier<WildFlyChatModelConfig> factory) {
-        Consumer<WildFlyChatModelConfig> captor = registry.add(name);
-        ResourceServiceInstaller installer = CapabilityServiceInstaller.builder(CHAT_MODEL_PROVIDER_CAPABILITY, factory)
-                .withCaptor(captor)
-                .startWhen(Installer.StartWhen.INSTALLED)
-                .build();
-        Consumer<OperationContext> remover = ctx -> registry.remove(ctx.getCurrentAddressValue());
-        return new ResourceServiceInstaller() {
-            @Override
-            public Consumer<OperationContext> install(OperationContext context) {
-                return installer.install(context).andThen(remover);
-            }
-        };
+        return installService(name, factory, false);
     }
 
-    ResourceServiceInstaller installService(final String name, Supplier<WildFlyChatModelConfig> factory, ServiceDependency<WildFlyOpenTelemetryConfig> openTelemetryConfig) {
+    ResourceServiceInstaller installService(final String name, Supplier<WildFlyChatModelConfig> factory, boolean isObservable) {
+        return installService(name, factory, isObservable, null);
+    }
+
+    ResourceServiceInstaller installService(final String name, Supplier<WildFlyChatModelConfig> factory, boolean isObservable,
+            ServiceDependency<ManagedExecutorServiceAdapter> executorAdapter) {
         Consumer<WildFlyChatModelConfig> captor = registry.add(name);
-        ResourceServiceInstaller installer = CapabilityServiceInstaller.builder(CHAT_MODEL_PROVIDER_CAPABILITY, factory)
-                .requires(openTelemetryConfig)
+        CapabilityServiceInstaller.Builder builder = CapabilityServiceInstaller.builder(CHAT_MODEL_PROVIDER_CAPABILITY, factory)
                 .withCaptor(captor)
-                .startWhen(Installer.StartWhen.INSTALLED)
-                .build();
+                .startWhen(Installer.StartWhen.INSTALLED);
+        final ServiceDependency<WildFlyOpenTelemetryConfig> openTelemetryConfig;
+        if (isObservable) {
+            openTelemetryConfig = ServiceDependency.on(WildFlyOpenTelemetryConfig.SERVICE_DESCRIPTOR);
+            builder.requires(openTelemetryConfig);
+        }
+        if (executorAdapter != null) {
+            builder.requires(executorAdapter);
+        }
+        ResourceServiceInstaller installer = (ResourceServiceInstaller) builder.build();
         Consumer<OperationContext> remover = ctx -> registry.remove(ctx.getCurrentAddressValue());
         return new ResourceServiceInstaller() {
             @Override

@@ -4,6 +4,7 @@
  */
 package org.wildfly.extension.ai.injection.chat;
 
+import dev.langchain4j.http.client.HttpClientBuilder;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
@@ -18,6 +19,7 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
     private String baseUrl;
     private Boolean logRequests;
     private Boolean logResponses;
+    private HttpClientBuilder httpClientBuilder;
     private boolean isJson;
     private Integer maxRetries;
     private Integer numPredict;
@@ -53,6 +55,9 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
             if (isJson) {
                 builder.responseFormat(ResponseFormat.JSON);
             }
+            if(httpClientBuilder != null) {
+                builder.httpClientBuilder(httpClientBuilder);
+            }
             if (observable) {
                 builder.listeners(listeners);
             }
@@ -80,6 +85,9 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
             if (isJson) {
                 builder.responseFormat(ResponseFormat.JSON);
             }
+            if(httpClientBuilder != null) {
+                builder.httpClientBuilder(httpClientBuilder);
+            }
             if (observable) {
                 builder.listeners(listeners);
             }
@@ -90,6 +98,11 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
 
     public WildFlyOllamaChatModelConfig baseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
+        return this;
+    }
+
+    public WildFlyOllamaChatModelConfig httpClientBuilder(HttpClientBuilder httpClientBuilder) {
+        this.httpClientBuilder = httpClientBuilder;
         return this;
     }
 
