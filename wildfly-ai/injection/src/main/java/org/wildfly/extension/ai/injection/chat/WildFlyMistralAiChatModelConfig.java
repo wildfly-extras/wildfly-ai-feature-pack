@@ -31,7 +31,7 @@ public class WildFlyMistralAiChatModelConfig implements WildFlyChatModelConfig {
     private List<String> stopSequences;
     private Double presencePenalty;
     private Double frequencyPenalty;
-    private Integer maxRetries;;
+    private Integer maxRetries;
     private HttpClientBuilder httpClientBuilder;
     private boolean isJson;
     private boolean streaming;

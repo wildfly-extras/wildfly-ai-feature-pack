@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<installation xmlns="urn:jboss:galleon:provisioning:4.0">
+    <feature-pack location="org.wildfly:wildfly-galleon-pack:39.0.0.Final">
+        <default-configs inherit="false"/>
+        <packages inherit="false"/>
+    </feature-pack>
+    <feature-pack location="org.wildfly.generative-ai:wildfly-ai-feature-pack:0.9.1-SNAPSHOT">
+        <default-configs inherit="false"/>
+        <packages inherit="false"/>
+    </feature-pack>
+    <config model="standalone" name="standalone.xml">
+        <layers>
+            <!-- Base WildFly layers -->
+            <include name="cdi"/>
+            <include name="jaxrs"/>
+            <include name="management"/>
+
+            <!-- AI Feature Pack layers for testing -->
+            <include name="ollama-chat-model"/>
+            <include name="ollama-streaming-chat-model"/>
+            <include name="in-memory-embedding-model-all-minilm-l6-v2"/>
+            <include name="ollama-embedding-model"/>
+            <include name="in-memory-embedding-store"/>
+            <include name="default-embedding-content-retriever"/>
+            <include name="chat-memory-provider"/>
+        </layers>
+    </config>
+    <options>
+        <option name="jboss-fork-embedded" value="true"/>
+        <option name="optional-packages" value="passive+"/>
+    </options>
+</installation>
