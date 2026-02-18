@@ -11,10 +11,10 @@
     <parent>
         <groupId>org.wildfly.generative-ai</groupId>
         <artifactId>wildfly-ai-feature-pack-parent</artifactId>
-        <version>0.9.1-SNAPSHOT</version>
+        <version>0.9.1</version>
     </parent>
     <artifactId>wildfly-mcp</artifactId>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>0.9.1</version>
     <name>WildFly MCP Server Extension</name>
     <packaging>pom</packaging>
 
