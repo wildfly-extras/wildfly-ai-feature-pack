@@ -1040,5 +1040,6 @@
         <module>wildfly-wasm</module>
         <module>wildfly-mcp</module>
         <module>ai-feature-pack</module>
+        <module>testsuite</module>
     </modules>
 </project>

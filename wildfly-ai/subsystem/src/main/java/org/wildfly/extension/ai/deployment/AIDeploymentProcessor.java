@@ -60,7 +60,8 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
 
             final DeploymentResourceSupport deploymentResourceSupport = deploymentUnit.getAttachment(org.jboss.as.server.deployment.Attachments.DEPLOYMENT_RESOURCE_SUPPORT);
 
-            if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty()) {
+            if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty() || !requiredContentRetrievers.isEmpty()
+                    || !requiredToolProviders.isEmpty()|| !requiredChatMemoryProviders.isEmpty()) {
                 if (!requiredChatModels.isEmpty()) {
                     for (int i = 0; i < requiredChatModels.size(); i++) {
                         WildFlyBeanRegistry.registerChatModel(chatLanguageModelNames.get(i), requiredChatModels.get(i));
