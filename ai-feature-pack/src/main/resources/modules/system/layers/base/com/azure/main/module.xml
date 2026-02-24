@@ -26,6 +26,5 @@
         <module name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310"/>
         <module name="org.slf4j"/>
         <module name="io.projectreactor"/>
-        <module name="org.slf4j"/>
     </dependencies>
 </module> 
