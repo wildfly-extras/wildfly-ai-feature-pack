@@ -11,6 +11,7 @@
             <property name="managementPort">9990</property>
             <property name="startupTimeoutInSeconds">120</property>
             <property name="allowConnectingToRunningServer">false</property>
+            <property name="javaVmArguments">-Dorg.wildfly.ai.ollama.chat.model.name=llama3.2:1b -Dorg.wildfly.ai.ollama.embedding.model.name=llama3.2:1b</property>
         </configuration>
     </container>
 
