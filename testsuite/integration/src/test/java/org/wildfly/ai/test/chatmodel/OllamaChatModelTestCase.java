@@ -15,12 +15,30 @@ import org.wildfly.ai.test.util.DeploymentFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test for Ollama chat model CDI injection and basic functionality.
- * Tests the ai-chat-ollama Galleon layer.
+ * Integration test for Ollama chat model functionality in WildFly.
+ *
+ * <p>This test case validates the {@code ai-chat-ollama} Galleon layer by testing:</p>
+ * <ul>
+ *   <li>CDI injection of {@link ChatModel} beans</li>
+ *   <li>Basic chat interaction with the Ollama model</li>
+ *   <li>Question answering capabilities</li>
+ * </ul>
+ *
+ * <p>The test uses Arquillian for container management and deploys a minimal
+ * WAR archive created by {@link DeploymentFactory}. The Ollama instance is
+ * managed by {@link OllamaContainerManager}.</p>
+ *
+ * @see OllamaContainerManager
+ * @see DeploymentFactory
  */
 @ExtendWith(ArquillianExtension.class)
 public class OllamaChatModelTestCase {
 
+    /**
+     * Creates the test deployment archive.
+     *
+     * @return a WAR archive configured for Ollama chat model testing
+     */
     @Deployment
     public static WebArchive createDeployment() {
         return DeploymentFactory.createBaseDeployment("ollama-chat-test.war");
@@ -30,11 +48,22 @@ public class OllamaChatModelTestCase {
     @Named("ollama")
     private ChatModel chatModel;
 
+    /**
+     * Ensures the Ollama container is initialized before tests run.
+     *
+     * @throws Exception if container initialization fails
+     */
     @BeforeAll
     public static void setupContainer() throws Exception {
         OllamaContainerManager.initializeContainer();
     }
 
+    /**
+     * Verifies that the ChatModel bean is properly injected via CDI.
+     *
+     * <p>This test ensures the WildFly AI subsystem correctly registers
+     * and makes available the Ollama chat model for dependency injection.</p>
+     */
     @Test
     public void testChatModelInjection() {
         assertThat(chatModel)
@@ -42,6 +71,12 @@ public class OllamaChatModelTestCase {
                 .isNotNull();
     }
 
+    /**
+     * Tests basic chat interaction with the Ollama model.
+     *
+     * <p>Sends a simple prompt and verifies that the model generates a
+     * meaningful response containing the expected greeting.</p>
+     */
     @Test
     public void testBasicChatInteraction() {
         String response = chatModel.chat("Say 'Hello, WildFly AI!' and nothing else.");
@@ -53,6 +88,12 @@ public class OllamaChatModelTestCase {
                 .containsIgnoringCase("Hello");
     }
 
+    /**
+     * Tests the model's ability to answer simple mathematical questions.
+     *
+     * <p>Validates that the Ollama model can process and respond to
+     * basic arithmetic problems correctly.</p>
+     */
     @Test
     public void testMathQuestion() {
         String response = chatModel.chat("What is 2+2? Answer with just the number.");

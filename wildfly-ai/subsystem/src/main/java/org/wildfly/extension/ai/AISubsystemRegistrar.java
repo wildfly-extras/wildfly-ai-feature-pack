@@ -41,16 +41,95 @@ import org.wildfly.subsystem.resource.ResourceDescriptor;
 import org.wildfly.subsystem.resource.SubsystemResourceDefinitionRegistrar;
 
 /**
- * Registrar for the AI subsystem.
+ * Registrar for the WildFly AI subsystem.
+ *
+ * <p>This class orchestrates the registration of all AI-related management resources
+ * and deployment processors in the WildFly server. It acts as the central registration
+ * point for the entire AI subsystem.</p>
+ *
+ * <p>The registrar performs the following registrations:</p>
+ *
+ * <h3>Deployment Processors</h3>
+ * <ul>
+ *   <li>{@link AIDependencyProcessor} - Adds AI module dependencies (Phase: DEPENDENCIES)</li>
+ *   <li>{@link AIDeploymentProcessor} - Processes AI resources in deployments (Phase: POST_MODULE)</li>
+ * </ul>
+ *
+ * <h3>Chat Model Providers</h3>
+ * <ul>
+ *   <li>Gemini - Google's Gemini AI models</li>
+ *   <li>GitHub Models - GitHub's model marketplace</li>
+ *   <li>Ollama - Local LLM runtime</li>
+ *   <li>OpenAI - ChatGPT and GPT models</li>
+ *   <li>Mistral AI - Mistral's models</li>
+ * </ul>
+ *
+ * <h3>Embedding Model Providers</h3>
+ * <ul>
+ *   <li>In-Memory - Local ONNX-based models (All-MiniLM-L6-v2)</li>
+ *   <li>Ollama - Ollama-based embeddings</li>
+ * </ul>
+ *
+ * <h3>Embedding Store Providers</h3>
+ * <ul>
+ *   <li>Chroma - ChromaDB vector database</li>
+ *   <li>In-Memory - Volatile in-memory store</li>
+ *   <li>Neo4j - Neo4j graph database</li>
+ *   <li>Weaviate - Weaviate vector database</li>
+ * </ul>
+ *
+ * <h3>Content Retriever Providers</h3>
+ * <ul>
+ *   <li>Embedding Store - Semantic search using embedding stores</li>
+ *   <li>Neo4j - Graph-based retrieval</li>
+ *   <li>Web Search - Google/Tavily web search integration</li>
+ * </ul>
+ *
+ * <h3>MCP (Model Context Protocol) Providers</h3>
+ * <ul>
+ *   <li>Tool Providers - MCP function calling</li>
+ *   <li>Streamable Clients - Generic streamable MCP connections</li>
+ *   <li>SSE Clients - Server-Sent Events transport</li>
+ *   <li>Stdio Clients - Standard input/output transport</li>
+ * </ul>
+ *
+ * <h3>Chat Memory Providers</h3>
+ * <ul>
+ *   <li>Chat Memory - Conversation history management</li>
+ * </ul>
+ *
+ * @see SubsystemResourceDefinitionRegistrar
+ * @see AIExtension
  */
 class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
 
-    public static final String NAME = "ai"; 
+    /** Subsystem name used in configuration (subsystem xmlns="urn:wildfly:ai:1.0"). */
+    public static final String NAME = "ai";
+
     static final SubsystemResourceRegistration REGISTRATION = SubsystemResourceRegistration.of(NAME);
     static final ParentResourceDescriptionResolver RESOLVER = new SubsystemResourceDescriptionResolver(NAME, AISubsystemRegistrar.class);
+
+    /** Phase priority for AI dependency injection (Phase.DEPENDENCIES). */
     private static final int PHASE_DEPENDENCIES_AI = 0x1930;
+
+    /** Phase priority for AI deployment processing (Phase.POST_MODULE). */
     private static final int PHASE_POST_MODULE_AI = 0x3840;
 
+    /**
+     * Registers all AI subsystem resources and deployment processors.
+     *
+     * <p>This method is called during server startup to register:</p>
+     * <ol>
+     *   <li>Subsystem model definition</li>
+     *   <li>Deployment chain contributors (processors)</li>
+     *   <li>All AI provider resource registrars</li>
+     *   <li>Deployment model for runtime AI resources</li>
+     * </ol>
+     *
+     * @param parent the parent subsystem registration
+     * @param context the management resource registration context
+     * @return the management resource registration for this subsystem
+     */
     @Override
     public ManagementResourceRegistration register(SubsystemRegistration parent, ManagementResourceRegistrationContext context) {
         parent.setHostCapable();

@@ -17,12 +17,31 @@ import org.wildfly.ai.test.util.DeploymentFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test for in-memory embedding store.
- * Tests the ai-store-in-memory Galleon layer.
+ * Integration test for in-memory embedding store in WildFly.
+ *
+ * <p>This test case validates the {@code ai-store-in-memory} Galleon layer by testing:</p>
+ * <ul>
+ *   <li>CDI injection of {@link EmbeddingStore} beans</li>
+ *   <li>Storage and retrieval of embeddings with text segments</li>
+ *   <li>Multiple embedding storage</li>
+ *   <li>Metadata preservation during storage</li>
+ * </ul>
+ *
+ * <p>The in-memory embedding store provides a simple, volatile storage mechanism
+ * for embeddings that's useful for development, testing, and small-scale applications.
+ * For production use with persistence requirements, consider alternative store implementations.</p>
+ *
+ * @see DeploymentFactory
+ * @see EmbeddingStore
  */
 @ExtendWith(ArquillianExtension.class)
 public class InMemoryEmbeddingStoreTestCase {
 
+    /**
+     * Creates a minimal test deployment archive.
+     *
+     * @return a WAR archive configured for in-memory embedding store testing
+     */
     @Deployment
     public static WebArchive createDeployment() {
         return DeploymentFactory.createMinimalDeployment("in-memory-store-test.war");
@@ -36,6 +55,12 @@ public class InMemoryEmbeddingStoreTestCase {
     @Named("all-minilm-l6-v2")
     private EmbeddingModel embeddingModel;
 
+    /**
+     * Verifies that the EmbeddingStore bean is properly injected via CDI.
+     *
+     * <p>This test ensures the WildFly AI subsystem correctly registers
+     * and makes available the in-memory embedding store.</p>
+     */
     @Test
     public void testEmbeddingStoreInjection() {
         assertThat(embeddingStore)
@@ -43,6 +68,12 @@ public class InMemoryEmbeddingStoreTestCase {
                 .isNotNull();
     }
 
+    /**
+     * Tests storage of an embedding with its associated text segment.
+     *
+     * <p>Validates that the store accepts embeddings and returns a unique
+     * identifier for retrieval.</p>
+     */
     @Test
     public void testStoreAndRetrieveEmbedding() {
         String text = "WildFly is a Java application server.";
@@ -56,9 +87,14 @@ public class InMemoryEmbeddingStoreTestCase {
                 .isNotNull();
     }
 
+    /**
+     * Tests storage of multiple embeddings in the same store.
+     *
+     * <p>Validates that the store can handle multiple embeddings and assigns
+     * unique identifiers to each stored item.</p>
+     */
     @Test
     public void testMultipleEmbeddings() {
-        // Add multiple documents to the store
         String doc1 = "WildFly is a powerful Java application server.";
         String doc2 = "Jakarta EE provides enterprise features.";
         String doc3 = "Docker containers run isolated applications.";
@@ -82,6 +118,12 @@ public class InMemoryEmbeddingStoreTestCase {
                 .isNotNull();
     }
 
+    /**
+     * Tests that embeddings with metadata are stored correctly.
+     *
+     * <p>Validates that metadata attached to text segments is preserved
+     * when storing embeddings, ensuring contextual information is maintained.</p>
+     */
     @Test
     public void testEmbeddingWithMetadata() {
         String doc = "Artificial Intelligence and Machine Learning";

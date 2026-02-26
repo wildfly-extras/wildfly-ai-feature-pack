@@ -27,11 +27,45 @@ import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.extension.ai.injection.memory.WildFlyChatMemoryProviderConfig;
 import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
 
+/**
+ * WildFly implementation of LangChain4j's LLMConfig SPI.
+ *
+ * <p>This class bridges WildFly's AI subsystem configuration with LangChain4j's CDI
+ * integration by implementing the {@link LLMConfig} service provider interface. It
+ * manages bean registration, property configuration, and producer function creation
+ * for all AI service types.</p>
+ *
+ * <p>The configuration handles producer functions for:</p>
+ * <ul>
+ *   <li>Chat models with optional observability ({@link ChatModelListener})</li>
+ *   <li>Streaming chat models</li>
+ *   <li>Content retrievers with dependency injection support</li>
+ *   <li>Chat memory providers</li>
+ *   <li>Other AI services (embedding models, stores, etc.)</li>
+ * </ul>
+ *
+ * <p>All beans are registered with {@link ApplicationScoped} scope and are made
+ * available for injection using {@code @Named} qualifiers.</p>
+ *
+ * @see LLMConfig
+ * @see WildFlyBeanRegistry
+ */
 public class WildFlyLLMConfig extends LLMConfig {
 
     private static final Set<String> beanNames = new HashSet<>();
     private static final Map<String, String> values = new HashMap<>();
 
+    /**
+     * Registers an AI service bean for CDI production.
+     *
+     * <p>This method configures the bean metadata (class, scope, producer) and creates
+     * a producer function that will be called by the CDI container when the bean is
+     * requested for injection.</p>
+     *
+     * @param name unique bean identifier (used with {@code @Named} qualifier)
+     * @param value configuration or instance for the bean
+     * @param type expected bean type (e.g., ChatModel.class, EmbeddingModel.class)
+     */
     public void registerBean(String name, Object value, Class<?> type) {
         beanNames.add(name);
         values.put(getBeanPropertyName(name, CLASS), type.getName());
@@ -40,6 +74,21 @@ public class WildFlyLLMConfig extends LLMConfig {
         registerProducer(getBeanPropertyName(name, PRODUCER), createProducerFunction(value, type));
     }
 
+    /**
+     * Creates a producer function for an AI service bean.
+     *
+     * <p>The producer function is type-specific and handles:</p>
+     * <ul>
+     *   <li><b>Chat models</b> - Creates ChatModel or StreamingChatModel with optional listeners</li>
+     *   <li><b>Content retrievers</b> - Creates ContentRetriever with CDI dependencies</li>
+     *   <li><b>Chat memory</b> - Creates ChatMemoryProvider with CDI dependencies</li>
+     *   <li><b>Other types</b> - Returns the value directly</li>
+     * </ul>
+     *
+     * @param value configuration object for the bean
+     * @param expectedType expected bean type for validation
+     * @return producer function that creates the bean instance
+     */
     private ProducerFunction<Object> createProducerFunction(Object value, Class<?> expectedType) {
             if (ChatModel.class.isAssignableFrom(expectedType) || StreamingChatModel.class.isAssignableFrom(expectedType)) {
                 return (Instance<Object> lookup, String beanName, LLMConfig llmConfig) -> {
@@ -79,29 +128,67 @@ public class WildFlyLLMConfig extends LLMConfig {
             }
     }
 
+    /**
+     * Initializes the configuration.
+     *
+     * <p>No initialization is required as beans are registered dynamically
+     * by the WildFly subsystem during deployment processing.</p>
+     */
     @Override
     public void init() {
     }
 
+    /**
+     * Returns the set of all registered bean names.
+     *
+     * @return unmodifiable set of bean identifiers
+     */
     @Override
     public Set<String> getBeanNames() {
         return Collections.unmodifiableSet(beanNames);
     }
 
+    /**
+     * Returns property names for a specific bean.
+     *
+     * <p>WildFly manages bean properties internally, so this returns an empty set
+     * as properties are not exposed through the LLMConfig interface.</p>
+     *
+     * @param beanName the bean identifier
+     * @return empty set (properties managed internally)
+     */
     @Override
     public Set<String> getPropertyNamesForBean(String beanName) {
         return Collections.emptySet();
     }
 
+    /**
+     * Constructs a fully-qualified property name for a bean attribute.
+     *
+     * @param beanName the bean identifier
+     * @param propertyName the property name (e.g., "class", "scope", "producer")
+     * @return qualified property name in format "langchain4j.{beanName}.{propertyName}"
+     */
     private String getBeanPropertyName(String beanName, String propertyName) {
         return PREFIX + "." + beanName + "." + propertyName;
     }
 
+    /**
+     * Returns all registered property keys.
+     *
+     * @return set of property keys for all registered beans
+     */
     @Override
     public Set<String> getPropertyKeys() {
         return values.keySet();
     }
 
+    /**
+     * Retrieves a property value by key.
+     *
+     * @param name the property key
+     * @return property value, or null if not found
+     */
     @Override
     public String getValue(String name) {
         return values.get(name);

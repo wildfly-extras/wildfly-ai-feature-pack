@@ -32,8 +32,71 @@ import org.jboss.modules.Module;
 import org.jboss.modules.ModuleLoader;
 import org.wildfly.extension.ai.Capabilities;
 
+/**
+ * Deployment processor for AI module dependencies and service discovery.
+ *
+ * <p>This processor runs during the {@code DEPENDENCIES} phase of deployment processing
+ * and performs two main functions:</p>
+ *
+ * <h3>1. Module Dependency Management</h3>
+ * <p>Automatically adds LangChain4j and AI-related module dependencies to deployments:</p>
+ * <ul>
+ *   <li><b>Exported modules</b> - Always added and re-exported to deployments:
+ *     <ul>
+ *       <li>{@code dev.langchain4j} - Core LangChain4j API</li>
+ *       <li>{@code dev.langchain4j.cdi} - CDI integration</li>
+ *       <li>{@code org.wildfly.extension.ai.injection} - WildFly AI injection support</li>
+ *     </ul>
+ *   </li>
+ *   <li><b>Optional modules</b> - Added as optional dependencies (only loaded if needed):
+ *     <ul>
+ *       <li>{@code dev.langchain4j.chroma} - ChromaDB integration</li>
+ *       <li>{@code dev.langchain4j.gemini} - Google Gemini models</li>
+ *       <li>{@code dev.langchain4j.github-models} - GitHub Models marketplace</li>
+ *       <li>{@code dev.langchain4j.ollama} - Ollama local LLM runtime</li>
+ *       <li>{@code dev.langchain4j.openai} - OpenAI GPT models</li>
+ *       <li>{@code dev.langchain4j.mcp-client} - Model Context Protocol</li>
+ *       <li>{@code dev.langchain4j.mistral-ai} - Mistral AI models</li>
+ *       <li>{@code dev.langchain4j.neo4j} - Neo4j graph database</li>
+ *       <li>{@code dev.langchain4j.weaviate} - Weaviate vector database</li>
+ *       <li>{@code dev.langchain4j.web-search-engines} - Web search integration</li>
+ *     </ul>
+ *   </li>
+ * </ul>
+ *
+ * <h3>2. AI Service Discovery</h3>
+ * <p>Scans deployment classes for AI service usage via annotations:</p>
+ * <ul>
+ *   <li>{@code @Named} - CDI field injection (e.g., {@code @Inject @Named("ollama") ChatModel model})</li>
+ *   <li>{@code @RegisterAIService} - LangChain4j AI service registration</li>
+ * </ul>
+ *
+ * <p>When AI services are detected, the processor:</p>
+ * <ol>
+ *   <li>Identifies required service types (chat models, embeddings, stores, etc.)</li>
+ *   <li>Extracts bean names from annotations</li>
+ *   <li>Adds deployment dependencies on corresponding capability services</li>
+ *   <li>Attaches service keys to the deployment unit for later processing</li>
+ * </ol>
+ *
+ * <p>This ensures that:</p>
+ * <ul>
+ *   <li>Required AI services are started before the deployment</li>
+ *   <li>Service availability is validated at deployment time</li>
+ *   <li>Proper dependency injection can occur in {@link AIDeploymentProcessor}</li>
+ * </ul>
+ *
+ * @see AIDeploymentProcessor
+ * @see AIAttachments
+ * @see Capabilities
+ */
 public class AIDependencyProcessor implements DeploymentUnitProcessor {
 
+    /**
+     * Optional AI provider modules loaded only when referenced by deployments.
+     * These modules are added with {@code setOptional(true)} to avoid deployment
+     * failures if specific providers are not installed.
+     */
     public static final String[] OPTIONAL_MODULES = {
         "dev.langchain4j.chroma",
         "dev.langchain4j.gemini",
@@ -46,12 +109,34 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         "dev.langchain4j.weaviate",
         "dev.langchain4j.web-search-engines"
     };
+
+    /**
+     * Core AI modules that are always added and re-exported to deployments.
+     * These modules provide the base API and CDI integration required for all
+     * AI functionality in applications.
+     */
     public static final String[] EXPORTED_MODULES = {
         "dev.langchain4j",
         "dev.langchain4j.cdi",
         "org.wildfly.extension.ai.injection"
     };
 
+    /**
+     * Processes a deployment to add AI module dependencies and discover required services.
+     *
+     * <p>This method performs the following operations:</p>
+     * <ol>
+     *   <li>Adds core and optional LangChain4j module dependencies</li>
+     *   <li>Scans for {@code @Named} injection points on AI service fields</li>
+     *   <li>Scans for {@code @RegisterAIService} annotations</li>
+     *   <li>Collects required service names for each AI service type</li>
+     *   <li>Adds deployment dependencies on required capability services</li>
+     *   <li>Attaches service keys to deployment unit for {@link AIDeploymentProcessor}</li>
+     * </ol>
+     *
+     * @param deploymentPhaseContext the deployment phase context
+     * @throws DeploymentUnitProcessingException if annotation index cannot be resolved
+     */
     @Override
     public void deploy(DeploymentPhaseContext deploymentPhaseContext) throws DeploymentUnitProcessingException {
         DeploymentUnit deploymentUnit = deploymentPhaseContext.getDeploymentUnit();
@@ -213,6 +298,13 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         }
     }
 
+    /**
+     * Safely extracts a string value from an annotation attribute.
+     *
+     * @param annotation the annotation instance
+     * @param name the attribute name
+     * @return attribute value as string, or empty string if attribute is not present
+     */
     private String getAnnotationValue(AnnotationInstance annotation, String name) {
         AnnotationValue value = annotation.value(name);
         if (value == null) {

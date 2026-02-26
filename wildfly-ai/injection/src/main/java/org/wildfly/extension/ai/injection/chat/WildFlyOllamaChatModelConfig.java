@@ -14,6 +14,32 @@ import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import java.time.Duration;
 import java.util.List;
 
+/**
+ * Configuration for Ollama chat models in WildFly.
+ *
+ * <p>This configuration class manages both standard and streaming chat models backed by
+ * Ollama, a local LLM runtime. Ollama supports various open-source models including
+ * Llama, Mistral, Gemma, and many others.</p>
+ *
+ * <p>Supported configuration options:</p>
+ * <ul>
+ *   <li><b>baseUrl</b> - Ollama API endpoint (default: http://localhost:11434)</li>
+ *   <li><b>modelName</b> - Model identifier (e.g., "llama3.2:1b", "mistral:7b")</li>
+ *   <li><b>temperature</b> - Randomness in responses (0.0-2.0)</li>
+ *   <li><b>topK/topP</b> - Sampling parameters for generation</li>
+ *   <li><b>maxRetries</b> - Number of retry attempts on failure</li>
+ *   <li><b>streaming</b> - Enable token-by-token streaming</li>
+ *   <li><b>observable</b> - Enable {@link ChatModelListener} support</li>
+ *   <li><b>isJson</b> - Force JSON response format</li>
+ * </ul>
+ *
+ * <p>The configuration uses lazy initialization - the model instance is created only
+ * when first accessed through {@link #createLanguageModel} or {@link #createStreamingLanguageModel}.</p>
+ *
+ * @see OllamaChatModel
+ * @see OllamaStreamingChatModel
+ * @see WildFlyChatModelConfig
+ */
 public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
 
     private String baseUrl;
@@ -35,6 +61,15 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
     private boolean observable;
     private Object instance = null;
 
+    /**
+     * Creates a standard Ollama chat model instance.
+     *
+     * <p>Lazily initializes the {@link OllamaChatModel} on first call using the
+     * configured parameters. Subsequent calls return the same instance.</p>
+     *
+     * @param listeners optional list of {@link ChatModelListener} for observability
+     * @return configured Ollama chat model
+     */
     @Override
     public ChatModel createLanguageModel(List<ChatModelListener> listeners) {
         if (instance == null) {
@@ -66,6 +101,16 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
         return (ChatModel) instance;
     }
 
+    /**
+     * Creates a streaming Ollama chat model instance.
+     *
+     * <p>Lazily initializes the {@link OllamaStreamingChatModel} on first call,
+     * enabling token-by-token response streaming. Subsequent calls return the
+     * same instance.</p>
+     *
+     * @param listeners optional list of {@link ChatModelListener} for observability
+     * @return configured streaming Ollama chat model
+     */
     @Override
     public StreamingChatModel createStreamingLanguageModel(List<ChatModelListener> listeners) {
         if (instance == null) {
@@ -185,11 +230,21 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
         return this;
     }
 
+    /**
+     * Indicates whether this configuration produces a streaming chat model.
+     *
+     * @return true if streaming mode is enabled
+     */
     @Override
     public boolean isStreaming() {
         return streaming;
     }
 
+    /**
+     * Indicates whether this configuration enables observability through listeners.
+     *
+     * @return true if {@link ChatModelListener} support is enabled
+     */
     @Override
     public boolean isObservable() {
         return observable;

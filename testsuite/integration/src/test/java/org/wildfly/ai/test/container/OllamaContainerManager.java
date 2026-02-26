@@ -12,8 +12,20 @@ import org.testcontainers.utility.DockerImageName;
 
 /**
  * Singleton manager for the Ollama container lifecycle.
- * This manager ensures a single Ollama container is shared across all tests
- * to improve performance and reduce resource usage.
+ *
+ * <p>This manager ensures a single Ollama container is shared across all tests
+ * to improve performance and reduce resource usage. It intelligently detects if
+ * an Ollama instance is already running on the default port (11434) and reuses it,
+ * or starts a new Testcontainers-managed instance if needed.</p>
+ *
+ * <p>The manager uses {@code ollama/ollama:latest} image and automatically pulls
+ * the {@code llama3.2:1b} model on first initialization.</p>
+ *
+ * <p>System properties set by this manager:</p>
+ * <ul>
+ *   <li>{@code ollama.base.url} - The endpoint URL for Ollama API</li>
+ *   <li>{@code ollama.model.name} - The name of the pulled model (llama3.2:1b)</li>
+ * </ul>
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class OllamaContainerManager {
@@ -24,7 +36,10 @@ public class OllamaContainerManager {
     private static OllamaContainer ollama;
     private static volatile boolean initialized = false;
 
-    // Static initializer to start container before any tests
+    /**
+     * Static initializer that ensures Ollama is ready before any tests run.
+     * Throws {@link RuntimeException} if initialization fails.
+     */
     static {
         try {
             initializeContainer();
@@ -34,9 +49,21 @@ public class OllamaContainerManager {
     }
 
     /**
-     * Gets or creates the Ollama container instance.
-     * The container is started and the model is pulled on first access.
-     * First checks if Ollama is already running on default port 11434.
+     * Initializes the Ollama container or detects an existing instance.
+     *
+     * <p>This method performs the following steps:</p>
+     * <ol>
+     *   <li>Checks if Ollama is already running on http://localhost:11434</li>
+     *   <li>If found, reuses the existing instance to avoid port conflicts</li>
+     *   <li>If not found, starts a new Testcontainers-managed Ollama container</li>
+     *   <li>Pulls the llama3.2:1b model (one-time operation)</li>
+     *   <li>Sets system properties for test access</li>
+     * </ol>
+     *
+     * <p>This method is thread-safe and idempotent - subsequent calls after
+     * successful initialization will do nothing.</p>
+     *
+     * @throws Exception if container startup or model pulling fails
      */
     public static synchronized void initializeContainer() throws Exception {
         if (!initialized) {
@@ -69,6 +96,13 @@ public class OllamaContainerManager {
 
     /**
      * Checks if Ollama is running at the given endpoint.
+     *
+     * <p>Performs a health check by sending a GET request to the {@code /api/tags}
+     * endpoint with a 2-second timeout. This is used to detect existing Ollama
+     * instances before attempting to start a new container.</p>
+     *
+     * @param endpoint the Ollama API endpoint URL (e.g., "http://localhost:11434")
+     * @return {@code true} if Ollama responds with HTTP 200, {@code false} otherwise
      */
     private static boolean isOllamaRunning(String endpoint) {
         HttpURLConnection conn = null;
@@ -90,21 +124,31 @@ public class OllamaContainerManager {
     }
 
     /**
-     * Returns the Ollama container endpoint URL.
+     * Returns the Ollama API endpoint URL.
+     *
+     * <p>If using a Testcontainers-managed instance, returns the dynamically assigned
+     * endpoint. If using an existing Ollama instance, returns the default endpoint
+     * {@code http://localhost:11434}.</p>
+     *
+     * @return the Ollama API endpoint URL
      */
     public static String getEndpoint() {
         return ollama != null ? ollama.getEndpoint() : "http://localhost:11434";
     }
 
     /**
-     * Returns the name of the pulled model.
+     * Returns the name of the Ollama model used for testing.
+     *
+     * @return the model name ({@code llama3.2:1b})
      */
     public static String getModelName() {
         return MODEL_NAME;
     }
 
     /**
-     * Checks if the container is initialized.
+     * Checks if the Ollama instance has been initialized.
+     *
+     * @return {@code true} if initialization completed successfully, {@code false} otherwise
      */
     public static boolean isInitialized() {
         return initialized;
