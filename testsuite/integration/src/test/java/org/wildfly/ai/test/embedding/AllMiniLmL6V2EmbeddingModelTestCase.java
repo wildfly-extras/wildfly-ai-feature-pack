@@ -17,12 +17,33 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test for All-MiniLM-L6-v2 embedding model.
- * Tests the ai-embedding-all-minilm-l6-v2 Galleon layer.
+ * Integration test for All-MiniLM-L6-v2 in-memory embedding model in WildFly.
+ *
+ * <p>This test case validates the {@code ai-embedding-all-minilm-l6-v2} Galleon layer by testing:</p>
+ * <ul>
+ *   <li>CDI injection of {@link EmbeddingModel} beans</li>
+ *   <li>Single text embedding generation</li>
+ *   <li>Batch embedding processing</li>
+ *   <li>Semantic similarity calculation using cosine similarity</li>
+ * </ul>
+ *
+ * <p>All-MiniLM-L6-v2 is a sentence transformer model that produces 384-dimensional
+ * embeddings. It runs locally using ONNX runtime without requiring external API calls,
+ * making it suitable for offline and privacy-sensitive applications.</p>
+ *
+ * @see DeploymentFactory
+ * @see EmbeddingModel
  */
 @ExtendWith(ArquillianExtension.class)
 public class AllMiniLmL6V2EmbeddingModelTestCase {
 
+    /**
+     * Creates a minimal test deployment archive.
+     *
+     * <p>Uses minimal deployment since this test doesn't require Ollama container.</p>
+     *
+     * @return a WAR archive configured for All-MiniLM-L6-v2 embedding testing
+     */
     @Deployment
     public static WebArchive createDeployment() {
         return DeploymentFactory.createMinimalDeployment("all-minilm-embedding-test.war");
@@ -32,6 +53,12 @@ public class AllMiniLmL6V2EmbeddingModelTestCase {
     @Named("all-minilm-l6-v2")
     private EmbeddingModel embeddingModel;
 
+    /**
+     * Verifies that the EmbeddingModel bean is properly injected via CDI.
+     *
+     * <p>This test ensures the WildFly AI subsystem correctly registers
+     * and makes available the All-MiniLM-L6-v2 embedding model.</p>
+     */
     @Test
     public void testEmbeddingModelInjection() {
         assertThat(embeddingModel)
@@ -39,6 +66,12 @@ public class AllMiniLmL6V2EmbeddingModelTestCase {
                 .isNotNull();
     }
 
+    /**
+     * Tests generation of embeddings for a single text input.
+     *
+     * <p>Validates that the model produces a 384-dimensional embedding vector
+     * for a given text input, which is the standard output size for All-MiniLM-L6-v2.</p>
+     */
     @Test
     public void testSingleTextEmbedding() {
         String text = "This is a test sentence for embedding.";
@@ -58,6 +91,13 @@ public class AllMiniLmL6V2EmbeddingModelTestCase {
                 .isEqualTo(384);
     }
 
+    /**
+     * Tests batch embedding generation for multiple text inputs.
+     *
+     * <p>Validates that the model can efficiently process multiple text segments
+     * in a single batch operation, with each segment producing a 384-dimensional
+     * embedding vector.</p>
+     */
     @Test
     public void testBatchEmbedding() {
         List<TextSegment> textSegments = List.of(
@@ -79,6 +119,13 @@ public class AllMiniLmL6V2EmbeddingModelTestCase {
         }
     }
 
+    /**
+     * Tests semantic similarity detection using embedding vectors.
+     *
+     * <p>Validates that semantically similar sentences produce embeddings with
+     * higher cosine similarity scores compared to unrelated sentences. This
+     * demonstrates the model's ability to capture semantic meaning in vector form.</p>
+     */
     @Test
     public void testEmbeddingSimilarity() {
         String text1 = "The cat sits on the mat.";
@@ -98,6 +145,18 @@ public class AllMiniLmL6V2EmbeddingModelTestCase {
                 .isGreaterThan(similarity13);
     }
 
+    /**
+     * Calculates the cosine similarity between two embedding vectors.
+     *
+     * <p>Cosine similarity measures the cosine of the angle between two vectors,
+     * producing a value between -1 and 1 where higher values indicate greater similarity.
+     * This metric is commonly used for comparing embeddings as it focuses on direction
+     * rather than magnitude.</p>
+     *
+     * @param vector1 the first embedding vector
+     * @param vector2 the second embedding vector
+     * @return cosine similarity score between -1.0 and 1.0
+     */
     private double cosineSimilarity(float[] vector1, float[] vector2) {
         double dotProduct = 0.0;
         double norm1 = 0.0;

@@ -23,12 +23,32 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test for embedding store content retriever.
- * Tests the ai-retriever-embedding-store Galleon layer.
+ * Integration test for embedding store-based content retriever in WildFly.
+ *
+ * <p>This test case validates the {@code ai-retriever-embedding-store} Galleon layer by testing:</p>
+ * <ul>
+ *   <li>CDI injection of {@link ContentRetriever} beans</li>
+ *   <li>Semantic search and retrieval of relevant content</li>
+ *   <li>Multiple results retrieval based on query similarity</li>
+ *   <li>Metadata preservation during retrieval</li>
+ * </ul>
+ *
+ * <p>The content retriever uses an {@link EmbeddingStore} and {@link EmbeddingModel}
+ * to perform semantic search. It converts queries to embeddings and finds the most
+ * similar stored content based on cosine similarity.</p>
+ *
+ * @see RetrieverTestBean
+ * @see DeploymentFactory
+ * @see ContentRetriever
  */
 @ExtendWith(ArquillianExtension.class)
 public class EmbeddingStoreContentRetrieverTestCase {
 
+    /**
+     * Creates the test deployment archive with the retriever test bean.
+     *
+     * @return a WAR archive configured for content retriever testing
+     */
     @Deployment
     public static WebArchive createDeployment() {
         return DeploymentFactory.createMinimalDeployment("content-retriever-test.war", RetrieverTestBean.class);
@@ -42,6 +62,12 @@ public class EmbeddingStoreContentRetrieverTestCase {
     @Named("in-memory")
     private EmbeddingStore embeddingStore;
 
+    /**
+     * Populates the embedding store with test data before each test.
+     *
+     * <p>Adds three text segments with embeddings and metadata to the store,
+     * which are used by retrieval tests to verify semantic search functionality.</p>
+     */
     @BeforeEach
     public void populateEmbeddingStore() {
         // Populate the embedding store with test data
@@ -58,6 +84,12 @@ public class EmbeddingStoreContentRetrieverTestCase {
         embeddingStore.add(embeddingModel.embed(doc3).content(), segment3);
     }
 
+    /**
+     * Verifies that the ContentRetriever bean is properly injected via CDI.
+     *
+     * <p>Tests both the RetrieverTestBean injection and the ContentRetriever
+     * injection into that bean.</p>
+     */
     @Test
     public void testContentRetrieverInjection() {
         assertThat(retrieverTestBean)
@@ -68,6 +100,12 @@ public class EmbeddingStoreContentRetrieverTestCase {
                 .isNotNull();
     }
 
+    /**
+     * Tests semantic search to retrieve relevant content based on a query.
+     *
+     * <p>Validates that the retriever finds the most semantically relevant
+     * content from the embedding store for a given query.</p>
+     */
     @Test
     public void testRetrieveRelevantContent() {
         List<Content> contents = retrieverTestBean.retrieve("What is the AI feature pack?");
@@ -81,6 +119,12 @@ public class EmbeddingStoreContentRetrieverTestCase {
                 .containsIgnoringCase("AI feature pack");
     }
 
+    /**
+     * Tests retrieval of multiple relevant results for a query.
+     *
+     * <p>Validates that the retriever can return multiple content items
+     * when several stored items are semantically relevant to the query.</p>
+     */
     @Test
     public void testRetrieveWithMultipleResults() {
         List<Content> contents = retrieverTestBean.retrieve("Tell me about WildFly");
@@ -97,6 +141,12 @@ public class EmbeddingStoreContentRetrieverTestCase {
                 .isTrue();
     }
 
+    /**
+     * Tests that retrieved content preserves associated metadata.
+     *
+     * <p>Validates that metadata attached to stored text segments is
+     * preserved and accessible in retrieved results.</p>
+     */
     @Test
     public void testRetrieveWithMetadata() {
         List<Content> contents = retrieverTestBean.retrieve("What are embeddings?");

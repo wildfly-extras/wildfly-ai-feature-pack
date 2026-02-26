@@ -14,6 +14,77 @@ import org.wildfly.extension.ai.mcp.client.WildFlyMcpClient;
 import org.wildfly.service.descriptor.UnaryServiceDescriptor;
 import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
 
+/**
+ * WildFly capability definitions for the AI subsystem.
+ *
+ * <p>This interface defines all runtime capabilities provided and required by the
+ * AI subsystem. Capabilities enable loose coupling between subsystems while ensuring
+ * proper service dependencies and availability.</p>
+ *
+ * <h3>AI Service Capabilities</h3>
+ * <p>Each AI service type provides a capability with the following characteristics:</p>
+ * <ul>
+ *   <li><b>Dynamic naming</b> - Capability names include the bean identifier
+ *       (e.g., "org.wildfly.ai.chatmodel.ollama")</li>
+ *   <li><b>Multiple registrations</b> - Allows multiple instances of the same service type</li>
+ *   <li><b>Service descriptors</b> - Define service types for dependency injection</li>
+ * </ul>
+ *
+ * <h3>Provided Capabilities</h3>
+ * <table border="1">
+ *   <tr>
+ *     <th>Capability Name</th>
+ *     <th>Service Type</th>
+ *     <th>Description</th>
+ *   </tr>
+ *   <tr>
+ *     <td>org.wildfly.ai.chatmodel.{name}</td>
+ *     <td>{@link WildFlyChatModelConfig}</td>
+ *     <td>Chat model configurations (standard and streaming)</td>
+ *   </tr>
+ *   <tr>
+ *     <td>org.wildfly.ai.embedding.model.{name}</td>
+ *     <td>{@link EmbeddingModel}</td>
+ *     <td>Text embedding models</td>
+ *   </tr>
+ *   <tr>
+ *     <td>org.wildfly.ai.embedding.store.{name}</td>
+ *     <td>{@link EmbeddingStore}</td>
+ *     <td>Vector database backends</td>
+ *   </tr>
+ *   <tr>
+ *     <td>org.wildfly.ai.rag.retriever.{name}</td>
+ *     <td>{@link WildFlyContentRetrieverConfig}</td>
+ *     <td>Content retrievers for RAG</td>
+ *   </tr>
+ *   <tr>
+ *     <td>org.wildfly.ai.tool-provider.{name}</td>
+ *     <td>{@link ToolProvider}</td>
+ *     <td>MCP and function calling tools</td>
+ *   </tr>
+ *   <tr>
+ *     <td>org.wildfly.ai.chatmemory.{name}</td>
+ *     <td>{@link WildFlyChatMemoryProviderConfig}</td>
+ *     <td>Chat memory providers</td>
+ *   </tr>
+ *   <tr>
+ *     <td>org.wildfly.ai.mcp.client.{name}</td>
+ *     <td>{@link WildFlyMcpClient}</td>
+ *     <td>MCP client connections</td>
+ *   </tr>
+ * </table>
+ *
+ * <h3>Required Capabilities</h3>
+ * <p>The AI subsystem requires these capabilities from other subsystems:</p>
+ * <ul>
+ *   <li><b>org.wildfly.ee.concurrent.executor</b> - Managed executors for async operations</li>
+ *   <li><b>org.wildfly.extension.opentelemetry</b> - Optional observability integration</li>
+ *   <li><b>org.wildfly.network.outbound-socket-binding</b> - Network configuration for remote services</li>
+ * </ul>
+ *
+ * @see RuntimeCapability
+ * @see UnaryServiceDescriptor
+ */
 public interface Capabilities {
     UnaryServiceDescriptor<WildFlyChatMemoryProviderConfig> CHAT_MEMORY_PROVIDER_DESCRIPTOR = UnaryServiceDescriptor.of("org.wildfly.ai.chatmemory", WildFlyChatMemoryProviderConfig.class);
     RuntimeCapability<Void> CHAT_MEMORY_PROVIDER_CAPABILITY = RuntimeCapability.Builder.of(CHAT_MEMORY_PROVIDER_DESCRIPTOR).setAllowMultipleRegistrations(true).build();

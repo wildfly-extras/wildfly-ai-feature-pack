@@ -19,12 +19,31 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test for Ollama embedding model.
- * Tests the ai-embedding-ollama Galleon layer.
+ * Integration test for Ollama-based embedding model in WildFly.
+ *
+ * <p>This test case validates the {@code ai-embedding-ollama} Galleon layer by testing:</p>
+ * <ul>
+ *   <li>CDI injection of Ollama-based {@link EmbeddingModel} beans</li>
+ *   <li>Single text embedding generation using Ollama</li>
+ *   <li>Batch embedding processing</li>
+ * </ul>
+ *
+ * <p>Unlike All-MiniLM-L6-v2 which runs locally, this embedding model uses the
+ * Ollama service to generate embeddings via the llama3.2:1b model. The embedding
+ * dimensions depend on the specific Ollama model being used.</p>
+ *
+ * @see OllamaContainerManager
+ * @see DeploymentFactory
+ * @see EmbeddingModel
  */
 @ExtendWith(ArquillianExtension.class)
 public class OllamaEmbeddingModelTestCase {
 
+    /**
+     * Creates the test deployment archive.
+     *
+     * @return a WAR archive configured for Ollama embedding testing
+     */
     @Deployment
     public static WebArchive createDeployment() {
         return DeploymentFactory.createBaseDeployment("ollama-embedding-test.war");
@@ -34,11 +53,22 @@ public class OllamaEmbeddingModelTestCase {
     @Named("ollama-embeddings")
     private EmbeddingModel embeddingModel;
 
+    /**
+     * Ensures the Ollama container is initialized before tests run.
+     *
+     * @throws Exception if container initialization fails
+     */
     @BeforeAll
     public static void setupContainer() throws Exception {
         OllamaContainerManager.initializeContainer();
     }
 
+    /**
+     * Verifies that the Ollama EmbeddingModel bean is properly injected via CDI.
+     *
+     * <p>This test ensures the WildFly AI subsystem correctly registers
+     * and makes available the Ollama embedding model.</p>
+     */
     @Test
     public void testEmbeddingModelInjection() {
         assertThat(embeddingModel)
@@ -46,6 +76,12 @@ public class OllamaEmbeddingModelTestCase {
                 .isNotNull();
     }
 
+    /**
+     * Tests generation of embeddings for a single text input using Ollama.
+     *
+     * <p>Validates that the Ollama service produces a valid embedding vector
+     * with positive dimensions for a given text input.</p>
+     */
     @Test
     public void testSingleTextEmbedding() {
         String text = "This is a test sentence for Ollama embedding.";
@@ -64,6 +100,12 @@ public class OllamaEmbeddingModelTestCase {
                 .isPositive();
     }
 
+    /**
+     * Tests batch embedding generation for multiple text inputs using Ollama.
+     *
+     * <p>Validates that the Ollama service can efficiently process multiple text
+     * segments in a batch operation, with each segment producing an embedding vector.</p>
+     */
     @Test
     public void testBatchEmbedding() {
         List<TextSegment> textSegments = List.of(

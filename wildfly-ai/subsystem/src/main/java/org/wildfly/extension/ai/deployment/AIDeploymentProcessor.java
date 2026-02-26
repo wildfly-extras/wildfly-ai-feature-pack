@@ -29,8 +29,70 @@ import org.wildfly.extension.ai.injection.chat.WildFlyChatModelConfig;
 import org.wildfly.extension.ai.injection.memory.WildFlyChatMemoryProviderConfig;
 import org.wildfly.extension.ai.injection.retriever.WildFlyContentRetrieverConfig;
 
+/**
+ * Deployment processor for AI service registration and CDI integration.
+ *
+ * <p>This processor runs during the {@code POST_MODULE} phase, after dependencies
+ * have been resolved by {@link AIDependencyProcessor}. It performs the actual
+ * registration of AI services for CDI injection in the deployment.</p>
+ *
+ * <h3>Processing Steps</h3>
+ * <ol>
+ *   <li><b>Validation</b> - Verifies CDI (Weld) support is available</li>
+ *   <li><b>Service Retrieval</b> - Retrieves AI service instances from deployment attachments</li>
+ *   <li><b>Bean Registration</b> - Registers services with {@link WildFlyBeanRegistry} for CDI</li>
+ *   <li><b>Runtime Metadata</b> - Updates deployment management model with service info</li>
+ *   <li><b>CDI Extension Registration</b> - Registers LangChain4j CDI extensions</li>
+ * </ol>
+ *
+ * <h3>Supported Service Types</h3>
+ * <ul>
+ *   <li><b>Chat Models</b> - {@link WildFlyChatModelConfig} (standard and streaming)</li>
+ *   <li><b>Embedding Models</b> - {@link EmbeddingModel}</li>
+ *   <li><b>Embedding Stores</b> - {@link EmbeddingStore}</li>
+ *   <li><b>Content Retrievers</b> - {@link WildFlyContentRetrieverConfig}</li>
+ *   <li><b>Tool Providers</b> - {@link ToolProvider} (MCP/function calling)</li>
+ *   <li><b>Chat Memory</b> - {@link WildFlyChatMemoryProviderConfig}</li>
+ * </ul>
+ *
+ * <h3>OpenTelemetry Integration</h3>
+ * <p>If the OpenTelemetry capability is available, the processor logs this information
+ * but delegates actual instrumentation to the LangChain4j CDI extensions.</p>
+ *
+ * <h3>Management Model Updates</h3>
+ * <p>For each registered chat model, the processor updates the deployment's management
+ * model with runtime attributes like streaming status, making this information available
+ * through the WildFly CLI and management APIs.</p>
+ *
+ * @see AIDependencyProcessor
+ * @see WildFlyBeanRegistry
+ * @see AIAttachments
+ */
 public class AIDeploymentProcessor implements DeploymentUnitProcessor {
 
+    /**
+     * Registers AI services for CDI injection in the deployment.
+     *
+     * <p>This method retrieves AI service instances that were attached by
+     * {@link AIDependencyProcessor}, registers them with {@link WildFlyBeanRegistry}
+     * for CDI availability, and updates the deployment's management model.</p>
+     *
+     * <p>The method processes services in this order:</p>
+     * <ol>
+     *   <li>Chat models (with management model updates)</li>
+     *   <li>Embedding models</li>
+     *   <li>Embedding stores</li>
+     *   <li>Content retrievers</li>
+     *   <li>Tool providers</li>
+     *   <li>Chat memory providers</li>
+     * </ol>
+     *
+     * <p>After all services are registered, LangChain4j CDI portable extensions
+     * are registered with the Weld capability to enable AI service discovery.</p>
+     *
+     * @param deploymentPhaseContext the deployment phase context
+     * @throws DeploymentUnitProcessingException if CDI support is unavailable
+     */
     @Override
     public void deploy(DeploymentPhaseContext deploymentPhaseContext) throws DeploymentUnitProcessingException {
         final DeploymentUnit deploymentUnit = deploymentPhaseContext.getDeploymentUnit();
@@ -107,6 +169,14 @@ public class AIDeploymentProcessor implements DeploymentUnitProcessor {
         }
     }
 
+    /**
+     * Performs cleanup when a deployment is removed.
+     *
+     * <p>Currently no cleanup is required as AI service beans are managed by the
+     * CDI container and will be automatically destroyed during undeployment.</p>
+     *
+     * @param context the deployment unit being undeployed
+     */
     @Override
     public void undeploy(DeploymentUnit context) {
     }
