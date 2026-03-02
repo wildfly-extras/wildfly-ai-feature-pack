@@ -11,7 +11,6 @@ import static org.jboss.logging.Logger.Level.WARN;
 
 import java.lang.invoke.MethodHandles;
 
-import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.logging.BasicLogger;
@@ -32,8 +31,8 @@ public interface MCPLogger extends BasicLogger {
     @Message(id = 2, value = "Unable to resolve annotation index for deployment unit: %s")
     DeploymentUnitProcessingException unableToResolveAnnotationIndex(DeploymentUnit deploymentUnit);
 
-    @Message(id = 3, value = "Couldn't access the Chat Language Model called %s")
-    OperationFailedException chatLanguageModelServiceUnavailable(String chatLanguageModelName);
+//    @Message(id = 3, value = "Couldn't access the Chat Language Model called %s")
+//    OperationFailedException chatLanguageModelServiceUnavailable(String chatLanguageModelName);
 
     @LogMessage(level = INFO)
     @Message(id = 4, value = "Registered MCP endpoint '%s' for host '%s'")
@@ -43,8 +42,8 @@ public interface MCPLogger extends BasicLogger {
     @Message(id = 5, value = "Unregistered MCP endpoint '%s' for host '%s'")
     void endpointUnregistered(String path, String hostName);
 
-    @Message(id = 6, value = "Failed to resolve module for deployment %s")
-    DeploymentUnitProcessingException failedToResolveModule(DeploymentUnit deploymentUnit);
+//    @Message(id = 6, value = "Failed to resolve module for deployment %s")
+//    DeploymentUnitProcessingException failedToResolveModule(DeploymentUnit deploymentUnit);
 
     @LogMessage(level = ERROR)
     @Message(id = 7, value = "Invalid Method: %s")

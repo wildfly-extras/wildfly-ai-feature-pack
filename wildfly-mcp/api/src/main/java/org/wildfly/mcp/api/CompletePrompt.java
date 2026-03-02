@@ -17,8 +17,8 @@ import java.util.List;
  * The result of a "complete" operation is always represented as a {@link CompletionResponse}. However, the annotated method can
  * also return other types that are converted according to the following rules.
  * <ul>
- * <li>If the method returns {@link String} then the reponse contains the single value.</li>
- * <li>If the method returns a {@link List} of {@link String}s then the reponse contains the list of values.</li>
+ * <li>If the method returns {@link String} then the response contains the single value.</li>
+ * <li>If the method returns a {@link List} of {@link String}s then the response contains the list of values.</li>
  * <li>The method may return a {@link Uni} that wraps any of the type mentioned above.</li>
  * </ul>
  * In other words, the return type must be one of the following list:

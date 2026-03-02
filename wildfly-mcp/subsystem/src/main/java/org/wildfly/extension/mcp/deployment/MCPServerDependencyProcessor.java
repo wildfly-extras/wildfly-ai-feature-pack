@@ -5,7 +5,7 @@
 package org.wildfly.extension.mcp.deployment;
 
 import static org.wildfly.extension.mcp.MCPLogger.ROOT_LOGGER;
-import static org.wildfly.extension.mcp.deployment.MCPAttachements.MCP_REGISTRY_METADATA;
+import static org.wildfly.extension.mcp.deployment.MCPAttachments.MCP_REGISTRY_METADATA;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +28,14 @@ import org.wildfly.mcp.api.ToolArg;
 import org.wildfly.extension.mcp.MCPLogger;
 import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 import org.wildfly.extension.mcp.injection.tool.ArgumentMetadata;
-import org.wildfly.extension.mcp.injection.tool.McpFeatureMetadata;
+import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
 import org.wildfly.mcp.api.Prompt;
 import org.wildfly.mcp.api.PromptArg;
 import org.wildfly.mcp.api.Resource;
 import org.wildfly.mcp.api.ResourceArg;
 
-public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
+public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
 
     @Override
     public void deploy(DeploymentPhaseContext deploymentPhaseContext) throws DeploymentUnitProcessingException {
@@ -58,7 +58,7 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
         annotations = index.getAnnotations(DotName.createSimple(Resource.class));
         processResources(registry, annotations);
         deploymentUnit.putAttachment(MCP_REGISTRY_METADATA, registry);
-        deploymentPhaseContext.addDeploymentDependency(Capabilities.MCP_SERVER_PROVIDER_CAPABILITY.getCapabilityServiceName(), MCPAttachements.MCP_ENDPOINT_CONFIGURATION);
+        deploymentPhaseContext.addDeploymentDependency(Capabilities.MCP_SERVER_PROVIDER_CAPABILITY.getCapabilityServiceName(), MCPAttachments.MCP_ENDPOINT_CONFIGURATION);
     }
 
     private void processPrompts(WildFlyMCPRegistry registry, List<AnnotationInstance> annotations) {
@@ -81,7 +81,7 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
                 arguments.add(arg);
             }
             MCPLogger.ROOT_LOGGER.debug("Prompt detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
-            McpFeatureMetadata metadata = new McpFeatureMetadata(McpFeatureMetadata.Kind.PROMPT,
+            MCPFeatureMetadata metadata = new MCPFeatureMetadata(MCPFeatureMetadata.Kind.PROMPT,
                     name,
                     new MethodMetadata(
                             annotation.target().asMethod().name(),
@@ -116,7 +116,7 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
                 arguments.add(arg);
             }
             MCPLogger.ROOT_LOGGER.debug("Tool detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
-            McpFeatureMetadata metadata = new McpFeatureMetadata(McpFeatureMetadata.Kind.TOOL,
+            MCPFeatureMetadata metadata = new MCPFeatureMetadata(MCPFeatureMetadata.Kind.TOOL,
                     name,
                     new MethodMetadata(
                             annotation.target().asMethod().name(),
@@ -153,7 +153,7 @@ public class McpServerDependencyProcessor implements DeploymentUnitProcessor {
                 arguments.add(arg);
             }
             MCPLogger.ROOT_LOGGER.debug("Resource detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
-            McpFeatureMetadata metadata = new McpFeatureMetadata(McpFeatureMetadata.Kind.RESOURCE,
+            MCPFeatureMetadata metadata = new MCPFeatureMetadata(MCPFeatureMetadata.Kind.RESOURCE,
                     name,
                     new MethodMetadata(
                             annotation.target().asMethod().name(),

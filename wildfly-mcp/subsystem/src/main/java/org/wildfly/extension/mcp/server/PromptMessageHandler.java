@@ -32,13 +32,13 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import org.wildfly.extension.mcp.api.McpConnection;
+import org.wildfly.extension.mcp.api.MCPConnection;
 import org.wildfly.extension.mcp.api.Responder;
 import org.wildfly.extension.mcp.injection.MCPLogger;
 import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 import org.wildfly.extension.mcp.injection.tool.ArgumentMetadata;
-import org.wildfly.extension.mcp.injection.tool.McpFeatureMetadata;
-import org.wildfly.extension.mcp.injection.tool.McpPrompt;
+import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
+import org.wildfly.extension.mcp.injection.tool.MCPPrompt;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
 import org.wildfly.mcp.api.ContentMapper;
 import org.wildfly.mcp.api.PromptMessage;
@@ -77,7 +77,7 @@ public class PromptMessageHandler {
         MCPLogger.ROOT_LOGGER.debugf("List tools [id: %s]", id);
 
         JsonArrayBuilder prompts = Json.createArrayBuilder();
-        for (McpFeatureMetadata promptMetadata : registry.listPrompts()) {
+        for (MCPFeatureMetadata promptMetadata : registry.listPrompts()) {
             JsonObjectBuilder promptJson = Json.createObjectBuilder()
                     .add("name", promptMetadata.name())
                     .add("description", promptMetadata.description());
@@ -96,7 +96,7 @@ public class PromptMessageHandler {
         responder.sendResult(id, Json.createObjectBuilder().add("prompts", prompts));
     }
 
-    void promptsGet(JsonObject message, Responder responder, McpConnection connection) {
+    void promptsGet(JsonObject message, Responder responder, MCPConnection connection) {
         String id = message.get("id").toString();
         JsonObject params = message.get("params").asJsonObject();
         String promptName = params.getString("name");
@@ -108,7 +108,7 @@ public class PromptMessageHandler {
                 args.put(key, arguments.get(key));
             }
         }
-        final McpFeatureMetadata metadata = registry.getPrompt(promptName);
+        final MCPFeatureMetadata metadata = registry.getPrompt(promptName);
         if (metadata == null) {
             responder.sendError(id, INVALID_PARAMS, "Invalid prompt name: " + promptName);
             return;
@@ -122,7 +122,7 @@ public class PromptMessageHandler {
                     try {
                         MethodMetadata methodMetadata = metadata.method();
                         Class<?> clazz = classLoader.loadClass(methodMetadata.declaringClassName());
-                        Instance beanInstance = CDI.current().select(clazz, McpPrompt.McpPromptLiteral.INSTANCE);
+                        Instance beanInstance = CDI.current().select(clazz, MCPPrompt.MCPPromptLiteral.INSTANCE);
                         Object result = null;
                         if (beanInstance.isResolvable()) {
                             MCPLogger.ROOT_LOGGER.debug("We have found the Singleton instance of the prompt" + promptName);
@@ -159,7 +159,7 @@ public class PromptMessageHandler {
                                 responder.sendResult(id, builder);
                             }
                         }
-                    } catch (McpException e) {
+                    } catch (MCPException e) {
                         MCPLogger.ROOT_LOGGER.error(e);
                         responder.sendError(id, e.getJsonRpcError(), e.getMessage());
                     } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException | IllegalArgumentException ex) {

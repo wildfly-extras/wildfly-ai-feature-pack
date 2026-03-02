@@ -6,7 +6,7 @@ package org.wildfly.mcp.api;
 
 import java.util.Base64;
 
-public final record BlobResourceContents(String uri, String blob, String mimeType) implements ResourceContents {
+public record BlobResourceContents(String uri, String blob, String mimeType) implements ResourceContents {
 
     public static BlobResourceContents create(String uri, String blob) {
         return new BlobResourceContents(uri, blob, null);

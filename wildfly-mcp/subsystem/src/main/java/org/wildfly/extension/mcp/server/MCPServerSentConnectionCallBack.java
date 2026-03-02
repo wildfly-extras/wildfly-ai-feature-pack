@@ -10,12 +10,12 @@ import io.undertow.server.handlers.sse.ServerSentEventConnectionCallback;
 import org.wildfly.extension.mcp.MCPLogger;
 import org.wildfly.extension.mcp.api.ConnectionManager;
 
-public class McpServerSentConnectionCallBack implements ServerSentEventConnectionCallback {
+public class MCPServerSentConnectionCallBack implements ServerSentEventConnectionCallback {
 
     private final String endpoint;
     private final ConnectionManager connectionManager;
 
-    public McpServerSentConnectionCallBack(String endpoint, ConnectionManager connectionManager) {
+    public MCPServerSentConnectionCallBack(String endpoint, ConnectionManager connectionManager) {
         this.endpoint = endpoint;
         this.connectionManager = connectionManager;
     }

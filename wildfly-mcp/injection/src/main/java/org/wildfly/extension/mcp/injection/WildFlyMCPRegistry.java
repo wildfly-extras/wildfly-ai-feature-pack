@@ -4,63 +4,58 @@
  */
 package org.wildfly.extension.mcp.injection;
 
-import jakarta.enterprise.inject.spi.Extension;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import org.wildfly.extension.mcp.injection.tool.McpFeatureMetadata;
+
+import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
 
 public class WildFlyMCPRegistry {
 
-    private final Map<String, McpFeatureMetadata> tools = new HashMap<>();
-    private final Map<String, McpFeatureMetadata> prompts = new HashMap<>();
-    private final Map<String, McpFeatureMetadata> resources = new HashMap<>();
+    private final Map<String, MCPFeatureMetadata> tools = new HashMap<>();
+    private final Map<String, MCPFeatureMetadata> prompts = new HashMap<>();
+    private final Map<String, MCPFeatureMetadata> resources = new HashMap<>();
     private final Map<String, MethodHandle> toolInvokers = new HashMap<>();
     private final Map<String, MethodHandle> promptInvokers = new HashMap<>();
     private final Map<String, MethodHandle> resourceInvokers = new HashMap<>();
     private final MethodHandles.Lookup lookup = MethodHandles.lookup();
 
-    public static final List<Extension> getCDIExtensions() {
-        return List.of();
-    }
-
-    public Iterable<McpFeatureMetadata> listTools() {
+    public Iterable<MCPFeatureMetadata> listTools() {
         return tools.values();
     }
 
-    public Iterable<McpFeatureMetadata> listPrompts() {
+    public Iterable<MCPFeatureMetadata> listPrompts() {
         return prompts.values();
     }
 
-    public Iterable<McpFeatureMetadata> listResources() {
+    public Iterable<MCPFeatureMetadata> listResources() {
         return resources.values();
     }
 
-    public void addTool(String name, McpFeatureMetadata metadata) {
+    public void addTool(String name, MCPFeatureMetadata metadata) {
         tools.put(name, metadata);
     }
 
-    public void addPrompt(String name, McpFeatureMetadata metadata) {
+    public void addPrompt(String name, MCPFeatureMetadata metadata) {
         prompts.put(name, metadata);
     }
 
-    public void addResource(String uri, McpFeatureMetadata metadata) {
+    public void addResource(String uri, MCPFeatureMetadata metadata) {
         resources.put(uri, metadata);
     }
 
-    public McpFeatureMetadata getTool(String tool) {
+    public MCPFeatureMetadata getTool(String tool) {
         return tools.get(tool);
     }
 
-    public McpFeatureMetadata getPrompt(String prompt) {
+    public MCPFeatureMetadata getPrompt(String prompt) {
         return prompts.get(prompt);
     }
 
-    public McpFeatureMetadata getResource(String resource) {
+    public MCPFeatureMetadata getResource(String resource) {
         return resources.get(resource);
     }
 

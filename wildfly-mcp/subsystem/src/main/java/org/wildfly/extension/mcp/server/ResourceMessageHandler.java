@@ -34,12 +34,12 @@ import java.util.Map;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.wildfly.mcp.api.ContentMapper;
-import org.wildfly.extension.mcp.api.McpConnection;
+import org.wildfly.extension.mcp.api.MCPConnection;
 import org.wildfly.extension.mcp.api.Responder;
 import org.wildfly.extension.mcp.injection.MCPLogger;
 import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
-import org.wildfly.extension.mcp.injection.tool.McpFeatureMetadata;
-import org.wildfly.extension.mcp.injection.tool.McpResource;
+import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
+import org.wildfly.extension.mcp.injection.tool.MCPResource;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
 import org.wildfly.mcp.api.BlobResourceContents;
 import org.wildfly.mcp.api.ResourceContents;
@@ -82,7 +82,7 @@ public class ResourceMessageHandler {
         MCPLogger.ROOT_LOGGER.debugf("List resources [id: %s]", id);
 
         JsonArrayBuilder resources = Json.createArrayBuilder();
-        for (McpFeatureMetadata resourceMetadata : registry.listResources()) {
+        for (MCPFeatureMetadata resourceMetadata : registry.listResources()) {
             JsonObjectBuilder resource = Json.createObjectBuilder()
                     .add("name", resourceMetadata.name())
                     .add("description", resourceMetadata.description())
@@ -93,7 +93,7 @@ public class ResourceMessageHandler {
         responder.sendResult(id, Json.createObjectBuilder().add("resources", resources));
     }
 
-    void resourceCall(JsonObject message, Responder responder, McpConnection connection) {
+    void resourceCall(JsonObject message, Responder responder, MCPConnection connection) {
         String id = message.get("id").toString();
         JsonObject params = message.get("params").asJsonObject();
         String resourceUri = params.getString("uri");
@@ -105,7 +105,7 @@ public class ResourceMessageHandler {
                 args.put(key, arguments.get(key));
             }
         }
-        final McpFeatureMetadata metadata = registry.getResource(resourceUri);
+        final MCPFeatureMetadata metadata = registry.getResource(resourceUri);
         if (metadata == null) {
             responder.sendError(id, INVALID_PARAMS, "Invalid resource name: " + resourceUri);
             return;
@@ -119,7 +119,7 @@ public class ResourceMessageHandler {
                     try {
                         MethodMetadata methodMetadata = metadata.method();
                         Class<?> clazz = classLoader.loadClass(methodMetadata.declaringClassName());
-                        Instance beanInstance = CDI.current().select(clazz, McpResource.McpResourceLiteral.INSTANCE);
+                        Instance beanInstance = CDI.current().select(clazz, MCPResource.MCPResourceLiteral.INSTANCE);
                         Object result = null;
                         if (beanInstance.isResolvable()) {
                             MCPLogger.ROOT_LOGGER.info("We have found the Singleton instance of the resource" + resourceUri);
@@ -176,7 +176,7 @@ public class ResourceMessageHandler {
                         JsonObjectBuilder builder = Json.createObjectBuilder();
                         builder.add("contents", jsonContent);
                         responder.sendResult(id, builder);
-                    } catch (McpException e) {
+                    } catch (MCPException e) {
                         MCPLogger.ROOT_LOGGER.error(e);
                         responder.sendError(id, e.getJsonRpcError(), e.getMessage());
                     } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException | IllegalArgumentException ex) {

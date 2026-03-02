@@ -17,9 +17,9 @@ import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.as.weld.WeldCapability;
 import org.wildfly.extension.mcp.Capabilities;
 import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
-import org.wildfly.extension.mcp.injection.tool.McpPortableExtension;
+import org.wildfly.extension.mcp.injection.tool.MCPPortableExtension;
 
-public class McpServerCDIProcessor implements DeploymentUnitProcessor {
+public class MCPServerCDIProcessor implements DeploymentUnitProcessor {
 
     @Override
     public void deploy(DeploymentPhaseContext phaseContext) throws DeploymentUnitProcessingException {
@@ -27,13 +27,13 @@ public class McpServerCDIProcessor implements DeploymentUnitProcessor {
         final CapabilityServiceSupport support = deploymentUnit.getAttachment(Attachments.CAPABILITY_SERVICE_SUPPORT);
         final org.jboss.modules.Module module = deploymentUnit.getAttachment(Attachments.MODULE);
         final ClassLoader classLoader = module.getClassLoader();
-        WildFlyMCPRegistry registry = deploymentUnit.getAttachment(MCPAttachements.MCP_REGISTRY_METADATA);
+        WildFlyMCPRegistry registry = deploymentUnit.getAttachment(MCPAttachments.MCP_REGISTRY_METADATA);
         final Optional<WeldCapability> weldCapability = support.getOptionalCapabilityRuntimeAPI(WELD_CAPABILITY_NAME, WeldCapability.class);
         if (weldCapability != null && weldCapability.isPresent() && !weldCapability.get().isPartOfWeldDeployment(deploymentUnit)) {
             ROOT_LOGGER.cdiRequired();
         } else {
-            weldCapability.get().registerExtensionInstance(new McpPortableExtension(registry, classLoader), deploymentUnit);
+            weldCapability.get().registerExtensionInstance(new MCPPortableExtension(registry, classLoader), deploymentUnit);
         }
-        phaseContext.addDeploymentDependency(Capabilities.MCP_SERVER_PROVIDER_CAPABILITY.getCapabilityServiceName(), MCPAttachements.MCP_ENDPOINT_CONFIGURATION);
+        phaseContext.addDeploymentDependency(Capabilities.MCP_SERVER_PROVIDER_CAPABILITY.getCapabilityServiceName(), MCPAttachments.MCP_ENDPOINT_CONFIGURATION);
     }
 }

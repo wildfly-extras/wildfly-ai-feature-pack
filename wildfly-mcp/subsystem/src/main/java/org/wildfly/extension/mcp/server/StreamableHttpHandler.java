@@ -6,8 +6,8 @@ import static io.undertow.util.Headers.CONTENT_TYPE;
 import static io.undertow.util.HttpString.tryFromString;
 
 import static org.wildfly.extension.mcp.api.ConnectionManager.MCP_SESSION_ID_HEADER;
-import static org.wildfly.extension.mcp.server.McpStreamableConnectionCallBack.JSON_PAYLOAD;
-import static org.wildfly.extension.mcp.server.McpStreamableConnectionCallBack.SESSION_ID;
+import static org.wildfly.extension.mcp.server.MCPStreamableConnectionCallBack.JSON_PAYLOAD;
+import static org.wildfly.extension.mcp.server.MCPStreamableConnectionCallBack.SESSION_ID;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -27,14 +27,14 @@ import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 public class StreamableHttpHandler implements HttpHandler {
 
     private final ConnectionManager connectionManager;
-    static McpMessageHandler handler;
+    static MCPMessageHandler handler;
     private final ServerSentEventHandler sseHandler;
 
     public StreamableHttpHandler(ConnectionManager connectionManager, WildFlyMCPRegistry registry, ClassLoader classLoader,
             String serverName, String applicationName, ServerSentEventHandler sseHandler) {
         this.connectionManager = connectionManager;
         this.sseHandler = sseHandler;
-        handler = new McpMessageHandler(connectionManager, registry, classLoader, serverName, applicationName);
+        handler = new MCPMessageHandler(connectionManager, registry, classLoader, serverName, applicationName);
     }
 
     @Override

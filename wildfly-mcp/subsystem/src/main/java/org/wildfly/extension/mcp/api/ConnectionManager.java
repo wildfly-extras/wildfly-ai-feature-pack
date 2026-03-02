@@ -16,23 +16,23 @@ import java.util.logging.Logger;
 public class ConnectionManager {
 
     public static final HttpString MCP_SESSION_ID_HEADER = HttpString.tryFromString("mcp-session-id");
-    private final ConcurrentMap<String, McpConnection> connections = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, MCPConnection> connections = new ConcurrentHashMap<>();
 
     public String id() {
         return Base64.getUrlEncoder().encodeToString(UUID.randomUUID().toString().getBytes());
     }
 
-    public McpConnection get(String id) {
+    public MCPConnection get(String id) {
         return connections.get(id);
     }
 
-    public void add(McpConnection connection) {
+    public void add(MCPConnection connection) {
         connections.put(connection.id(), connection);
 
     }
 
     public boolean remove(String id) {
-        McpConnection connection = connections.remove(id);
+        MCPConnection connection = connections.remove(id);
         if (connection != null) {
             try {
                 connection.close();

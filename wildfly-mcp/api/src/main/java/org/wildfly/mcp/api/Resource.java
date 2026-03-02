@@ -18,9 +18,9 @@ import java.util.List;
  * can also return other types that are converted according to the following rules.
  *
  * <ul>
- * <li>If the method returns an implementation of {@link ResourceContents} then the reponse contains the single contents
+ * <li>If the method returns an implementation of {@link ResourceContents} then the response contains the single contents
  * object.</li>
- * <li>If the method returns a {@link List} of {@link ResourceContents} implementations then the reponse contains the list of
+ * <li>If the method returns a {@link List} of {@link ResourceContents} implementations then the response contains the list of
  * contents objects.</li>
  * <li>The method may return a {@link Uni} that wraps any of the type mentioned above.</li>
  * </ul>

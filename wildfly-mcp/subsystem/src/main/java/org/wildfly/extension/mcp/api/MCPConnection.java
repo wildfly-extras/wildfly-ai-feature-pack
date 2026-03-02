@@ -6,7 +6,7 @@ package org.wildfly.extension.mcp.api;
 import java.io.Closeable;
 import java.util.concurrent.Future;
 
-public interface McpConnection extends Closeable {
+public interface MCPConnection extends Closeable {
 
     /**
      * See <a href="https://spec.modelcontextprotocol.io/specification/2024-11-05/basic/lifecycle/">Lifecycle</a>

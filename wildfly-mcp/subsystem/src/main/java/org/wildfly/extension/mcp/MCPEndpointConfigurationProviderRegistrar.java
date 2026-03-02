@@ -25,7 +25,7 @@ import org.wildfly.subsystem.resource.ResourceDescriptor;
 import org.wildfly.subsystem.resource.operation.ResourceOperationRuntimeHandler;
 
 
-public class McpEndpointConfigurationProviderRegistrar implements ChildResourceDefinitionRegistrar {
+public class MCPEndpointConfigurationProviderRegistrar implements ChildResourceDefinitionRegistrar {
 
     public static final SimpleAttributeDefinition SSE_PATH = SimpleAttributeDefinitionBuilder.create("sse-path", ModelType.STRING, false)
             .setAllowExpression(true)
@@ -46,11 +46,11 @@ public class McpEndpointConfigurationProviderRegistrar implements ChildResourceD
     public static final PathElement PATH = PathElement.pathElement(NAME);
     public static final ResourceRegistration REGISTRATION = ResourceRegistration.of(PATH);
 
-    public McpEndpointConfigurationProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
+    public MCPEndpointConfigurationProviderRegistrar(ParentResourceDescriptionResolver parentResolver) {
         this.descriptor = ResourceDescriptor.builder(parentResolver.createChildResolver(PATH))
                 .addCapability(Capabilities.MCP_SERVER_PROVIDER_CAPABILITY)
                 .addAttributes(ATTRIBUTES)
-                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new McpEndpointConfigurationProviderServiceConfigurator()))
+                .withRuntimeHandler(ResourceOperationRuntimeHandler.configureService(new MCPEndpointConfigurationProviderServiceConfigurator()))
                 .build();
     }
 

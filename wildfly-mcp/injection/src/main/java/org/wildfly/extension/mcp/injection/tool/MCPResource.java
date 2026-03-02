@@ -8,6 +8,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import jakarta.enterprise.util.AnnotationLiteral;
 import jakarta.inject.Qualifier;
+
+import java.io.Serial;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -15,15 +17,16 @@ import java.lang.annotation.Target;
 @Qualifier
 @Retention(RUNTIME)
 @Target(ElementType.TYPE)
-public @interface McpResource {
+public @interface MCPResource {
 
-    public final class McpResourceLiteral extends AnnotationLiteral<McpResource> implements McpResource {
+    final class MCPResourceLiteral extends AnnotationLiteral<MCPResource> implements MCPResource {
 
         /**
          * Default Singleton literal
          */
-        public static final McpResourceLiteral INSTANCE = new McpResourceLiteral();
+        public static final MCPResourceLiteral INSTANCE = new MCPResourceLiteral();
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
     }

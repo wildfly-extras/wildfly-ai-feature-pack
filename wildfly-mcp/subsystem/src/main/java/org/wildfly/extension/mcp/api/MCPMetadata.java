@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import org.wildfly.mcp.api.ToolResponse;
 
-public class McpMetadata {
+public class MCPMetadata {
 
-    private List<FeatureMetadata<PromptResponse>> prompts;
-    private List<FeatureMetadata<CompletionResponse>> promptCompletions;
-    private List<FeatureMetadata<ToolResponse>> tools;
-    private List<FeatureMetadata<ResourceResponse>> resources;
-    private List<FeatureMetadata<ResourceResponse>> resourceTemplates;
-    private List<FeatureMetadata<CompletionResponse>> resourceTemplateCompletions;
+    private final List<FeatureMetadata<PromptResponse>> prompts;
+    private final List<FeatureMetadata<CompletionResponse>> promptCompletions;
+    private final List<FeatureMetadata<ToolResponse>> tools;
+    private final List<FeatureMetadata<ResourceResponse>> resources;
+    private final List<FeatureMetadata<ResourceResponse>> resourceTemplates;
+    private final List<FeatureMetadata<CompletionResponse>> resourceTemplateCompletions;
 
-    public McpMetadata() {
+    public MCPMetadata() {
         this.prompts = new ArrayList<>();
         this.promptCompletions = new ArrayList<>();
         this.tools = new ArrayList<>();
