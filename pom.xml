@@ -56,7 +56,7 @@
         <version.com.azure.azure-xml>1.2.0</version.com.azure.azure-xml>
         <version.com.dylibso.chicory>1.6.1</version.com.dylibso.chicory>
         <version.com.fasterxml.classmate>1.7.0</version.com.fasterxml.classmate>
-        <version.com.fasterxml.jackson.core>2.18.4</version.com.fasterxml.jackson.core>
+        <version.com.fasterxml.jackson.core>2.20.0</version.com.fasterxml.jackson.core>
         <version.com.github.victools.jsonschema-generator>4.38.0</version.com.github.victools.jsonschema-generator>
         <version.com.google.apis>v1-rev20240821-2.0.0</version.com.google.apis>
         <version.com.knuddels.jtokkit>1.1.0</version.com.knuddels.jtokkit>
