@@ -5,7 +5,7 @@
 package org.wildfly.extension.mcp;
 
 import static org.wildfly.extension.mcp.Capabilities.MCP_CAPABILITY_NAME;
-import org.wildfly.extension.mcp.deployment.McpServerCDIProcessor;
+import org.wildfly.extension.mcp.deployment.MCPServerCDIProcessor;
 import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.SubsystemRegistration;
 import org.jboss.as.controller.SubsystemResourceRegistration;
@@ -14,8 +14,8 @@ import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.descriptions.SubsystemResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.as.server.deployment.Phase;
-import org.wildfly.extension.mcp.deployment.McpServerDependencyProcessor;
-import org.wildfly.extension.mcp.deployment.McpServerDeploymentProcessor;
+import org.wildfly.extension.mcp.deployment.MCPServerDependencyProcessor;
+import org.wildfly.extension.mcp.deployment.MCPServerDeploymentProcessor;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrar;
 import org.wildfly.subsystem.resource.ManagementResourceRegistrationContext;
 import org.wildfly.subsystem.resource.ResourceDescriptor;
@@ -41,14 +41,14 @@ class MCPSubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
         ResourceDescriptor descriptor = ResourceDescriptor
                 .builder(RESOLVER)
                 .withDeploymentChainContributor(target -> {
-                    target.addDeploymentProcessor(NAME, Phase.DEPENDENCIES, PHASE_DEPENDENCIES_MCP, new McpServerDependencyProcessor());
-                    target.addDeploymentProcessor(NAME, Phase.POST_MODULE, PHASE_POST_MODULE_MCP, new McpServerCDIProcessor());
-                    target.addDeploymentProcessor(NAME, Phase.INSTALL, PHASE_INSTALL_MCP, new McpServerDeploymentProcessor());
+                    target.addDeploymentProcessor(NAME, Phase.DEPENDENCIES, PHASE_DEPENDENCIES_MCP, new MCPServerDependencyProcessor());
+                    target.addDeploymentProcessor(NAME, Phase.POST_MODULE, PHASE_POST_MODULE_MCP, new MCPServerCDIProcessor());
+                    target.addDeploymentProcessor(NAME, Phase.INSTALL, PHASE_INSTALL_MCP, new MCPServerDeploymentProcessor());
                 })
                 .addCapability(MCP_CAPABILITY)
                 .build();
         ManagementResourceRegistrar.of(descriptor).register(registration);
-        new McpEndpointConfigurationProviderRegistrar(RESOLVER).register(registration, context);
+        new MCPEndpointConfigurationProviderRegistrar(RESOLVER).register(registration, context);
         return registration;
     }
 }

@@ -16,12 +16,12 @@ import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 
 public class MessagesHttpHandler implements HttpHandler {
     private final ConnectionManager connectionManager;
-    private static McpMessageHandler handler;
+    private static MCPMessageHandler handler;
 
     public MessagesHttpHandler(ConnectionManager connectionManager, WildFlyMCPRegistry registry, ClassLoader classLoader, 
             String serverName, String applicationName) {
         this.connectionManager = connectionManager;
-        handler = new McpMessageHandler(connectionManager,registry, classLoader, serverName, applicationName);
+        handler = new MCPMessageHandler(connectionManager,registry, classLoader, serverName, applicationName);
     }
 
     @Override

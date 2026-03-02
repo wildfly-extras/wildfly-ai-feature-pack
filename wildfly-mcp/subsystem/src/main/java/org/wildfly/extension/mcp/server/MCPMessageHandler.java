@@ -4,11 +4,6 @@
  */
 package org.wildfly.extension.mcp.server;
 
-
-import static org.wildfly.extension.mcp.api.McpConnection.Status.INITIALIZING;
-import static org.wildfly.extension.mcp.api.McpConnection.Status.IN_OPERATION;
-import static org.wildfly.extension.mcp.api.McpConnection.Status.NEW;
-
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import java.util.ArrayList;
@@ -21,12 +16,12 @@ import org.wildfly.extension.mcp.api.ConnectionManager;
 import org.wildfly.extension.mcp.api.Implementation;
 import org.wildfly.extension.mcp.api.InitializeRequest;
 import org.wildfly.extension.mcp.api.JsonRPC;
-import org.wildfly.extension.mcp.api.McpConnection;
+import org.wildfly.extension.mcp.api.MCPConnection;
 import org.wildfly.extension.mcp.api.Messages;
 import org.wildfly.extension.mcp.api.Responder;
 import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 
-public class McpMessageHandler {
+public class MCPMessageHandler {
 
     private final ConnectionManager connectionManager;
     private final Map<String, Object> serverInfo;
@@ -34,7 +29,7 @@ public class McpMessageHandler {
     private final PromptMessageHandler promptHandler;
     private final ResourceMessageHandler resourceHandler;
 
-    public McpMessageHandler(ConnectionManager connectionManager, WildFlyMCPRegistry registry, ClassLoader classLoader, String serverName, String serverVersion) {
+    public MCPMessageHandler(ConnectionManager connectionManager, WildFlyMCPRegistry registry, ClassLoader classLoader, String serverName, String serverVersion) {
         this.toolHandler = new ToolMessageHandler(registry, classLoader);
         this.promptHandler = new PromptMessageHandler(registry, classLoader);
         this.resourceHandler = new ResourceMessageHandler(registry, classLoader);
@@ -50,9 +45,9 @@ public class McpMessageHandler {
         this.serverInfo.put("capabilities", capabilities);
     }
 
-    public void handle(JsonObject message, McpConnection connection, Responder responder) {
+    public void handle(JsonObject message, MCPConnection connection, Responder responder) {
         if (Messages.isResponse(message)) {
-            // Reponse from a client
+            // Response from a client
             // Currently we discard all responses, including pong responses
             MCPLogger.ROOT_LOGGER.warnf("Discard client response: %s", message);
         } else {
@@ -70,7 +65,7 @@ public class McpMessageHandler {
         }
     }
 
-    private void initializeNew(JsonObject message, Responder responder, McpConnection connection) {
+    private void initializeNew(JsonObject message, Responder responder, MCPConnection connection) {
         String id = message.get("id").toString();
         // The first message must be "initialize"
         String method = message.getString("method");
@@ -95,7 +90,7 @@ public class McpMessageHandler {
     }
 
 
-    private void initializing(JsonObject message, Responder responder, McpConnection connection) {
+    private void initializing(JsonObject message, Responder responder, MCPConnection connection) {
         String method = message.getString("method");
         if (NOTIFICATIONS_INITIALIZED.equals(method)) {
             if (connection.setInitialized()) {
@@ -126,7 +121,7 @@ public class McpMessageHandler {
     // non-standard messages
     static final String Q_CLOSE = "q/close";
 
-    private void operation(JsonObject message, Responder responder, McpConnection connection) {
+    private void operation(JsonObject message, Responder responder, MCPConnection connection) {
         String method = message.get("method") == null ? "" : message.getString("method");
         String id = message.get("id") != null ? message.get("id").toString() : "";
         switch (method) {
@@ -151,7 +146,7 @@ public class McpMessageHandler {
         }
     }
 
-    private void complete(JsonObject message, Responder responder, McpConnection connection) {
+    private void complete(JsonObject message, Responder responder, MCPConnection connection) {
         String id = message.get("id").toString();
         JsonObject params = message.getJsonObject("params");
         JsonObject ref = params.getJsonObject("ref");
@@ -186,7 +181,7 @@ public class McpMessageHandler {
         responder.sendResult(id, Json.createObjectBuilder());
     }
 
-    private void close(JsonObject message, Responder responder, McpConnection connection) {
+    private void close(JsonObject message, Responder responder, MCPConnection connection) {
         if (connectionManager.remove(connection.id())) {
             MCPLogger.ROOT_LOGGER.debugf("Connection %s closed", connection.id());
         } else {

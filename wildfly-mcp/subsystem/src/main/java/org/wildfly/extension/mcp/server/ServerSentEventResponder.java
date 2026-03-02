@@ -16,12 +16,11 @@ import java.util.Collections;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 import org.wildfly.extension.mcp.api.InitializeRequest;
-import org.wildfly.extension.mcp.api.McpConnection;
-import org.wildfly.extension.mcp.api.McpConnection.Status;
+import org.wildfly.extension.mcp.api.MCPConnection;
 import org.wildfly.extension.mcp.api.Responder;
 import org.wildfly.extension.mcp.MCPLogger;
 
-public class ServerSentEventResponder implements Responder, McpConnection {
+public class ServerSentEventResponder implements Responder, MCPConnection {
 
     private final JsonWriterFactory jsonWriterFactory = Json.createWriterFactory(Collections.emptyMap());
     private final ServerSentEventConnection connection;

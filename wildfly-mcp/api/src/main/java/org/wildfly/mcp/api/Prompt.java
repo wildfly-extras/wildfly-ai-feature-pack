@@ -12,9 +12,9 @@ import java.util.List;
  * The result of a "prompt get" operation is always represented as a {@link PromptResponse}. However, the annotated method can
  * also return other types that are converted according to the following rules.
  * <ul>
- * <li>If the method returns a {@link PromptMessage} then the reponse has no description and contains the single
+ * <li>If the method returns a {@link PromptMessage} then the response has no description and contains the single
  * message object.</li>
- * <li>If the method returns a {@link List} of {@link PromptMessage}s then the reponse has no description and contains the
+ * <li>If the method returns a {@link List} of {@link PromptMessage}s then the response has no description and contains the
  * list of messages.</li>
  * <li>The method may return a {@link Uni} that wraps any of the type mentioned above.</li>
  * </ul>

@@ -6,7 +6,7 @@ package org.wildfly.extension.mcp.injection.tool;
 
 import java.util.List;
 
-public record McpFeatureMetadata(Kind kind, String name, MethodMetadata method) {
+public record MCPFeatureMetadata(Kind kind, String name, MethodMetadata method) {
 
     public String description() {
         return method.description();

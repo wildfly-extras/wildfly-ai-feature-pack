@@ -13,13 +13,13 @@ import org.wildfly.extension.mcp.MCPLogger;
 import org.wildfly.extension.mcp.api.ConnectionManager;
 import org.wildfly.extension.mcp.api.JsonRPC;
 
-public class McpStreamableConnectionCallBack implements ServerSentEventConnectionCallback {
+public class MCPStreamableConnectionCallBack implements ServerSentEventConnectionCallback {
     public static final AttachmentKey<JsonObject> JSON_PAYLOAD = AttachmentKey.create(JsonObject.class);
     public static final AttachmentKey<String> SESSION_ID = AttachmentKey.create(String.class);
 
     private final ConnectionManager connectionManager;
 
-    public McpStreamableConnectionCallBack(ConnectionManager connectionManager) {
+    public MCPStreamableConnectionCallBack(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
 

@@ -36,8 +36,8 @@ enum MCPSubsystemSchema implements SubsystemResourceXMLSchema<MCPSubsystemSchema
     public SubsystemResourceRegistrationXMLElement getSubsystemXMLElement() {
         return this.factory.subsystemElement(MCPSubsystemRegistrar.REGISTRATION)
                 .withContent(this.factory.choice().withCardinality(XMLCardinality.Single.OPTIONAL)
-                        .addElement(this.factory.namedElement(McpEndpointConfigurationProviderRegistrar.REGISTRATION)
-                                .addAttributes(McpEndpointConfigurationProviderRegistrar.ATTRIBUTES).build())
+                        .addElement(this.factory.namedElement(MCPEndpointConfigurationProviderRegistrar.REGISTRATION)
+                                .addAttributes(MCPEndpointConfigurationProviderRegistrar.ATTRIBUTES).build())
                         .build()
                 )
                 .build();

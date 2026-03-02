@@ -43,13 +43,13 @@ import javax.naming.NamingException;
 import org.wildfly.mcp.api.Content;
 import org.wildfly.mcp.api.ContentMapper;
 import org.wildfly.extension.mcp.api.JsonRPC;
-import org.wildfly.extension.mcp.api.McpConnection;
+import org.wildfly.extension.mcp.api.MCPConnection;
 import org.wildfly.extension.mcp.api.Responder;
 import org.wildfly.extension.mcp.injection.MCPLogger;
 import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 import org.wildfly.extension.mcp.injection.tool.ArgumentMetadata;
-import org.wildfly.extension.mcp.injection.tool.McpFeatureMetadata;
-import org.wildfly.extension.mcp.injection.tool.McpTool;
+import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
+import org.wildfly.extension.mcp.injection.tool.MCPTool;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
 import org.wildfly.security.manager.WildFlySecurityManager;
 
@@ -89,7 +89,7 @@ public class ToolMessageHandler {
         MCPLogger.ROOT_LOGGER.debugf("List tools [id: %s]", id);
 
         JsonArrayBuilder tools = Json.createArrayBuilder();
-        for (McpFeatureMetadata toolMetadata : registry.listTools()) {
+        for (MCPFeatureMetadata toolMetadata : registry.listTools()) {
             JsonObjectBuilder tool = Json.createObjectBuilder()
                     .add("name", toolMetadata.name())
                     .add("description", toolMetadata.description());
@@ -122,7 +122,7 @@ public class ToolMessageHandler {
         return Json.createReader(new StringReader(jsonNode.toString())).readObject();
     }
 
-    void toolsCall(JsonObject message, Responder responder, McpConnection connection) {
+    void toolsCall(JsonObject message, Responder responder, MCPConnection connection) {
         String id = message.get("id").toString();
         JsonObject params = message.get("params").asJsonObject();
         String toolName = params.getString("name");
@@ -134,7 +134,7 @@ public class ToolMessageHandler {
                 args.put(key, arguments.get(key));
             }
         }
-        final McpFeatureMetadata metadata = registry.getTool(toolName);
+        final MCPFeatureMetadata metadata = registry.getTool(toolName);
         if (metadata == null) {
             responder.sendError(id, INVALID_PARAMS, "Invalid tool name: " + toolName);
             return;
@@ -148,7 +148,7 @@ public class ToolMessageHandler {
                     try {
                         MethodMetadata methodMetadata = metadata.method();
                         Class<?> clazz = classLoader.loadClass(methodMetadata.declaringClassName());
-                        Instance beanInstance = CDI.current().select(clazz, McpTool.McpToolLiteral.INSTANCE);
+                        Instance beanInstance = CDI.current().select(clazz, MCPTool.MCPToolLiteral.INSTANCE);
                         Object result = null;
                         if (beanInstance.isResolvable()) {
                             MCPLogger.ROOT_LOGGER.debug("We have found the Singleton instance of the tool" + toolName);
@@ -184,7 +184,7 @@ public class ToolMessageHandler {
                                 responder.sendResult(id, builder);
                             }
                         }
-                    } catch (McpException e) {
+                    } catch (MCPException e) {
                         MCPLogger.ROOT_LOGGER.error(e);
                         responder.sendError(id, e.getJsonRpcError(), e.getMessage());
                     } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException | IllegalArgumentException ex) {
@@ -199,7 +199,7 @@ public class ToolMessageHandler {
     }
 
     @SuppressWarnings("unchecked")
-    protected static Object[] prepareArguments(McpFeatureMetadata metadata, Map<String, JsonValue> args, ObjectMapper mapper) throws McpException {
+    protected static Object[] prepareArguments(MCPFeatureMetadata metadata, Map<String, JsonValue> args, ObjectMapper mapper) throws MCPException {
         if (metadata.arguments().isEmpty()) {
             return new Object[0];
         }
@@ -208,7 +208,7 @@ public class ToolMessageHandler {
         for (ArgumentMetadata arg : metadata.arguments()) {
             JsonValue val = args.get(arg.name());
             if (val == null && arg.required()) {
-                throw new McpException("Missing required argument: " + arg.name(), JsonRPC.INVALID_PARAMS);
+                throw new MCPException("Missing required argument: " + arg.name(), JsonRPC.INVALID_PARAMS);
             }
             if (val == null) {
                 ret[idx] = null;
