@@ -19,7 +19,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>api</module>
         <module>injection</module>
         <module>subsystem</module>
     </modules>
