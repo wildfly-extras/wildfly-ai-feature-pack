@@ -39,7 +39,7 @@ public class WasmCDIProcessor implements DeploymentUnitProcessor {
             weldCapability.get().registerExtensionInstance(new WasmPortableExtension(wasmRegistry), deploymentUnit);
             if (support.hasCapability(MCP_CAPABILITY_NAME)) {
                 try {
-                    Annotation mcpToolQualifier = Annotation.class.cast(Class.forName("org.wildfly.extension.mcp.injection.tool.McpTool$McpToolLiteral").getDeclaredField("INSTANCE").get(null));
+                    Annotation mcpToolQualifier = Annotation.class.cast(Class.forName("org.wildfly.extension.mcp.injection.tool.MCPTool$MCPToolLiteral").getDeclaredField("INSTANCE").get(null));
                     weldCapability.get().registerExtensionInstance(new WasmServicePortableExtension(mcpToolQualifier), deploymentUnit);
                 } catch (ClassNotFoundException | NoSuchFieldException | SecurityException | IllegalAccessException | IllegalArgumentException ex) {
                     WasmLogger.ROOT_LOGGER.error(ex);

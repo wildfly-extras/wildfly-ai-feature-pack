@@ -41,8 +41,8 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import org.wildfly.mcp.api.Content;
-import org.wildfly.mcp.api.ContentMapper;
+import org.mcp_java.model.content.ContentBlock;
+import org.wildfly.extension.mcp.api.ContentMapper;
 import org.wildfly.extension.mcp.api.JsonRPC;
 import org.wildfly.extension.mcp.api.MCPConnection;
 import org.wildfly.extension.mcp.api.Responder;
@@ -176,7 +176,7 @@ public class ToolMessageHandler {
                                 result = method.invoke(instance, prepareArguments(metadata, args, mapper));
                             }
                         }
-                        Collection<? extends Content> content = ContentMapper.processResultAsText(result);
+                        Collection<? extends ContentBlock> content = ContentMapper.processResultAsText(result);
                         try (StringWriter out = new StringWriter()) {
                             mapper.writeValue(out, content);
                             try (StringReader in = new StringReader(out.toString())) {

@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import org.wildfly.mcp.api.ContentMapper;
+import org.wildfly.extension.mcp.api.ContentMapper;
 import org.wildfly.extension.mcp.api.MCPConnection;
 import org.wildfly.extension.mcp.api.Responder;
 import org.wildfly.extension.mcp.injection.MCPLogger;
@@ -41,9 +41,7 @@ import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
 import org.wildfly.extension.mcp.injection.tool.MCPResource;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
-import org.wildfly.mcp.api.BlobResourceContents;
-import org.wildfly.mcp.api.ResourceContents;
-import org.wildfly.mcp.api.TextResourceContents;
+import org.mcp_java.model.resource.ResourceContents;
 import org.wildfly.security.manager.WildFlySecurityManager;
 
 public class ResourceMessageHandler {
@@ -150,26 +148,15 @@ public class ResourceMessageHandler {
                         JsonArrayBuilder jsonContent = Json.createArrayBuilder();
                         for (ResourceContents content : contents) {
                             JsonObjectBuilder contentResource = Json.createObjectBuilder();
-                            switch (content.type()) {
-                                case BLOB:
-                                    BlobResourceContents blob = content.asBlob();
-                                    contentResource.add("uri", blob.uri());
-                                    String blobMimeType = blob.mimeType() == null ? methodMetadata.mimeType() : blob.mimeType();
-                                    if (blobMimeType != null) {
-                                        contentResource.add("mimeType", blobMimeType);
-                                    }
-                                    contentResource.add("mimeType", blob.mimeType() == null ? methodMetadata.mimeType() : blob.mimeType());
-                                    contentResource.add("text", blob.blob());
-                                    break;
-                                case TEXT:
-                                    TextResourceContents text = content.asText();
-                                    contentResource.add("uri", text.uri());
-                                    String textMimeType = text.mimeType() == null ? methodMetadata.mimeType() : text.mimeType();
-                                    if (textMimeType != null) {
-                                        contentResource.add("mimeType", textMimeType);
-                                    }
-                                    contentResource.add("text", text.text());
-                                    break;
+                            contentResource.add("uri", content.uri());
+                            String mimeType = content.mimeType() != null ? content.mimeType() : methodMetadata.mimeType();
+                            if (mimeType != null && !mimeType.isEmpty()) {
+                                contentResource.add("mimeType", mimeType);
+                            }
+                            if (content.isBlob()) {
+                                contentResource.add("blob", content.blob());
+                            } else {
+                                contentResource.add("text", content.text());
                             }
                             jsonContent.add(contentResource);
                         }

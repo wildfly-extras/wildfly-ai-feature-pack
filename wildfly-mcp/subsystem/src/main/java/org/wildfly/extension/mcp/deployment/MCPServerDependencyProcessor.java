@@ -24,17 +24,18 @@ import org.jboss.jandex.JandexReflection;
 import org.jboss.jandex.MethodInfo;
 import org.jboss.modules.ModuleLoader;
 import org.wildfly.extension.mcp.Capabilities;
-import org.wildfly.mcp.api.Tool;
-import org.wildfly.mcp.api.ToolArg;
 import org.wildfly.extension.mcp.MCPLogger;
 import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 import org.wildfly.extension.mcp.injection.tool.ArgumentMetadata;
 import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
-import org.wildfly.mcp.api.Prompt;
-import org.wildfly.mcp.api.PromptArg;
-import org.wildfly.mcp.api.Resource;
-import org.wildfly.mcp.api.ResourceArg;
+import org.mcp_java.annotations.tools.Tool;
+import org.mcp_java.annotations.tools.ToolArg;
+import org.mcp_java.annotations.prompts.Prompt;
+import org.mcp_java.annotations.prompts.PromptArg;
+import org.mcp_java.annotations.resources.Resource;
+import org.mcp_java.annotations.resources.ResourceTemplate;
+import org.mcp_java.annotations.resources.ResourceTemplateArg;
 
 public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
 
@@ -58,6 +59,8 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
         processPrompts(registry, annotations);
         annotations = index.getAnnotations(DotName.createSimple(Resource.class));
         processResources(registry, annotations);
+        annotations = index.getAnnotations(DotName.createSimple(ResourceTemplate.class));
+        processResourceTemplates(registry, annotations);
         deploymentUnit.putAttachment(MCP_REGISTRY_METADATA, registry);
         deploymentPhaseContext.addDeploymentDependency(Capabilities.MCP_SERVER_PROVIDER_CAPABILITY.getCapabilityServiceName(), MCPAttachments.MCP_ENDPOINT_CONFIGURATION);
     }
@@ -118,15 +121,13 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
         if (annotations == null || annotations.isEmpty()) {
             return;
         }
-        DotName resourceArg = DotName.createSimple(ResourceArg.class);
         for (AnnotationInstance annotation : annotations) {
             String name = annotation.value("name") != null ? annotation.value("name").asString() : annotation.target().asMethod().name();
             String description = annotation.value("description") != null ? annotation.value("description").asString() : "";
             String uri = annotation.value("uri") != null ? annotation.value("uri").asString() : "";
             String mimeType = annotation.value("mimeType") != null ? annotation.value("mimeType").asString() : "";
             MethodInfo info = annotation.target().asMethod();
-            List<ArgumentMetadata> arguments = buildArguments(info, resourceArg);
-            MCPLogger.ROOT_LOGGER.debug("Resource detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
+            MCPLogger.ROOT_LOGGER.debug("Resource detected on class " + info.declaringClass() + " with method " + info.name());
             MCPFeatureMetadata metadata = new MCPFeatureMetadata(MCPFeatureMetadata.Kind.RESOURCE,
                     name,
                     new MethodMetadata(
@@ -134,11 +135,39 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
                             description,
                             uri,
                             mimeType,
-                            arguments,
+                            List.of(),
                             info.declaringClass().toString(),
                             annotation.target().asMethod().returnType().name().toString())
             );
             registry.addResource(uri, metadata);
+        }
+    }
+
+    private void processResourceTemplates(WildFlyMCPRegistry registry, List<AnnotationInstance> annotations) {
+        if (annotations == null || annotations.isEmpty()) {
+            return;
+        }
+        DotName resourceTemplateArg = DotName.createSimple(ResourceTemplateArg.class);
+        for (AnnotationInstance annotation : annotations) {
+            String name = annotation.value("name") != null ? annotation.value("name").asString() : annotation.target().asMethod().name();
+            String description = annotation.value("description") != null ? annotation.value("description").asString() : "";
+            String uriTemplate = annotation.value("uriTemplate") != null ? annotation.value("uriTemplate").asString() : "";
+            String mimeType = annotation.value("mimeType") != null ? annotation.value("mimeType").asString() : "";
+            MethodInfo info = annotation.target().asMethod();
+            List<ArgumentMetadata> arguments = buildArguments(info, resourceTemplateArg);
+            MCPLogger.ROOT_LOGGER.debug("ResourceTemplate detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
+            MCPFeatureMetadata metadata = new MCPFeatureMetadata(MCPFeatureMetadata.Kind.RESOURCE_TEMPLATE,
+                    name,
+                    new MethodMetadata(
+                            annotation.target().asMethod().name(),
+                            description,
+                            uriTemplate,
+                            mimeType,
+                            arguments,
+                            info.declaringClass().toString(),
+                            annotation.target().asMethod().returnType().name().toString())
+            );
+            registry.addResource(uriTemplate, metadata);
         }
     }
 

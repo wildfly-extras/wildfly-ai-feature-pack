@@ -40,8 +40,8 @@ import org.wildfly.extension.mcp.injection.tool.ArgumentMetadata;
 import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
 import org.wildfly.extension.mcp.injection.tool.MCPPrompt;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
-import org.wildfly.mcp.api.ContentMapper;
-import org.wildfly.mcp.api.PromptMessage;
+import org.wildfly.extension.mcp.api.ContentMapper;
+import org.mcp_java.model.prompt.PromptMessage;
 import org.wildfly.security.manager.WildFlySecurityManager;
 
 public class PromptMessageHandler {

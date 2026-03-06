@@ -2,7 +2,7 @@
  * Copyright The WildFly Authors
  * SPDX-License-Identifier: Apache-2.0
  */
-package org.wildfly.mcp.api;
+package org.wildfly.extension.mcp.api;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -10,33 +10,38 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.mcp_java.model.content.ContentBlock;
+import org.mcp_java.model.content.TextContent;
+import org.mcp_java.model.prompt.PromptMessage;
+import org.mcp_java.model.resource.ResourceContents;
+
 public class ContentMapper {
 
-    public static Collection<? extends Content> processResultAsText(Object result) {
+    public static Collection<? extends ContentBlock> processResultAsText(Object result) {
         if (result instanceof Collection) {
             Collection collection = (Collection) result;
-            if (isContent(collection)) {
-                return (Collection<Content>) result;
+            if (isContentBlock(collection)) {
+                return (Collection<ContentBlock>) result;
             }
-            return collection.stream().map(c -> new TextContent(c.toString())).toList();
+            return collection.stream().map(c -> TextContent.of(c.toString())).toList();
         }
         if (result.getClass().isArray()) {
-            if (Content.class.isAssignableFrom(result.getClass().arrayType())) {
-                return Arrays.asList((Content[]) result);
+            if (ContentBlock.class.isAssignableFrom(result.getClass().arrayType())) {
+                return Arrays.asList((ContentBlock[]) result);
             }
-            return Arrays.stream((Object[]) result).map(c -> new TextContent(c.toString())).toList();
+            return Arrays.stream((Object[]) result).map(c -> TextContent.of(c.toString())).toList();
         }
-        if (Content.class.isAssignableFrom(result.getClass())) {
-            return List.of((Content) result);
+        if (ContentBlock.class.isAssignableFrom(result.getClass())) {
+            return List.of((ContentBlock) result);
         }
-        return List.of(new TextContent(result.toString()));
+        return List.of(TextContent.of(result.toString()));
     }
 
-    private static boolean isContent(Collection result) {
+    private static boolean isContentBlock(Collection result) {
         Type resultType = result.getClass().getGenericSuperclass();
         if (resultType instanceof ParameterizedType) {
             Type realType = ((ParameterizedType) resultType).getActualTypeArguments()[0];
-            return Content.class.isAssignableFrom(realType.getClass());
+            return ContentBlock.class.isAssignableFrom(realType.getClass());
         }
         return false;
     }
@@ -47,18 +52,18 @@ public class ContentMapper {
             if (isPromptMessage(collection)) {
                 return (Collection<PromptMessage>) result;
             }
-            return collection.stream().map(c -> PromptMessage.withUserRole(new TextContent(c.toString()))).toList();
+            return collection.stream().map(c -> PromptMessage.user(List.of(TextContent.of(c.toString())))).toList();
         }
         if (result.getClass().isArray()) {
             if (PromptMessage.class.isAssignableFrom(result.getClass().arrayType())) {
                 return Arrays.asList((PromptMessage[]) result);
             }
-            return Arrays.stream((Object[]) result).map(c -> PromptMessage.withUserRole(new TextContent(c.toString()))).toList();
+            return Arrays.stream((Object[]) result).map(c -> PromptMessage.user(List.of(TextContent.of(c.toString())))).toList();
         }
         if (PromptMessage.class.isAssignableFrom(result.getClass())) {
             return List.of((PromptMessage) result);
         }
-        return List.of(PromptMessage.withUserRole(new TextContent(result.toString())));
+        return List.of(PromptMessage.user(List.of(TextContent.of(result.toString()))));
     }
 
     private static boolean isPromptMessage(Collection result) {
@@ -76,18 +81,18 @@ public class ContentMapper {
             if (isResourceContents(collection)) {
                 return (Collection<ResourceContents>) result;
             }
-            return collection.stream().map(c -> TextResourceContents.create(uri, c.toString())).toList();
+            return collection.stream().map(c -> ResourceContents.text(uri, c.toString())).toList();
         }
         if (result.getClass().isArray()) {
             if (ResourceContents.class.isAssignableFrom(result.getClass().arrayType())) {
                 return Arrays.asList((ResourceContents[]) result);
             }
-            return Arrays.stream((Object[]) result).map(c -> TextResourceContents.create(uri, c.toString())).toList();
+            return Arrays.stream((Object[]) result).map(c -> ResourceContents.text(uri, c.toString())).toList();
         }
         if (ResourceContents.class.isAssignableFrom(result.getClass())) {
             return List.of((ResourceContents) result);
         }
-        return List.of(TextResourceContents.create(uri, result.toString()));
+        return List.of(ResourceContents.text(uri, result.toString()));
     }
 
     private static boolean isResourceContents(Collection result) {
