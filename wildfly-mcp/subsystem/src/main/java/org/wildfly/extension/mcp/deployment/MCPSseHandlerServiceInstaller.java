@@ -82,11 +82,12 @@ public class MCPSseHandlerServiceInstaller implements DeploymentServiceInstaller
         final ConnectionManager connectionManager = new ConnectionManager();
         final MCPServerSentConnectionCallBack mcpServerSentConnectionCallBack = new MCPServerSentConnectionCallBack(messagesEndpoint, connectionManager);
         final MCPStreamableConnectionCallBack mcpStreamableConnectionCallBack = new MCPStreamableConnectionCallBack(connectionManager);
-        final MessagesHttpHandler messagesHttpHandler = new MessagesHttpHandler(connectionManager, registry, classLoader, serverName, deploymentUnit.getName());
+        final int pageSize = configuration.pageSize();
+        final MessagesHttpHandler messagesHttpHandler = new MessagesHttpHandler(connectionManager, registry, classLoader, serverName, deploymentUnit.getName(), pageSize);
         final String ssePath = "/".equals(webContext) ? webContext + configuration.ssePath() : webContext + '/' + configuration.ssePath();
         final String streamableEndpoint = "/".equals(webContext) ? webContext + configuration.streamablePath() : webContext + '/' + configuration.streamablePath();
         final ServerSentEventHandler sseHandler = Handlers.serverSentEvents(mcpServerSentConnectionCallBack);
-        final StreamableHttpHandler streamableHttpHandler = new StreamableHttpHandler(connectionManager, registry, classLoader, serverName, deploymentUnit.getName(), Handlers.serverSentEvents(mcpStreamableConnectionCallBack));
+        final StreamableHttpHandler streamableHttpHandler = new StreamableHttpHandler(connectionManager, registry, classLoader, serverName, deploymentUnit.getName(), Handlers.serverSentEvents(mcpStreamableConnectionCallBack), pageSize);
         Runnable start = new Runnable() {
             @Override
             public void run() {

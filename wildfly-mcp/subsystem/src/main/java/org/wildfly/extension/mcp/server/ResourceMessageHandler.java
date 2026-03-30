@@ -29,8 +29,12 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.StreamSupport;
+import org.wildfly.extension.mcp.api.Cursor;
 import org.wildfly.extension.mcp.api.ContentMapper;
 import org.wildfly.extension.mcp.api.MCPConnection;
 import org.wildfly.extension.mcp.api.Responder;
@@ -49,22 +53,37 @@ public class ResourceMessageHandler {
     private final ObjectMapper mapper;
     private final ClassLoader classLoader;
     private final ExecutorService executorService;
+    private final int pageSize;
 
     ResourceMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader, ExecutorService executorService) {
+        this(registry, classLoader, executorService, 0);
+    }
+
+    ResourceMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader, ExecutorService executorService, int pageSize) {
         this.schemaGenerator = new SchemaGenerator(
                 new SchemaGeneratorConfigBuilder(SchemaVersion.DRAFT_2020_12, OptionPreset.PLAIN_JSON).build());
         this.registry = registry;
         this.mapper = new ObjectMapper();
         this.classLoader = classLoader;
         this.executorService = executorService;
+        this.pageSize = pageSize;
     }
 
     void resourcesList(JsonObject message, Responder responder) {
         String id = message.get("id").toString();
-        MCPLogger.ROOT_LOGGER.debugf("List resources [id: %s]", id);
+        JsonObject params = message.getJsonObject("params");
+        String cursorValue = params != null ? params.getString("cursor", null) : null;
+
+        List<MCPFeatureMetadata> sorted = StreamSupport.stream(registry.listResources().spliterator(), false)
+                .sorted(Comparator.comparing(MCPFeatureMetadata::name))
+                .toList();
+        List<MCPFeatureMetadata> page = applyPage(sorted, cursorValue);
+        String nextCursor = nextCursor(sorted, page);
+
+        MCPLogger.ROOT_LOGGER.debugf("List resources [id: %s, cursor: %s, pageSize: %d]", id, cursorValue, pageSize);
 
         JsonArrayBuilder resources = Json.createArrayBuilder();
-        for (MCPFeatureMetadata resourceMetadata : registry.listResources()) {
+        for (MCPFeatureMetadata resourceMetadata : page) {
             JsonObjectBuilder resource = Json.createObjectBuilder()
                     .add("name", resourceMetadata.name())
                     .add("description", resourceMetadata.description())
@@ -72,7 +91,38 @@ public class ResourceMessageHandler {
                     .add("mimeType", resourceMetadata.method().mimeType());
             resources.add(resource);
         }
-        responder.sendResult(id, Json.createObjectBuilder().add("resources", resources));
+        JsonObjectBuilder result = Json.createObjectBuilder().add("resources", resources);
+        if (nextCursor != null) {
+            result.add("nextCursor", nextCursor);
+        }
+        responder.sendResult(id, result);
+    }
+
+    private List<MCPFeatureMetadata> applyPage(List<MCPFeatureMetadata> sorted, String cursorValue) {
+        int start = 0;
+        if (cursorValue != null) {
+            String lastName = Cursor.decode(cursorValue);
+            for (int i = 0; i < sorted.size(); i++) {
+                if (sorted.get(i).name().equals(lastName)) {
+                    start = i + 1;
+                    break;
+                }
+            }
+        }
+        if (pageSize > 0 && start + pageSize < sorted.size()) {
+            return sorted.subList(start, start + pageSize);
+        }
+        return sorted.subList(start, sorted.size());
+    }
+
+    private String nextCursor(List<MCPFeatureMetadata> all, List<MCPFeatureMetadata> page) {
+        if (pageSize > 0 && !page.isEmpty()) {
+            MCPFeatureMetadata last = page.get(page.size() - 1);
+            if (all.indexOf(last) < all.size() - 1) {
+                return Cursor.encode(last.name());
+            }
+        }
+        return null;
     }
 
     void resourcesSubscribe(JsonObject message, Responder responder) {

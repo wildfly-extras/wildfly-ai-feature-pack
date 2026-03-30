@@ -38,12 +38,16 @@ public class MCPMessageHandler {
     private final CompletionHandler completionHandler;
 
     public MCPMessageHandler(ConnectionManager connectionManager, WildFlyMCPRegistry registry, ClassLoader classLoader, String serverName, String serverVersion) {
+        this(connectionManager, registry, classLoader, serverName, serverVersion, 0);
+    }
+
+    public MCPMessageHandler(ConnectionManager connectionManager, WildFlyMCPRegistry registry, ClassLoader classLoader, String serverName, String serverVersion, int pageSize) {
         this.registry = registry;
         ExecutorService executorService = lookupExecutorService();
-        this.toolHandler = new ToolMessageHandler(registry, classLoader, executorService);
-        this.promptHandler = new PromptMessageHandler(registry, classLoader, executorService);
-        this.resourceHandler = new ResourceMessageHandler(registry, classLoader, executorService);
-        this.resourceTemplateHandler = new ResourceTemplateMessageHandler(registry, classLoader, executorService);
+        this.toolHandler = new ToolMessageHandler(registry, classLoader, executorService, pageSize);
+        this.promptHandler = new PromptMessageHandler(registry, classLoader, executorService, pageSize);
+        this.resourceHandler = new ResourceMessageHandler(registry, classLoader, executorService, pageSize);
+        this.resourceTemplateHandler = new ResourceTemplateMessageHandler(registry, classLoader, executorService, pageSize);
         this.completionHandler = new CompletionHandler(registry, classLoader);
         this.connectionManager = connectionManager;
         this.serverInfo = new HashMap<>();

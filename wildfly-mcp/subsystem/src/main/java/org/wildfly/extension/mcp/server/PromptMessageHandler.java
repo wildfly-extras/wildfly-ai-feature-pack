@@ -28,8 +28,12 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.StreamSupport;
+import org.wildfly.extension.mcp.api.Cursor;
 import org.wildfly.extension.mcp.api.MCPConnection;
 import org.wildfly.extension.mcp.api.Responder;
 import org.wildfly.extension.mcp.injection.MCPLogger;
@@ -48,20 +52,35 @@ public class PromptMessageHandler {
     private final ObjectMapper mapper;
     private final ClassLoader classLoader;
     private final ExecutorService executorService;
+    private final int pageSize;
 
     PromptMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader, ExecutorService executorService) {
+        this(registry, classLoader, executorService, 0);
+    }
+
+    PromptMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader, ExecutorService executorService, int pageSize) {
         this.registry = registry;
         this.mapper = new ObjectMapper();
         this.classLoader = classLoader;
         this.executorService = executorService;
+        this.pageSize = pageSize;
     }
 
     void promptsList(JsonObject message, Responder responder) {
         String id = message.get("id").toString();
-        MCPLogger.ROOT_LOGGER.debugf("List tools [id: %s]", id);
+        JsonObject params = message.getJsonObject("params");
+        String cursorValue = params != null ? params.getString("cursor", null) : null;
+
+        List<MCPFeatureMetadata> sorted = StreamSupport.stream(registry.listPrompts().spliterator(), false)
+                .sorted(Comparator.comparing(MCPFeatureMetadata::name))
+                .toList();
+        List<MCPFeatureMetadata> page = applyPage(sorted, cursorValue);
+        String nextCursor = nextCursor(sorted, page);
+
+        MCPLogger.ROOT_LOGGER.debugf("List prompts [id: %s, cursor: %s, pageSize: %d]", id, cursorValue, pageSize);
 
         JsonArrayBuilder prompts = Json.createArrayBuilder();
-        for (MCPFeatureMetadata promptMetadata : registry.listPrompts()) {
+        for (MCPFeatureMetadata promptMetadata : page) {
             JsonObjectBuilder promptJson = Json.createObjectBuilder()
                     .add("name", promptMetadata.name())
                     .add("description", promptMetadata.description());
@@ -77,7 +96,38 @@ public class PromptMessageHandler {
             promptJson.add("arguments", arguments);
             prompts.add(promptJson);
         }
-        responder.sendResult(id, Json.createObjectBuilder().add("prompts", prompts));
+        JsonObjectBuilder result = Json.createObjectBuilder().add("prompts", prompts);
+        if (nextCursor != null) {
+            result.add("nextCursor", nextCursor);
+        }
+        responder.sendResult(id, result);
+    }
+
+    private List<MCPFeatureMetadata> applyPage(List<MCPFeatureMetadata> sorted, String cursorValue) {
+        int start = 0;
+        if (cursorValue != null) {
+            String lastName = Cursor.decode(cursorValue);
+            for (int i = 0; i < sorted.size(); i++) {
+                if (sorted.get(i).name().equals(lastName)) {
+                    start = i + 1;
+                    break;
+                }
+            }
+        }
+        if (pageSize > 0 && start + pageSize < sorted.size()) {
+            return sorted.subList(start, start + pageSize);
+        }
+        return sorted.subList(start, sorted.size());
+    }
+
+    private String nextCursor(List<MCPFeatureMetadata> all, List<MCPFeatureMetadata> page) {
+        if (pageSize > 0 && !page.isEmpty()) {
+            MCPFeatureMetadata last = page.get(page.size() - 1);
+            if (all.indexOf(last) < all.size() - 1) {
+                return Cursor.encode(last.name());
+            }
+        }
+        return null;
     }
 
     void promptsGet(JsonObject message, Responder responder, MCPConnection connection) {
