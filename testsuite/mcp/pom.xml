@@ -110,6 +110,13 @@
             <artifactId>mcp-model</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <!-- WildFly MCP injection API (ElicitationSender, schema types, etc.) -->
+        <dependency>
+            <groupId>org.wildfly.generative-ai</groupId>
+            <artifactId>wildfly-mcp-injection</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

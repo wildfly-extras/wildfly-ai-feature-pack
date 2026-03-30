@@ -7,6 +7,7 @@ package org.wildfly.extension.mcp.server;
 import java.util.concurrent.Future;
 import org.wildfly.extension.mcp.api.InitializeRequest;
 import org.wildfly.extension.mcp.api.MCPConnection;
+import org.wildfly.extension.mcp.server.PendingRequestRegistry;
 
 public class TestMCPConnection implements MCPConnection {
 
@@ -14,6 +15,7 @@ public class TestMCPConnection implements MCPConnection {
     private Status status = Status.NEW;
     private InitializeRequest initializeRequest;
     private boolean cancelled = false;
+    private final PendingRequestRegistry pendingRequestRegistry = new PendingRequestRegistry();
 
     public TestMCPConnection(String id) {
         this.id = id;
@@ -67,6 +69,16 @@ public class TestMCPConnection implements MCPConnection {
     }
 
     public InitializeRequest getInitializeRequest() {
+        return initializeRequest;
+    }
+
+    @Override
+    public PendingRequestRegistry pendingRequests() {
+        return pendingRequestRegistry;
+    }
+
+    @Override
+    public InitializeRequest initializeRequest() {
         return initializeRequest;
     }
 }

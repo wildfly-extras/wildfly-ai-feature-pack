@@ -53,6 +53,7 @@ import org.wildfly.extension.mcp.injection.tool.ArgumentMetadata;
 import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
 import org.wildfly.extension.mcp.injection.tool.MCPTool;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
+import org.wildfly.extension.mcp.injection.elicitation.ElicitationSender;
 import org.wildfly.security.manager.WildFlySecurityManager;
 
 public class ToolMessageHandler {
@@ -99,6 +100,9 @@ public class ToolMessageHandler {
             JsonObjectBuilder properties = Json.createObjectBuilder();
             JsonArrayBuilder required = Json.createArrayBuilder();
             for (ArgumentMetadata a : toolMetadata.arguments()) {
+                if (ElicitationSender.class.isAssignableFrom(a.type())) {
+                    continue; // injected by the framework, not a client-supplied argument
+                }
                 properties.add(a.name(), generateSchema(a.type(), a));
                 if (a.required()) {
                     required.add(a.name());
@@ -190,13 +194,14 @@ public class ToolMessageHandler {
                         Class<?> clazz = classLoader.loadClass(methodMetadata.declaringClassName());
                         Instance beanInstance = CDI.current().select(clazz, MCPTool.MCPToolLiteral.INSTANCE);
                         Object result = null;
+                        Object[] builtArgs = buildArguments(metadata, args, mapper, connection, responder);
                         if (beanInstance.isResolvable()) {
                             MCPLogger.ROOT_LOGGER.debug("We have found the Singleton instance of the tool" + toolName);
                             try {
-                                if (args.isEmpty()) {
+                                if (builtArgs.length == 0) {
                                     result = registry.getToolInvoker(toolName).invoke(beanInstance.get());
                                 } else {
-                                    ArrayList preparedArguments = new ArrayList(Arrays.asList(prepareArguments(metadata, args, mapper)));
+                                    ArrayList preparedArguments = new ArrayList(Arrays.asList(builtArgs));
                                     preparedArguments.add(0, beanInstance.get());
                                     result = registry.getToolInvoker(toolName).invokeWithArguments(preparedArguments);
                                 }
@@ -208,11 +213,11 @@ public class ToolMessageHandler {
                             MCPLogger.ROOT_LOGGER.warn("We have NOT found the Singleton instance of the tool" + toolName);
                             Method method = clazz.getMethod(methodMetadata.name(), methodMetadata.argumentTypes());
                             if (Modifier.isStatic(method.getModifiers())) {
-                                result = method.invoke(null, prepareArguments(metadata, args, mapper));
+                                result = method.invoke(null, builtArgs);
                             } else {
                                 Constructor defaultConstructor = clazz.getConstructor(new Class[0]);
                                 Object instance = defaultConstructor.newInstance(new Object[0]);
-                                result = method.invoke(instance, prepareArguments(metadata, args, mapper));
+                                result = method.invoke(instance, builtArgs);
                             }
                         }
                         Collection<? extends ContentBlock> content = ContentMapper.processResultAsText(result);
@@ -247,6 +252,50 @@ public class ToolMessageHandler {
         } finally {
             WildFlySecurityManager.setCurrentContextClassLoaderPrivileged(prevCL);
         }
+    }
+
+    /**
+     * Like {@link #prepareArguments} but additionally injects framework-managed parameters
+     * such as {@link ElicitationSender} based on the declared argument type.
+     */
+    private Object[] buildArguments(
+            MCPFeatureMetadata metadata,
+            Map<String, JsonValue> jsonArgs,
+            ObjectMapper objectMapper,
+            MCPConnection connection,
+            Responder responder) throws MCPException {
+        if (metadata.arguments().isEmpty()) {
+            return new Object[0];
+        }
+        Object[] ret = new Object[metadata.arguments().size()];
+        int idx = 0;
+        for (ArgumentMetadata arg : metadata.arguments()) {
+            if (ElicitationSender.class.isAssignableFrom(arg.type())) {
+                ret[idx] = new ElicitationSenderImpl(
+                        connection.pendingRequests(),
+                        responder,
+                        connection.initializeRequest());
+            } else {
+                JsonValue val = jsonArgs.get(arg.name());
+                if (val == null && arg.required()) {
+                    throw new MCPException("Missing required argument: " + arg.name(), JsonRPC.INVALID_PARAMS);
+                }
+                // Delegate to the existing single-value conversion logic via a one-element map
+                Map<String, JsonValue> singleArg = val != null ? Map.of(arg.name(), val) : Map.of();
+                Object[] single = prepareArguments(
+                        new MCPFeatureMetadata(metadata.kind(), metadata.name(),
+                                new org.wildfly.extension.mcp.injection.tool.MethodMetadata(
+                                        metadata.method().name(), metadata.method().description(),
+                                        metadata.method().uri(), metadata.method().mimeType(),
+                                        List.of(arg),
+                                        metadata.method().declaringClassName(),
+                                        metadata.method().returnType())),
+                        singleArg, objectMapper);
+                ret[idx] = single[0];
+            }
+            idx++;
+        }
+        return ret;
     }
 
     @SuppressWarnings("unchecked")

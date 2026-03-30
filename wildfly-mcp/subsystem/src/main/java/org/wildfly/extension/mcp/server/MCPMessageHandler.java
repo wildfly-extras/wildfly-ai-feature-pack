@@ -59,14 +59,14 @@ public class MCPMessageHandler {
         capabilities.put("resources", Map.of("subscribe", true));
         capabilities.put("completions", Map.of());
         capabilities.put("logging", Map.of());
+        capabilities.put("elicitation", Map.of());
         this.serverInfo.put("capabilities", capabilities);
     }
 
     public void handle(JsonObject message, MCPConnection connection, Responder responder) {
         if (Messages.isResponse(message)) {
-            // Response from a client
-            // Currently we discard all responses, including pong responses
-            MCPLogger.ROOT_LOGGER.warnf("Discard client response: %s", message);
+            // Route client responses (e.g. elicitation/create replies) to any waiting future
+            connection.pendingRequests().handleResponse(message.get("id"), message);
         } else {
             switch (connection.status()) {
                 case NEW ->
