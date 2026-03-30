@@ -242,7 +242,141 @@ public class MCPMessageHandlerTestCase {
         assertTrue(args.getJsonObject(0).getBoolean("required"));
     }
 
+    // ==================== Null Params Validation Tests ====================
+
+    @Test
+    public void testToolsCallMissingParams() {
+        moveToOperation();
+        responder.clear();
+
+        handler.handle(jsonRpcRequest(20, "tools/call"), connection, responder);
+
+        assertTrue(responder.hasError());
+        assertEquals(-32602, responder.lastError().getInt("code"));
+    }
+
+    @Test
+    public void testPromptsGetMissingParams() {
+        moveToOperation();
+        responder.clear();
+
+        handler.handle(jsonRpcRequest(21, "prompts/get"), connection, responder);
+
+        assertTrue(responder.hasError());
+        assertEquals(-32602, responder.lastError().getInt("code"));
+    }
+
+    @Test
+    public void testResourcesReadMissingParams() {
+        moveToOperation();
+        responder.clear();
+
+        handler.handle(jsonRpcRequest(22, "resources/read"), connection, responder);
+
+        assertTrue(responder.hasError());
+        assertEquals(-32602, responder.lastError().getInt("code"));
+    }
+
     // ==================== Resources Tests ====================
+
+    @Test
+    public void testResourcesSubscribeCapabilityAdvertised() {
+        handler.handle(initializeMessage(1), connection, responder);
+
+        JsonObject resources = responder.lastResult().getJsonObject("capabilities").getJsonObject("resources");
+        assertNotNull(resources);
+        assertTrue(resources.getBoolean("subscribe"));
+    }
+
+    @Test
+    public void testResourcesSubscribe() {
+        moveToOperation();
+        responder.clear();
+
+        JsonObject message = Json.createObjectBuilder()
+                .add("jsonrpc", "2.0")
+                .add("id", 23)
+                .add("method", "resources/subscribe")
+                .add("params", Json.createObjectBuilder()
+                        .add("uri", "file:///logs/server.log"))
+                .build();
+        handler.handle(message, connection, responder);
+
+        assertTrue(responder.hasResult());
+    }
+
+    @Test
+    public void testResourcesSubscribeMissingParams() {
+        moveToOperation();
+        responder.clear();
+
+        handler.handle(jsonRpcRequest(24, "resources/subscribe"), connection, responder);
+
+        assertTrue(responder.hasError());
+        assertEquals(-32602, responder.lastError().getInt("code"));
+    }
+
+    @Test
+    public void testResourcesSubscribeMissingUri() {
+        moveToOperation();
+        responder.clear();
+
+        JsonObject message = Json.createObjectBuilder()
+                .add("jsonrpc", "2.0")
+                .add("id", 25)
+                .add("method", "resources/subscribe")
+                .add("params", Json.createObjectBuilder())
+                .build();
+        handler.handle(message, connection, responder);
+
+        assertTrue(responder.hasError());
+        assertEquals(-32602, responder.lastError().getInt("code"));
+    }
+
+    @Test
+    public void testResourcesUnsubscribe() {
+        moveToOperation();
+        responder.clear();
+
+        JsonObject message = Json.createObjectBuilder()
+                .add("jsonrpc", "2.0")
+                .add("id", 26)
+                .add("method", "resources/unsubscribe")
+                .add("params", Json.createObjectBuilder()
+                        .add("uri", "file:///logs/server.log"))
+                .build();
+        handler.handle(message, connection, responder);
+
+        assertTrue(responder.hasResult());
+    }
+
+    @Test
+    public void testResourcesUnsubscribeMissingParams() {
+        moveToOperation();
+        responder.clear();
+
+        handler.handle(jsonRpcRequest(27, "resources/unsubscribe"), connection, responder);
+
+        assertTrue(responder.hasError());
+        assertEquals(-32602, responder.lastError().getInt("code"));
+    }
+
+    @Test
+    public void testResourcesUnsubscribeMissingUri() {
+        moveToOperation();
+        responder.clear();
+
+        JsonObject message = Json.createObjectBuilder()
+                .add("jsonrpc", "2.0")
+                .add("id", 28)
+                .add("method", "resources/unsubscribe")
+                .add("params", Json.createObjectBuilder())
+                .build();
+        handler.handle(message, connection, responder);
+
+        assertTrue(responder.hasError());
+        assertEquals(-32602, responder.lastError().getInt("code"));
+    }
 
     @Test
     public void testResourcesList() {

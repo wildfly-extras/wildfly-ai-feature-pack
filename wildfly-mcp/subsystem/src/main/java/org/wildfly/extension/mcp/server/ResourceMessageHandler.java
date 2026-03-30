@@ -75,6 +75,38 @@ public class ResourceMessageHandler {
         responder.sendResult(id, Json.createObjectBuilder().add("resources", resources));
     }
 
+    void resourcesSubscribe(JsonObject message, Responder responder) {
+        String id = message.get("id").toString();
+        JsonValue paramsValue = message.get("params");
+        if (paramsValue == null || paramsValue.getValueType() != JsonValue.ValueType.OBJECT) {
+            responder.sendError(id, INVALID_PARAMS, "Message params must be present");
+            return;
+        }
+        String resourceUri = paramsValue.asJsonObject().getString("uri", null);
+        if (resourceUri == null) {
+            responder.sendError(id, INVALID_PARAMS, "Resource URI not defined");
+            return;
+        }
+        MCPLogger.ROOT_LOGGER.debugf("Subscribe to resource %s [id: %s]", resourceUri, id);
+        responder.sendResult(id, Json.createObjectBuilder());
+    }
+
+    void resourcesUnsubscribe(JsonObject message, Responder responder) {
+        String id = message.get("id").toString();
+        JsonValue paramsValue = message.get("params");
+        if (paramsValue == null || paramsValue.getValueType() != JsonValue.ValueType.OBJECT) {
+            responder.sendError(id, INVALID_PARAMS, "Message params must be present");
+            return;
+        }
+        String resourceUri = paramsValue.asJsonObject().getString("uri", null);
+        if (resourceUri == null) {
+            responder.sendError(id, INVALID_PARAMS, "Resource URI not defined");
+            return;
+        }
+        MCPLogger.ROOT_LOGGER.debugf("Unsubscribe from resource %s [id: %s]", resourceUri, id);
+        responder.sendResult(id, Json.createObjectBuilder());
+    }
+
     void resourceCall(JsonObject message, Responder responder, MCPConnection connection) {
         String id = message.get("id").toString();
         JsonValue paramsValue = message.get("params");
