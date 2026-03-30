@@ -9,6 +9,7 @@ package org.wildfly.extension.mcp;
  * @param ssePath: the URL path of the sse endpoint.
  * @param messagesPath: the URL path of the messages' endpoint.
  * @param streamablePath: the URL path of the streamable endpoint.
+ * @param pageSize: maximum number of items per paginated list response; 0 disables pagination.
  */
-public record MCPEndpointConfiguration(String ssePath, String messagesPath, String streamablePath) {
+public record MCPEndpointConfiguration(String ssePath, String messagesPath, String streamablePath, int pageSize) {
 }

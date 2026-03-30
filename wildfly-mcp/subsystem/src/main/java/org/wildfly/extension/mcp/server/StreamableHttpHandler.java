@@ -32,9 +32,14 @@ public class StreamableHttpHandler implements HttpHandler {
 
     public StreamableHttpHandler(ConnectionManager connectionManager, WildFlyMCPRegistry registry, ClassLoader classLoader,
             String serverName, String applicationName, ServerSentEventHandler sseHandler) {
+        this(connectionManager, registry, classLoader, serverName, applicationName, sseHandler, 0);
+    }
+
+    public StreamableHttpHandler(ConnectionManager connectionManager, WildFlyMCPRegistry registry, ClassLoader classLoader,
+            String serverName, String applicationName, ServerSentEventHandler sseHandler, int pageSize) {
         this.connectionManager = connectionManager;
         this.sseHandler = sseHandler;
-        handler = new MCPMessageHandler(connectionManager, registry, classLoader, serverName, applicationName);
+        handler = new MCPMessageHandler(connectionManager, registry, classLoader, serverName, applicationName, pageSize);
     }
 
     @Override

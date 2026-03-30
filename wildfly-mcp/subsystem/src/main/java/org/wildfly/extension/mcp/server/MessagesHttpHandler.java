@@ -18,10 +18,15 @@ public class MessagesHttpHandler implements HttpHandler {
     private final ConnectionManager connectionManager;
     private static MCPMessageHandler handler;
 
-    public MessagesHttpHandler(ConnectionManager connectionManager, WildFlyMCPRegistry registry, ClassLoader classLoader, 
+    public MessagesHttpHandler(ConnectionManager connectionManager, WildFlyMCPRegistry registry, ClassLoader classLoader,
             String serverName, String applicationName) {
+        this(connectionManager, registry, classLoader, serverName, applicationName, 0);
+    }
+
+    public MessagesHttpHandler(ConnectionManager connectionManager, WildFlyMCPRegistry registry, ClassLoader classLoader,
+            String serverName, String applicationName, int pageSize) {
         this.connectionManager = connectionManager;
-        handler = new MCPMessageHandler(connectionManager,registry, classLoader, serverName, applicationName);
+        handler = new MCPMessageHandler(connectionManager, registry, classLoader, serverName, applicationName, pageSize);
     }
 
     @Override

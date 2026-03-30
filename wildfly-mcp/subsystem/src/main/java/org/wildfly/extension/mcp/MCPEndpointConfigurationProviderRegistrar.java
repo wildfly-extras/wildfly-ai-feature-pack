@@ -39,7 +39,12 @@ public class MCPEndpointConfigurationProviderRegistrar implements ChildResourceD
             .setAllowExpression(true)
             .setRestartAllServices()
             .build();
-    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of( MESSAGES_PATH, SSE_PATH, STREAMABLE_PATH);
+    public static final SimpleAttributeDefinition PAGE_SIZE = SimpleAttributeDefinitionBuilder.create("page-size", ModelType.INT, true)
+            .setAllowExpression(true)
+            .setDefaultValue(new org.jboss.dmr.ModelNode(0))
+            .setRestartAllServices()
+            .build();
+    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(MESSAGES_PATH, SSE_PATH, STREAMABLE_PATH, PAGE_SIZE);
 
     private final ResourceDescriptor descriptor;
     static final String NAME = "mcp-server";

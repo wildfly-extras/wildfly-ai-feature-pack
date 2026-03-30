@@ -6,6 +6,7 @@ package org.wildfly.extension.mcp;
 
 import static org.wildfly.extension.mcp.Capabilities.MCP_SERVER_PROVIDER_CAPABILITY;
 import static org.wildfly.extension.mcp.MCPEndpointConfigurationProviderRegistrar.MESSAGES_PATH;
+import static org.wildfly.extension.mcp.MCPEndpointConfigurationProviderRegistrar.PAGE_SIZE;
 import static org.wildfly.extension.mcp.MCPEndpointConfigurationProviderRegistrar.SSE_PATH;
 import static org.wildfly.extension.mcp.MCPEndpointConfigurationProviderRegistrar.STREAMABLE_PATH;
 
@@ -24,10 +25,11 @@ public class MCPEndpointConfigurationProviderServiceConfigurator implements Reso
         final String ssePath = SSE_PATH.resolveModelAttribute(context, model).asString("sse");
         final String messagesPath = MESSAGES_PATH.resolveModelAttribute(context, model).asString("messages");
         final String streamablePath = STREAMABLE_PATH.resolveModelAttribute(context, model).asString("streamable");
+        final int pageSize = PAGE_SIZE.resolveModelAttribute(context, model).asInt(0);
         Supplier<MCPEndpointConfiguration> factory = new Supplier<>() {
             @Override
             public MCPEndpointConfiguration get() {
-                return new MCPEndpointConfiguration(ssePath, messagesPath,streamablePath);
+                return new MCPEndpointConfiguration(ssePath, messagesPath, streamablePath, pageSize);
             }
         };
         return CapabilityServiceInstaller.builder(MCP_SERVER_PROVIDER_CAPABILITY, factory)
