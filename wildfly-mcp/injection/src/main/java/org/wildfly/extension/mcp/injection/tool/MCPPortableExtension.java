@@ -66,6 +66,40 @@ public class MCPPortableExtension implements Extension {
                 MCPLogger.ROOT_LOGGER.error("Unexpected error ", ex);
             }
         }
+        for (MCPFeatureMetadata resourceTemplate : registry.listResourceTemplates()) {
+            String className = resourceTemplate.method().declaringClassName();
+            MCPLogger.ROOT_LOGGER.info("Adding " + className + " to CDI for discovery");
+            try {
+                Class clazz = Class.forName(className, true, deploymentClassLoader);
+                registry.prepareResourceTemplate(resourceTemplate.method().uri(), clazz);
+                updateAnnotations(beanClasses, clazz, MCPResource.MCPResourceLiteral.INSTANCE);
+                ids.putIfAbsent(clazz, resourceTemplate.method().uri() + "-" + resourceTemplate.method().name());
+            } catch (ClassNotFoundException ex) {
+                MCPLogger.ROOT_LOGGER.error("Unexpected error ", ex);
+            }
+        }
+        for (MCPFeatureMetadata completion : registry.listPromptCompletions()) {
+            String className = completion.method().declaringClassName();
+            try {
+                Class clazz = Class.forName(className, true, deploymentClassLoader);
+                registry.preparePromptCompletion(completion.name(), clazz);
+                updateAnnotations(beanClasses, clazz, MCPPrompt.MCPPromptLiteral.INSTANCE);
+                ids.putIfAbsent(clazz, completion.name() + "-" + completion.method().name());
+            } catch (ClassNotFoundException ex) {
+                MCPLogger.ROOT_LOGGER.error("Unexpected error ", ex);
+            }
+        }
+        for (MCPFeatureMetadata completion : registry.listResourceTemplateCompletions()) {
+            String className = completion.method().declaringClassName();
+            try {
+                Class clazz = Class.forName(className, true, deploymentClassLoader);
+                registry.prepareResourceTemplateCompletion(completion.name(), clazz);
+                updateAnnotations(beanClasses, clazz, MCPResource.MCPResourceLiteral.INSTANCE);
+                ids.putIfAbsent(clazz, completion.name() + "-" + completion.method().name());
+            } catch (ClassNotFoundException ex) {
+                MCPLogger.ROOT_LOGGER.error("Unexpected error ", ex);
+            }
+        }
         for (Map.Entry<Class<?>, Set<AnnotationLiteral>> bean : beanClasses.entrySet()) {
             AnnotatedTypeConfigurator config = atd.addAnnotatedType(bean.getKey(), ids.get(bean.getKey())).add(SingletonLiteral.INSTANCE);
             for (AnnotationLiteral annotation : bean.getValue()) {

@@ -18,9 +18,15 @@ public class WildFlyMCPRegistry {
     private final Map<String, MCPFeatureMetadata> tools = new HashMap<>();
     private final Map<String, MCPFeatureMetadata> prompts = new HashMap<>();
     private final Map<String, MCPFeatureMetadata> resources = new HashMap<>();
+    private final Map<String, MCPFeatureMetadata> resourceTemplates = new HashMap<>();
+    private final Map<String, MCPFeatureMetadata> promptCompletions = new HashMap<>();
+    private final Map<String, MCPFeatureMetadata> resourceTemplateCompletions = new HashMap<>();
     private final Map<String, MethodHandle> toolInvokers = new HashMap<>();
     private final Map<String, MethodHandle> promptInvokers = new HashMap<>();
     private final Map<String, MethodHandle> resourceInvokers = new HashMap<>();
+    private final Map<String, MethodHandle> resourceTemplateInvokers = new HashMap<>();
+    private final Map<String, MethodHandle> promptCompletionInvokers = new HashMap<>();
+    private final Map<String, MethodHandle> resourceTemplateCompletionInvokers = new HashMap<>();
     private final MethodHandles.Lookup lookup = MethodHandles.lookup();
 
     public Iterable<MCPFeatureMetadata> listTools() {
@@ -47,6 +53,42 @@ public class WildFlyMCPRegistry {
         resources.put(uri, metadata);
     }
 
+    public void addResourceTemplate(String uriTemplate, MCPFeatureMetadata metadata) {
+        resourceTemplates.put(uriTemplate, metadata);
+    }
+
+    public void addPromptCompletion(String key, MCPFeatureMetadata metadata) {
+        promptCompletions.put(key, metadata);
+    }
+
+    public void addResourceTemplateCompletion(String key, MCPFeatureMetadata metadata) {
+        resourceTemplateCompletions.put(key, metadata);
+    }
+
+    public MCPFeatureMetadata getPromptCompletion(String key) {
+        return promptCompletions.get(key);
+    }
+
+    public MCPFeatureMetadata getResourceTemplateCompletion(String key) {
+        return resourceTemplateCompletions.get(key);
+    }
+
+    public Iterable<MCPFeatureMetadata> listPromptCompletions() {
+        return promptCompletions.values();
+    }
+
+    public Iterable<MCPFeatureMetadata> listResourceTemplateCompletions() {
+        return resourceTemplateCompletions.values();
+    }
+
+    public MethodHandle getPromptCompletionInvoker(String key) {
+        return promptCompletionInvokers.get(key);
+    }
+
+    public MethodHandle getResourceTemplateCompletionInvoker(String key) {
+        return resourceTemplateCompletionInvokers.get(key);
+    }
+
     public MCPFeatureMetadata getTool(String tool) {
         return tools.get(tool);
     }
@@ -59,6 +101,28 @@ public class WildFlyMCPRegistry {
         return resources.get(resource);
     }
 
+    public Iterable<MCPFeatureMetadata> listResourceTemplates() {
+        return resourceTemplates.values();
+    }
+
+    public MCPFeatureMetadata getResourceTemplate(String uriTemplate) {
+        return resourceTemplates.get(uriTemplate);
+    }
+
+    public MCPFeatureMetadata findResourceTemplateByUri(String uri) {
+        for (Map.Entry<String, MCPFeatureMetadata> entry : resourceTemplates.entrySet()) {
+            if (matchesUriTemplate(entry.getKey(), uri)) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
+    private boolean matchesUriTemplate(String template, String uri) {
+        String regex = template.replaceAll("\\{[^}]+}", "([^/]+)");
+        return uri.matches(regex);
+    }
+
     public MethodHandle getToolInvoker(String tool) {
         return toolInvokers.get(tool);
     }
@@ -69,6 +133,19 @@ public class WildFlyMCPRegistry {
 
     public MethodHandle getResourceInvoker(String uri) {
         return resourceInvokers.get(uri);
+    }
+
+    public MethodHandle getResourceTemplateInvoker(String uriTemplate) {
+        return resourceTemplateInvokers.get(uriTemplate);
+    }
+
+    public MethodHandle findResourceTemplateInvokerByUri(String uri) {
+        for (Map.Entry<String, MCPFeatureMetadata> entry : resourceTemplates.entrySet()) {
+            if (matchesUriTemplate(entry.getKey(), uri)) {
+                return resourceTemplateInvokers.get(entry.getKey());
+            }
+        }
+        return null;
     }
 
     public void prepareTool(String toolName, Class<?> clazz) {
@@ -124,6 +201,42 @@ public class WildFlyMCPRegistry {
             MethodHandles.Lookup privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
             MethodHandle handle = privateLookup.findVirtual(clazz, method.name(), mt);
             resourceInvokers.put(resourceUri, handle);
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException ex) {
+            MCPLogger.ROOT_LOGGER.error("Unexpected error ", ex);
+        }
+    }
+
+    public void prepareResourceTemplate(String uriTemplate, Class<?> clazz) {
+        try {
+            MethodMetadata method = resourceTemplates.get(uriTemplate).method();
+            MethodType mt = MethodType.methodType(Class.forName(method.returnType(), true, clazz.getClassLoader()), method.argumentTypes());
+            MethodHandles.Lookup privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
+            MethodHandle handle = privateLookup.findVirtual(clazz, method.name(), mt);
+            resourceTemplateInvokers.put(uriTemplate, handle);
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException ex) {
+            MCPLogger.ROOT_LOGGER.error("Unexpected error ", ex);
+        }
+    }
+
+    public void preparePromptCompletion(String key, Class<?> clazz) {
+        try {
+            MethodMetadata method = promptCompletions.get(key).method();
+            MethodType mt = MethodType.methodType(Class.forName(method.returnType(), true, clazz.getClassLoader()), method.argumentTypes());
+            MethodHandles.Lookup privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
+            MethodHandle handle = privateLookup.findVirtual(clazz, method.name(), mt);
+            promptCompletionInvokers.put(key, handle);
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException ex) {
+            MCPLogger.ROOT_LOGGER.error("Unexpected error ", ex);
+        }
+    }
+
+    public void prepareResourceTemplateCompletion(String key, Class<?> clazz) {
+        try {
+            MethodMetadata method = resourceTemplateCompletions.get(key).method();
+            MethodType mt = MethodType.methodType(Class.forName(method.returnType(), true, clazz.getClassLoader()), method.argumentTypes());
+            MethodHandles.Lookup privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
+            MethodHandle handle = privateLookup.findVirtual(clazz, method.name(), mt);
+            resourceTemplateCompletionInvokers.put(key, handle);
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException ex) {
             MCPLogger.ROOT_LOGGER.error("Unexpected error ", ex);
         }

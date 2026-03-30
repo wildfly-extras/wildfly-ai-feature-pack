@@ -58,6 +58,10 @@
             <artifactId>mcp-model</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.mcp-java</groupId>
+            <artifactId>mcp-server-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wildfly-mcp-injection</artifactId>
         </dependency>

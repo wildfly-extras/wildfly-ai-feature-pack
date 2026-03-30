@@ -16,7 +16,7 @@ import com.github.victools.jsonschema.generator.OptionPreset;
 import com.github.victools.jsonschema.generator.SchemaGenerator;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 import com.github.victools.jsonschema.generator.SchemaVersion;
-import jakarta.enterprise.concurrent.ManagedExecutorService;
+import java.util.concurrent.ExecutorService;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.json.Json;
@@ -39,8 +39,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import org.mcp_java.model.content.ContentBlock;
 import org.wildfly.extension.mcp.api.ContentMapper;
 import org.wildfly.extension.mcp.api.JsonRPC;
@@ -60,29 +58,15 @@ public class ToolMessageHandler {
     private final WildFlyMCPRegistry registry;
     private final ObjectMapper mapper;
     private final ClassLoader classLoader;
-    private ManagedExecutorService executorService;
+    private final ExecutorService executorService;
 
-    ToolMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader) {
+    ToolMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader, ExecutorService executorService) {
         this.schemaGenerator = new SchemaGenerator(
                 new SchemaGeneratorConfigBuilder(SchemaVersion.DRAFT_2020_12, OptionPreset.PLAIN_JSON).build());
         this.registry = registry;
         this.mapper = new ObjectMapper();
         this.classLoader = classLoader;
-        InitialContext context = null;
-        try {
-            context = new InitialContext();
-            executorService = (ManagedExecutorService) context.lookup("java:jboss/ee/concurrency/executor/default");
-        } catch (NamingException ex) {
-            MCPLogger.ROOT_LOGGER.error("Error accessing managed executor service ", ex);
-        } finally {
-            if (context != null) {
-                try {
-                    context.close();
-                } catch (NamingException ex) {
-                    MCPLogger.ROOT_LOGGER.debug("Error closing initial context", ex);
-                }
-            }
-        }
+        this.executorService = executorService;
     }
 
     void toolsList(JsonObject message, Responder responder) {
@@ -177,14 +161,25 @@ public class ToolMessageHandler {
                             }
                         }
                         Collection<? extends ContentBlock> content = ContentMapper.processResultAsText(result);
-                        try (StringWriter out = new StringWriter()) {
-                            mapper.writeValue(out, content);
-                            try (StringReader in = new StringReader(out.toString())) {
-                                JsonObjectBuilder builder = Json.createObjectBuilder();
-                                builder.add("content", Json.createReader(in).readArray());
-                                responder.sendResult(id, builder);
+                        JsonArrayBuilder contentArray = Json.createArrayBuilder();
+                        for (var contentBlock : content) {
+                            try (StringWriter out = new StringWriter()) {
+                                mapper.writeValue(out, contentBlock);
+                                try (StringReader in = new StringReader(out.toString())) {
+                                    JsonObject contentJson = Json.createReader(in).readObject();
+                                    JsonObjectBuilder filtered = Json.createObjectBuilder();
+                                    for (String key : contentJson.keySet()) {
+                                        if (!contentJson.isNull(key)) {
+                                            filtered.add(key, contentJson.get(key));
+                                        }
+                                    }
+                                    contentArray.add(filtered);
+                                }
                             }
                         }
+                        JsonObjectBuilder builder = Json.createObjectBuilder();
+                        builder.add("content", contentArray);
+                        responder.sendResult(id, builder);
                     } catch (MCPException e) {
                         MCPLogger.ROOT_LOGGER.error(e);
                         responder.sendError(id, e.getJsonRpcError(), e.getMessage());

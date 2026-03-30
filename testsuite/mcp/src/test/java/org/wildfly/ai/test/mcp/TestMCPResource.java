@@ -1,0 +1,16 @@
+/*
+ * Copyright The WildFly Authors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+package org.wildfly.ai.test.mcp;
+
+import org.mcp_java.annotations.resources.Resource;
+import org.mcp_java.model.resource.ResourceContents;
+
+public class TestMCPResource {
+
+    @Resource(uri = "test://info", mimeType = "text/plain", name = "test-info")
+    ResourceContents info() {
+        return ResourceContents.text("test://info", "WildFly MCP Test Resource");
+    }
+}

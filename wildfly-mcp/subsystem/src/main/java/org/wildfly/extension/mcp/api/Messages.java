@@ -47,7 +47,7 @@ public class Messages {
     }
 
     public static boolean isResponse(JsonObject message) {
-        return message.containsKey("result") && message.containsKey("error");
+        return message.containsKey("result") || message.containsKey("error");
     }
 
 }
