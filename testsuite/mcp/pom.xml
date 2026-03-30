@@ -8,40 +8,24 @@
         <version>0.9.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>wildfly-ai-testsuite-integration</artifactId>
+    <artifactId>wildfly-ai-testsuite-mcp</artifactId>
     <packaging>jar</packaging>
 
-    <name>WildFly AI Feature Pack - Integration Tests</name>
-    <description>Integration tests for WildFly AI Feature Pack using Arquillian and Testcontainers</description>
+    <name>WildFly AI Feature Pack - MCP Integration Tests</name>
+    <description>Integration tests for WildFly MCP Server subsystem</description>
 
     <properties>
         <version.junit>5.11.4</version.junit>
         <version.arquillian>1.10.0.Final</version.arquillian>
         <version.wildfly.arquillian>5.0.1.Final</version.wildfly.arquillian>
-        <version.testcontainers>1.21.4</version.testcontainers>
         <version.assertj>3.26.3</version.assertj>
-        <version.wildfly.glow>1.5.2.Final</version.wildfly.glow>
         <version.wildfly.maven.plugin>5.1.0.Final</version.wildfly.maven.plugin>
         <version.maven.surefire>3.5.2</version.maven.surefire>
         <jboss.home>${project.build.directory}/server</jboss.home>
-
-        <!-- Ollama configuration for tests - defaults to local instance -->
-        <ollama.base.url>http://localhost:11434</ollama.base.url>
-        <ollama.model.name>llama3.2:1b</ollama.model.name>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <!-- Testcontainers BOM -->
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>testcontainers-bom</artifactId>
-                <version>${version.testcontainers}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- Arquillian BOM -->
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
@@ -49,8 +33,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <!-- JUnit BOM -->
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
@@ -69,13 +51,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- JUnit Platform Launcher for test execution listeners -->
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Arquillian JUnit 5 -->
         <dependency>
             <groupId>org.jboss.arquillian.junit5</groupId>
@@ -91,45 +66,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Testcontainers -->
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>ollama</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- LangChain4j dependencies -->
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-ollama</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- AssertJ for fluent assertions -->
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${version.assertj}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Hamcrest for JUnit matchers -->
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <version>3.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -146,17 +87,34 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Jakarta JSON for response parsing in tests -->
         <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <scope>provided</scope>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
+            <scope>test</scope>
         </dependency>
 
+        <!-- MCP annotations for test beans -->
+        <dependency>
+            <groupId>org.mcp-java</groupId>
+            <artifactId>mcp-annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mcp-java</groupId>
+            <artifactId>mcp-model</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- WildFly Maven Plugin -->
+            <!-- WildFly Maven Plugin - provision server with MCP support -->
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
@@ -170,35 +128,10 @@
                         </goals>
                         <configuration>
                             <provisioning-file>${project.basedir}/src/test/resources/provisioning.xml</provisioning-file>
-                            <extraServerContentDirs>extra-content</extraServerContentDirs>
+                            <stability-level>experimental</stability-level>
                             <galleon-options>
                                 <jboss-fork-embedded>true</jboss-fork-embedded>
                             </galleon-options>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Maven Resources Plugin - Copy extra server content -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
-                <executions>
-                    <execution>
-                        <id>copy-server-resources</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/server</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/extra-content</directory>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </resources>
                         </configuration>
                     </execution>
                 </executions>
@@ -223,33 +156,19 @@
                                     <version>${version.assertj}</version>
                                     <outputDirectory>${project.build.directory}/test-libs</outputDirectory>
                                 </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.hamcrest</groupId>
-                                    <artifactId>hamcrest</artifactId>
-                                    <version>3.0</version>
-                                    <outputDirectory>${project.build.directory}/test-libs</outputDirectory>
-                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-            <!-- Maven Surefire Plugin - Configure test execution -->
+            <!-- Maven Surefire Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${version.maven.surefire}</version>
-                <configuration>
-                    <!-- System properties that will be available to tests and arquillian.xml -->
-                    <systemPropertyVariables>
-                        <ollama.base.url>${ollama.base.url}</ollama.base.url>
-                        <ollama.model.name>${ollama.model.name}</ollama.model.name>
-                    </systemPropertyVariables>
-                </configuration>
             </plugin>
         </plugins>
     </build>
-
 
 </project>

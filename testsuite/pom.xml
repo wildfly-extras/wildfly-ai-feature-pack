@@ -16,6 +16,7 @@
 
     <modules>
         <module>integration</module>
+        <module>mcp</module>
     </modules>
 
 </project>
