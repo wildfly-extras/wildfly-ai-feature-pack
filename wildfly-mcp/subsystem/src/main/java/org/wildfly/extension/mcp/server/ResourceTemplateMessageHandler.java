@@ -74,7 +74,12 @@ public class ResourceTemplateMessageHandler {
 
     void resourceTemplateRead(JsonObject message, Responder responder, MCPConnection connection) {
         String id = message.get("id").toString();
-        JsonObject params = message.get("params").asJsonObject();
+        JsonValue paramsValue = message.get("params");
+        if (paramsValue == null || paramsValue.getValueType() != JsonValue.ValueType.OBJECT) {
+            responder.sendError(id, INVALID_PARAMS, "Message params must be present");
+            return;
+        }
+        JsonObject params = paramsValue.asJsonObject();
         String resourceUri = params.getString("uri");
         MCPLogger.ROOT_LOGGER.debugf("Read resource template %s [id: %s]", resourceUri, id);
 

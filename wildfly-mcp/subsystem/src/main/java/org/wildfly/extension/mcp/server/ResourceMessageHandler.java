@@ -77,7 +77,12 @@ public class ResourceMessageHandler {
 
     void resourceCall(JsonObject message, Responder responder, MCPConnection connection) {
         String id = message.get("id").toString();
-        JsonObject params = message.get("params").asJsonObject();
+        JsonValue paramsValue = message.get("params");
+        if (paramsValue == null || paramsValue.getValueType() != JsonValue.ValueType.OBJECT) {
+            responder.sendError(id, INVALID_PARAMS, "Message params must be present");
+            return;
+        }
+        JsonObject params = paramsValue.asJsonObject();
         String resourceUri = params.getString("uri");
         MCPLogger.ROOT_LOGGER.debugf("Call resource %s [id: %s]", resourceUri, id);
         Map<String, JsonValue> args = new HashMap<>();

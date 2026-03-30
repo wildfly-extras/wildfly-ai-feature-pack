@@ -82,7 +82,12 @@ public class PromptMessageHandler {
 
     void promptsGet(JsonObject message, Responder responder, MCPConnection connection) {
         String id = message.get("id").toString();
-        JsonObject params = message.get("params").asJsonObject();
+        JsonValue paramsValue = message.get("params");
+        if (paramsValue == null || paramsValue.getValueType() != JsonValue.ValueType.OBJECT) {
+            responder.sendError(id, INVALID_PARAMS, "Message params must be present");
+            return;
+        }
+        JsonObject params = paramsValue.asJsonObject();
         String promptName = params.getString("name");
         MCPLogger.ROOT_LOGGER.debugf("Call prompt %s [id: %s]", promptName, id);
         Map<String, JsonValue> args = new HashMap<>();
