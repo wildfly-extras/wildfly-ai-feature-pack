@@ -328,6 +328,196 @@ public class MCPServerIntegrationTestCase {
         assertThat(response).as("Should contain resource content").contains("WildFly MCP Test Resource");
     }
 
+    // ==================== Resource Subscribe / Unsubscribe ====================
+
+    @Test
+    @Order(18)
+    public void testResourcesSubscribeCapabilityAdvertised() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        // Re-use the initialize response already received in testInitialize — re-initialize just to inspect
+        // Actually, the capability was already asserted in testInitialize via "resources". We validate subscribe here.
+        // Send a fresh tools/list to avoid consuming a pending SSE message, then check the init response cached earlier.
+        // Instead, call resources/list and ensure subscribe is still the advertised capability.
+        // We validate this by issuing resources/subscribe on a known URI and expecting success (not method-not-found).
+        String subscribeMessage = """
+                {"jsonrpc":"2.0","id":30,"method":"resources/subscribe","params":{"uri":"test://info"}}""";
+
+        postToStreamable(subscribeMessage);
+        String response = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(response).as("Subscribe should return a result").isNotNull();
+        assertThat(response).as("Subscribe should not return an error").doesNotContain("\"error\"");
+        assertThat(response).as("Subscribe should return an empty result object").contains("\"result\"");
+    }
+
+    @Test
+    @Order(19)
+    public void testResourcesSubscribeKnownResource() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        String subscribeMessage = """
+                {"jsonrpc":"2.0","id":31,"method":"resources/subscribe","params":{"uri":"test://info"}}""";
+
+        postToStreamable(subscribeMessage);
+        String response = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(response).as("Should receive subscribe response").isNotNull();
+
+        JsonObject json = Json.createReader(new StringReader(response)).readObject();
+        assertThat(json.containsKey("result")).as("Should be a result, not an error").isTrue();
+        assertThat(json.getJsonObject("result").isEmpty()).as("Result should be empty object per MCP spec").isTrue();
+    }
+
+    @Test
+    @Order(20)
+    public void testResourcesSubscribeSecondResource() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        String subscribeMessage = """
+                {"jsonrpc":"2.0","id":32,"method":"resources/subscribe","params":{"uri":"test://status"}}""";
+
+        postToStreamable(subscribeMessage);
+        String response = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(response).as("Should receive subscribe response").isNotNull();
+
+        JsonObject json = Json.createReader(new StringReader(response)).readObject();
+        assertThat(json.containsKey("result")).as("Should be a result, not an error").isTrue();
+        assertThat(json.getJsonObject("result").isEmpty()).as("Result should be empty object per MCP spec").isTrue();
+    }
+
+    @Test
+    @Order(21)
+    public void testResourcesReadAfterSubscribe() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        // Subscribing must not affect the ability to read the resource
+        String readMessage = """
+                {"jsonrpc":"2.0","id":33,"method":"resources/read","params":{"uri":"test://status"}}""";
+
+        postToStreamable(readMessage);
+        String response = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(response).as("Should receive resource read response").isNotNull();
+        assertThat(response).as("Should contain contents").contains("\"contents\"");
+        assertThat(response).as("Should contain JSON status content").contains("running");
+    }
+
+    @Test
+    @Order(22)
+    public void testResourcesUnsubscribeKnownResource() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        String unsubscribeMessage = """
+                {"jsonrpc":"2.0","id":34,"method":"resources/unsubscribe","params":{"uri":"test://info"}}""";
+
+        postToStreamable(unsubscribeMessage);
+        String response = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(response).as("Should receive unsubscribe response").isNotNull();
+
+        JsonObject json = Json.createReader(new StringReader(response)).readObject();
+        assertThat(json.containsKey("result")).as("Should be a result, not an error").isTrue();
+        assertThat(json.getJsonObject("result").isEmpty()).as("Result should be empty object per MCP spec").isTrue();
+    }
+
+    @Test
+    @Order(23)
+    public void testResourcesUnsubscribeIdempotent() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        // Unsubscribing from a resource that was already unsubscribed (or never subscribed) should still succeed
+        String unsubscribeMessage = """
+                {"jsonrpc":"2.0","id":35,"method":"resources/unsubscribe","params":{"uri":"test://info"}}""";
+
+        postToStreamable(unsubscribeMessage);
+        String response = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(response).as("Should receive unsubscribe response").isNotNull();
+
+        JsonObject json = Json.createReader(new StringReader(response)).readObject();
+        assertThat(json.containsKey("result")).as("Repeated unsubscribe should still succeed").isTrue();
+    }
+
+    @Test
+    @Order(24)
+    public void testResourcesSubscribeMissingParams() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        String subscribeMessage = """
+                {"jsonrpc":"2.0","id":36,"method":"resources/subscribe"}""";
+
+        postToStreamable(subscribeMessage);
+        String response = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(response).as("Should receive error response").isNotNull();
+
+        JsonObject json = Json.createReader(new StringReader(response)).readObject();
+        assertThat(json.containsKey("error")).as("Missing params should return an error").isTrue();
+        assertThat(json.getJsonObject("error").getInt("code")).as("Should be INVALID_PARAMS (-32602)").isEqualTo(-32602);
+    }
+
+    @Test
+    @Order(25)
+    public void testResourcesSubscribeMissingUri() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        String subscribeMessage = """
+                {"jsonrpc":"2.0","id":37,"method":"resources/subscribe","params":{}}""";
+
+        postToStreamable(subscribeMessage);
+        String response = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(response).as("Should receive error response").isNotNull();
+
+        JsonObject json = Json.createReader(new StringReader(response)).readObject();
+        assertThat(json.containsKey("error")).as("Missing URI should return an error").isTrue();
+        assertThat(json.getJsonObject("error").getInt("code")).as("Should be INVALID_PARAMS (-32602)").isEqualTo(-32602);
+    }
+
+    @Test
+    @Order(26)
+    public void testResourcesUnsubscribeMissingParams() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        String unsubscribeMessage = """
+                {"jsonrpc":"2.0","id":38,"method":"resources/unsubscribe"}""";
+
+        postToStreamable(unsubscribeMessage);
+        String response = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(response).as("Should receive error response").isNotNull();
+
+        JsonObject json = Json.createReader(new StringReader(response)).readObject();
+        assertThat(json.containsKey("error")).as("Missing params should return an error").isTrue();
+        assertThat(json.getJsonObject("error").getInt("code")).as("Should be INVALID_PARAMS (-32602)").isEqualTo(-32602);
+    }
+
+    @Test
+    @Order(27)
+    public void testResourcesUnsubscribeMissingUri() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        String unsubscribeMessage = """
+                {"jsonrpc":"2.0","id":39,"method":"resources/unsubscribe","params":{}}""";
+
+        postToStreamable(unsubscribeMessage);
+        String response = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(response).as("Should receive error response").isNotNull();
+
+        JsonObject json = Json.createReader(new StringReader(response)).readObject();
+        assertThat(json.containsKey("error")).as("Missing URI should return an error").isTrue();
+        assertThat(json.getJsonObject("error").getInt("code")).as("Should be INVALID_PARAMS (-32602)").isEqualTo(-32602);
+    }
+
+    @Test
+    @Order(28)
+    public void testResourcesListIncludesSecondResource() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        String listMessage = """
+                {"jsonrpc":"2.0","id":40,"method":"resources/list"}""";
+
+        postToStreamable(listMessage);
+        String response = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(response).as("Should receive resources list response").isNotNull();
+        assertThat(response).as("Should contain test-status resource").contains("\"test-status\"");
+        assertThat(response).as("Should contain test://status URI").contains("test://status");
+        assertThat(response).as("Should contain application/json mimeType").contains("application/json");
+    }
+
     @Test
     @Order(11)
     public void testUnsupportedMethod() throws Exception {

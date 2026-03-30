@@ -13,4 +13,9 @@ public class TestMCPResource {
     ResourceContents info() {
         return ResourceContents.text("test://info", "WildFly MCP Test Resource");
     }
+
+    @Resource(uri = "test://status", mimeType = "application/json", name = "test-status")
+    ResourceContents status() {
+        return ResourceContents.text("test://status", "{\"status\":\"running\",\"version\":\"1.0\"}");
+    }
 }
