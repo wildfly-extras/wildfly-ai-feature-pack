@@ -52,7 +52,7 @@ public class MCPMessageHandler {
         Map<String, Map<String, Object>> capabilities = new HashMap<>();
         capabilities.put("prompts", Map.of());
         capabilities.put("tools", Map.of());
-        capabilities.put("resources", Map.of());
+        capabilities.put("resources", Map.of("subscribe", true));
         capabilities.put("completions", Map.of());
         capabilities.put("logging", Map.of());
         this.serverInfo.put("capabilities", capabilities);
@@ -128,6 +128,8 @@ public class MCPMessageHandler {
     static final String RESOURCES_LIST = "resources/list";
     static final String RESOURCE_TEMPLATES_LIST = "resources/templates/list";
     static final String RESOURCES_READ = "resources/read";
+    static final String RESOURCES_SUBSCRIBE = "resources/subscribe";
+    static final String RESOURCES_UNSUBSCRIBE = "resources/unsubscribe";
     static final String PING = "ping";
     static final String COMPLETION_COMPLETE = "completion/complete";
     static final String LOGGING_SET_LEVEL = "logging/setLevel";
@@ -145,6 +147,8 @@ public class MCPMessageHandler {
             case NOTIFICATIONS_CANCEL -> connection.cancel();
             case PING -> ping(message, responder);
             case RESOURCES_LIST -> resourceHandler.resourcesList(message, responder);
+            case RESOURCES_SUBSCRIBE -> resourceHandler.resourcesSubscribe(message, responder);
+            case RESOURCES_UNSUBSCRIBE -> resourceHandler.resourcesUnsubscribe(message, responder);
             case RESOURCES_READ -> {
                 String resourceUri = message.getJsonObject("params") != null ? message.getJsonObject("params").getString("uri", "") : "";
                 if (registry.getResource(resourceUri) != null) {
