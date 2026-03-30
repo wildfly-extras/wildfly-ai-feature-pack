@@ -9,11 +9,19 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
 
 public class WildFlyMCPRegistry {
+
+    /**
+     * Recommended pattern for tool names as defined in the MCP spec.
+     * Tool names should only contain ASCII letters, digits, underscore, hyphen, and dot,
+     * and be between 1 and 128 characters in length.
+     */
+    public static final Pattern TOOL_NAME_PATTERN = Pattern.compile("^[A-Za-z0-9_.\\-]{1,128}$");
 
     private final Map<String, MCPFeatureMetadata> tools = new HashMap<>();
     private final Map<String, MCPFeatureMetadata> prompts = new HashMap<>();
@@ -42,6 +50,10 @@ public class WildFlyMCPRegistry {
     }
 
     public void addTool(String name, MCPFeatureMetadata metadata) {
+        if (!TOOL_NAME_PATTERN.matcher(name).matches()) {
+            throw new IllegalArgumentException(
+                    "Tool name [" + name + "] does not match the required pattern: " + TOOL_NAME_PATTERN.pattern());
+        }
         tools.put(name, metadata);
     }
 
