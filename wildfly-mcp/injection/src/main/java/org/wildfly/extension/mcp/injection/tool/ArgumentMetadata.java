@@ -4,6 +4,8 @@
  */
 package org.wildfly.extension.mcp.injection.tool;
 
-public record ArgumentMetadata (String name, String description, boolean required, Class<?> type) {
+import java.lang.reflect.Type;
+
+public record ArgumentMetadata (String name, String description, boolean required, Type type) {
 
 }

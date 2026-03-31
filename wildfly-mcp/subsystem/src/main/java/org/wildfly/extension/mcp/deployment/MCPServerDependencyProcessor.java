@@ -19,6 +19,7 @@ import org.jboss.as.server.deployment.module.ModuleDependency;
 import org.jboss.as.server.deployment.module.ModuleSpecification;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.DotName;
+import java.lang.reflect.Type;
 import org.jboss.jandex.JandexReflection;
 import org.jboss.jandex.MethodInfo;
 import org.jboss.modules.ModuleLoader;
@@ -76,7 +77,7 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
                 String paramName = param.value("name") != null ? param.value("name").asString() : param.target().asMethodParameter().name();
                 boolean required = param.value("required") == null ? true : param.value("required").asBoolean();
                 String paramDescription = param.value("description") != null ? param.value("description").asString() : "";
-                Class<?> type = JandexReflection.loadRawType(param.target().asMethodParameter().type());
+                Type type = JandexReflection.loadType(param.target().asMethodParameter().type());
                 ArgumentMetadata arg = new ArgumentMetadata(paramName, paramDescription, required, type);
                 arguments.add(arg);
             }
@@ -111,7 +112,7 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
                 String paramName = param.value("name") != null ? param.value("name").asString() : param.target().asMethodParameter().name();
                 boolean required = param.value("required") == null ? true : param.value("required").asBoolean();
                 String paramDescription = param.value("description") != null ? param.value("description").asString() : "";
-                Class<?> type = JandexReflection.loadRawType(param.target().asMethodParameter().type());
+                Type type = JandexReflection.loadType(param.target().asMethodParameter().type());
                 ArgumentMetadata arg = new ArgumentMetadata(paramName, paramDescription, required, type);
                 arguments.add(arg);
             }
@@ -148,7 +149,7 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
                 String paramName = param.value("name") != null ? param.value("name").asString() : param.target().asMethodParameter().name();
                 boolean required = param.value("required") == null ? true : param.value("required").asBoolean();
                 String paramDescription = param.value("description") != null ? param.value("description").asString() : "";
-                Class<?> type = JandexReflection.loadRawType(param.target().asMethodParameter().type());
+                Type type = JandexReflection.loadType(param.target().asMethodParameter().type());
                 ArgumentMetadata arg = new ArgumentMetadata(paramName, paramDescription, required, type);
                 arguments.add(arg);
             }
