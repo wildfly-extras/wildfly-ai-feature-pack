@@ -7,6 +7,7 @@ package org.wildfly.extension.mcp.deployment;
 import static org.wildfly.extension.mcp.MCPLogger.ROOT_LOGGER;
 import static org.wildfly.extension.mcp.deployment.MCPAttachments.MCP_REGISTRY_METADATA;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import org.jboss.as.server.deployment.Attachments;
@@ -19,7 +20,6 @@ import org.jboss.as.server.deployment.module.ModuleDependency;
 import org.jboss.as.server.deployment.module.ModuleSpecification;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.DotName;
-import java.lang.reflect.Type;
 import org.jboss.jandex.JandexReflection;
 import org.jboss.jandex.MethodInfo;
 import org.jboss.modules.ModuleLoader;
@@ -71,16 +71,7 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
             String name = annotation.value("name") != null ? annotation.value("name").asString() : annotation.target().asMethod().name();
             String description = annotation.value("description") != null ? annotation.value("description").asString() : "";
             MethodInfo info = annotation.target().asMethod();
-            List<AnnotationInstance> params = info.annotations(promptArg);
-            List<ArgumentMetadata> arguments = new ArrayList<>();
-            for (AnnotationInstance param : params) {
-                String paramName = param.value("name") != null ? param.value("name").asString() : param.target().asMethodParameter().name();
-                boolean required = param.value("required") == null ? true : param.value("required").asBoolean();
-                String paramDescription = param.value("description") != null ? param.value("description").asString() : "";
-                Type type = JandexReflection.loadType(param.target().asMethodParameter().type());
-                ArgumentMetadata arg = new ArgumentMetadata(paramName, paramDescription, required, type);
-                arguments.add(arg);
-            }
+            List<ArgumentMetadata> arguments = buildArguments(info, promptArg);
             MCPLogger.ROOT_LOGGER.debug("Prompt detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
             MCPFeatureMetadata metadata = new MCPFeatureMetadata(MCPFeatureMetadata.Kind.PROMPT,
                     name,
@@ -106,16 +97,7 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
             String name = annotation.value("name") != null ? annotation.value("name").asString() : annotation.target().asMethod().name();
             String description = annotation.value("description") != null ? annotation.value("description").asString() : "";
             MethodInfo info = annotation.target().asMethod();
-            List<AnnotationInstance> params = info.annotations(toolArg);
-            List<ArgumentMetadata> arguments = new ArrayList<>();
-            for (AnnotationInstance param : params) {
-                String paramName = param.value("name") != null ? param.value("name").asString() : param.target().asMethodParameter().name();
-                boolean required = param.value("required") == null ? true : param.value("required").asBoolean();
-                String paramDescription = param.value("description") != null ? param.value("description").asString() : "";
-                Type type = JandexReflection.loadType(param.target().asMethodParameter().type());
-                ArgumentMetadata arg = new ArgumentMetadata(paramName, paramDescription, required, type);
-                arguments.add(arg);
-            }
+            List<ArgumentMetadata> arguments = buildArguments(info, toolArg);
             MCPLogger.ROOT_LOGGER.debug("Tool detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
             MCPFeatureMetadata metadata = new MCPFeatureMetadata(MCPFeatureMetadata.Kind.TOOL,
                     name,
@@ -143,16 +125,7 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
             String uri = annotation.value("uri") != null ? annotation.value("uri").asString() : "";
             String mimeType = annotation.value("mimeType") != null ? annotation.value("mimeType").asString() : "";
             MethodInfo info = annotation.target().asMethod();
-            List<AnnotationInstance> params = info.annotations(resourceArg);
-            List<ArgumentMetadata> arguments = new ArrayList<>();
-            for (AnnotationInstance param : params) {
-                String paramName = param.value("name") != null ? param.value("name").asString() : param.target().asMethodParameter().name();
-                boolean required = param.value("required") == null ? true : param.value("required").asBoolean();
-                String paramDescription = param.value("description") != null ? param.value("description").asString() : "";
-                Type type = JandexReflection.loadType(param.target().asMethodParameter().type());
-                ArgumentMetadata arg = new ArgumentMetadata(paramName, paramDescription, required, type);
-                arguments.add(arg);
-            }
+            List<ArgumentMetadata> arguments = buildArguments(info, resourceArg);
             MCPLogger.ROOT_LOGGER.debug("Resource detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
             MCPFeatureMetadata metadata = new MCPFeatureMetadata(MCPFeatureMetadata.Kind.RESOURCE,
                     name,
@@ -167,5 +140,18 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
             );
             registry.addResource(uri, metadata);
         }
+    }
+
+    private List<ArgumentMetadata> buildArguments(MethodInfo info, DotName argAnnotation) {
+        List<AnnotationInstance> params = info.annotations(argAnnotation);
+        List<ArgumentMetadata> arguments = new ArrayList<>();
+        for (AnnotationInstance param : params) {
+            String paramName = param.value("name") != null ? param.value("name").asString() : param.target().asMethodParameter().name();
+            boolean required = param.value("required") == null || param.value("required").asBoolean();
+            String paramDescription = param.value("description") != null ? param.value("description").asString() : "";
+            Type type = JandexReflection.loadType(param.target().asMethodParameter().type());
+            arguments.add(new ArgumentMetadata(paramName, paramDescription, required, type));
+        }
+        return arguments;
     }
 }
