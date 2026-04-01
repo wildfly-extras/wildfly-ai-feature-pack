@@ -138,6 +138,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.jboss.metadata</groupId>
             <artifactId>jboss-metadata-web</artifactId>
             <scope>provided</scope>

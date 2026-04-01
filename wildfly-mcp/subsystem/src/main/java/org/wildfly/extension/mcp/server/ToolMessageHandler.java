@@ -23,6 +23,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 import java.io.IOException;
@@ -233,7 +234,7 @@ public class ToolMessageHandler {
                     if (arg.type() instanceof Class) {
                         Class clazz = (Class) arg.type();
                         if (clazz.isEnum()) {
-                            ret[idx] = Enum.valueOf(clazz, val.toString());
+                            ret[idx] = Enum.valueOf(clazz, ((JsonString) val).getString());
                         } else {
                             try {
                                 ret[idx] = mapper.readValue(val.toString(), clazz);
