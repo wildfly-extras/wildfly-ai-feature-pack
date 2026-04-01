@@ -242,23 +242,7 @@ public class ToolMessageHandler {
                             }
                         }
                     } else {
-                        if (arg.type().isPrimitive()) {
-                            if (val.getValueType() == ValueType.NUMBER) {
-                                if (Integer.TYPE.equals(arg.type())) {
-                                    ret[idx] = Integer.valueOf(val.toString());
-                                } else if (Float.TYPE.equals(arg.type())) {
-                                    ret[idx] = Float.valueOf(val.toString());
-                                } else if (Double.TYPE.equals(arg.type())) {
-                                    ret[idx] = Double.valueOf(val.toString());
-                                } else if (Long.TYPE.equals(arg.type())) {
-                                    ret[idx] = Long.valueOf(val.toString());
-                                } else if (Character.TYPE.equals(arg.type())) {
-                                    ret[idx] = (val.toString().charAt(0));
-                                }
-                            }
-                        } else {
-                            ret[idx] = val.toString();
-                        }
+                        ret[idx] = val.toString();
                     }
                 }
             }
