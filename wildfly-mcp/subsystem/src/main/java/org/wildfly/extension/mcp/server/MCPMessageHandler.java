@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import org.wildfly.extension.mcp.MCPLogger;
 import org.wildfly.extension.mcp.api.ClientCapability;
 import org.wildfly.extension.mcp.api.ConnectionManager;
@@ -20,19 +24,31 @@ import org.wildfly.extension.mcp.api.MCPConnection;
 import org.wildfly.extension.mcp.api.Messages;
 import org.wildfly.extension.mcp.api.Responder;
 import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
+import org.mcp_java.server.McpLog;
 
 public class MCPMessageHandler {
 
     private final ConnectionManager connectionManager;
+    private final WildFlyMCPRegistry registry;
     private final Map<String, Object> serverInfo;
     private final ToolMessageHandler toolHandler;
     private final PromptMessageHandler promptHandler;
     private final ResourceMessageHandler resourceHandler;
+    private final ResourceTemplateMessageHandler resourceTemplateHandler;
+    private final CompletionHandler completionHandler;
 
     public MCPMessageHandler(ConnectionManager connectionManager, WildFlyMCPRegistry registry, ClassLoader classLoader, String serverName, String serverVersion) {
-        this.toolHandler = new ToolMessageHandler(registry, classLoader);
-        this.promptHandler = new PromptMessageHandler(registry, classLoader);
-        this.resourceHandler = new ResourceMessageHandler(registry, classLoader);
+        this(connectionManager, registry, classLoader, serverName, serverVersion, 0);
+    }
+
+    public MCPMessageHandler(ConnectionManager connectionManager, WildFlyMCPRegistry registry, ClassLoader classLoader, String serverName, String serverVersion, int pageSize) {
+        this.registry = registry;
+        ExecutorService executorService = lookupExecutorService();
+        this.toolHandler = new ToolMessageHandler(registry, classLoader, executorService, pageSize);
+        this.promptHandler = new PromptMessageHandler(registry, classLoader, executorService, pageSize);
+        this.resourceHandler = new ResourceMessageHandler(registry, classLoader, executorService, pageSize);
+        this.resourceTemplateHandler = new ResourceTemplateMessageHandler(registry, classLoader, executorService, pageSize);
+        this.completionHandler = new CompletionHandler(registry, classLoader);
         this.connectionManager = connectionManager;
         this.serverInfo = new HashMap<>();
         this.serverInfo.put("serverInfo", Map.of("name", serverName, "version", serverVersion));
@@ -40,16 +56,17 @@ public class MCPMessageHandler {
         Map<String, Map<String, Object>> capabilities = new HashMap<>();
         capabilities.put("prompts", Map.of());
         capabilities.put("tools", Map.of());
-        capabilities.put("resources", Map.of());
-//        capabilities.put("logging", Map.of());
+        capabilities.put("resources", Map.of("subscribe", true));
+        capabilities.put("completions", Map.of());
+        capabilities.put("logging", Map.of());
+        capabilities.put("elicitation", Map.of());
         this.serverInfo.put("capabilities", capabilities);
     }
 
     public void handle(JsonObject message, MCPConnection connection, Responder responder) {
         if (Messages.isResponse(message)) {
-            // Response from a client
-            // Currently we discard all responses, including pong responses
-            MCPLogger.ROOT_LOGGER.warnf("Discard client response: %s", message);
+            // Route client responses (e.g. elicitation/create replies) to any waiting future
+            connection.pendingRequests().handleResponse(message.get("id"), message);
         } else {
             switch (connection.status()) {
                 case NEW ->
@@ -115,6 +132,8 @@ public class MCPMessageHandler {
     static final String RESOURCES_LIST = "resources/list";
     static final String RESOURCE_TEMPLATES_LIST = "resources/templates/list";
     static final String RESOURCES_READ = "resources/read";
+    static final String RESOURCES_SUBSCRIBE = "resources/subscribe";
+    static final String RESOURCES_UNSUBSCRIBE = "resources/unsubscribe";
     static final String PING = "ping";
     static final String COMPLETION_COMPLETE = "completion/complete";
     static final String LOGGING_SET_LEVEL = "logging/setLevel";
@@ -132,13 +151,22 @@ public class MCPMessageHandler {
             case NOTIFICATIONS_CANCEL -> connection.cancel();
             case PING -> ping(message, responder);
             case RESOURCES_LIST -> resourceHandler.resourcesList(message, responder);
-            case RESOURCES_READ ->  resourceHandler.resourceCall(message, responder, connection);
-//            case RESOURCE_TEMPLATES_LIST ->
-//                resourceTemplateHandler.resourceTemplatesList(message, responder);
-//            case COMPLETION_COMPLETE ->
-//                complete(message, responder, connection);
-//            case LOGGING_SET_LEVEL ->
-//                setLogLevel(message, responder, connection);
+            case RESOURCES_SUBSCRIBE -> resourceHandler.resourcesSubscribe(message, responder);
+            case RESOURCES_UNSUBSCRIBE -> resourceHandler.resourcesUnsubscribe(message, responder);
+            case RESOURCES_READ -> {
+                String resourceUri = message.getJsonObject("params") != null ? message.getJsonObject("params").getString("uri", "") : "";
+                if (registry.getResource(resourceUri) != null) {
+                    resourceHandler.resourceCall(message, responder, connection);
+                } else {
+                    resourceTemplateHandler.resourceTemplateRead(message, responder, connection);
+                }
+            }
+            case RESOURCE_TEMPLATES_LIST ->
+                resourceTemplateHandler.resourceTemplatesList(message, responder);
+            case COMPLETION_COMPLETE ->
+                complete(message, responder, connection);
+            case LOGGING_SET_LEVEL ->
+                setLogLevel(message, responder, connection);
             case Q_CLOSE -> close(message, responder, connection);
             default ->
                 responder.send(
@@ -147,31 +175,28 @@ public class MCPMessageHandler {
     }
 
     private void complete(JsonObject message, Responder responder, MCPConnection connection) {
+        completionHandler.complete(message, responder, connection);
+    }
+
+    private void setLogLevel(JsonObject message, Responder responder, MCPConnection connection) {
         String id = message.get("id").toString();
         JsonObject params = message.getJsonObject("params");
-        JsonObject ref = params.getJsonObject("ref");
-        if (ref == null) {
-            responder.sendError(id, JsonRPC.INVALID_REQUEST, "Reference not found");
-        } else {
-            String referenceType = ref.getString("type");
-            if (referenceType == null) {
-                responder.sendError(id, JsonRPC.INVALID_REQUEST, "Reference type not found");
-            } else {
-                JsonObject argument = params.getJsonObject("argument");
-                if (argument == null) {
-                    responder.sendError(id, JsonRPC.INVALID_REQUEST, "Argument not found");
-                } else {
-                    if ("ref/prompt".equals(referenceType)) {
-//                        promptCompleteHandler.complete(id, ref, argument, responder, connection);
-                    } else if ("ref/resource".equals(referenceType)) {
-//                        resourceTemplateCompleteHandler.complete(id, ref, argument, responder, connection);
-                    } else {
-                        responder.sendError(id, JsonRPC.INVALID_REQUEST,
-                                "Unsupported reference found: " + ref.getString("type"));
-                    }
-                }
-            }
+        if (params == null) {
+            responder.sendError(id, JsonRPC.INVALID_PARAMS, "Params not found");
+            return;
         }
+        String level = params.getString("level", null);
+        if (level == null) {
+            responder.sendError(id, JsonRPC.INVALID_PARAMS, "Log level not specified");
+            return;
+        }
+        McpLog.LogLevel logLevel = McpLog.LogLevel.from(level);
+        if (logLevel == null) {
+            responder.sendError(id, JsonRPC.INVALID_PARAMS, "Invalid log level: " + level);
+            return;
+        }
+        MCPLogger.ROOT_LOGGER.infof("Log level set to %s [connection: %s]", logLevel, connection.id());
+        responder.sendResult(id, Json.createObjectBuilder());
     }
 
     private void ping(JsonObject message, Responder responder) {
@@ -190,6 +215,25 @@ public class MCPMessageHandler {
         }
     }
 
+    static ExecutorService lookupExecutorService() {
+        InitialContext context = null;
+        try {
+            context = new InitialContext();
+            return (ExecutorService) context.lookup("java:jboss/ee/concurrency/executor/default");
+        } catch (NamingException ex) {
+            MCPLogger.ROOT_LOGGER.warn("Managed executor service not available, using default executor service");
+            return Executors.newCachedThreadPool();
+        } finally {
+            if (context != null) {
+                try {
+                    context.close();
+                } catch (NamingException ex) {
+                    MCPLogger.ROOT_LOGGER.debug("Error closing initial context", ex);
+                }
+            }
+        }
+    }
+
     private InitializeRequest decodeInitializeRequest(JsonObject params) {
         JsonObject clientInfo = params.getJsonObject("clientInfo");
         Implementation implementation = new Implementation(clientInfo.getString("name"), clientInfo.getString("version"));
@@ -204,25 +248,4 @@ public class MCPMessageHandler {
         }
         return new InitializeRequest(implementation, protocolVersion, clientCapabilities);
     }
-/*
-    private Map<String, Object> serverInfo(PromptManager promptManager, ToolManager toolManager,
-            ResourceManager resourceManager, ResourceTemplateManager resourceTemplateManager) {
-        Map<String, Object> info = new HashMap<>();
-        info.put("protocolVersion", "2024-11-05");
-        info.put("serverInfo", Map.of("name", serverName, "version", serverVersion));
-
-        Map<String, Map<String, Object>> capabilities = new HashMap<>();
-        if (!promptManager.isEmpty()) {
-            capabilities.put("prompts", Map.of());
-        }
-        if (!toolManager.isEmpty()) {
-            capabilities.put("tools", Map.of());
-        }
-        if (!resourceManager.isEmpty() || !resourceTemplateManager.isEmpty()) {
-            capabilities.put("resources", Map.of());
-        }
-        capabilities.put("logging", Map.of());
-        info.put("capabilities", capabilities);
-        return info;
-    }*/
 }

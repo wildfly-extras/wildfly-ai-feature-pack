@@ -34,10 +34,6 @@
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>wildfly-mcp-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-weld-common</artifactId>
         </dependency>
@@ -66,6 +62,11 @@
         <dependency>
             <groupId>org.extism.sdk</groupId>
             <artifactId>chicory-sdk-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

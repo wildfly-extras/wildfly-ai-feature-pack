@@ -14,7 +14,7 @@ import com.github.victools.jsonschema.generator.OptionPreset;
 import com.github.victools.jsonschema.generator.SchemaGenerator;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 import com.github.victools.jsonschema.generator.SchemaVersion;
-import jakarta.enterprise.concurrent.ManagedExecutorService;
+import java.util.concurrent.ExecutorService;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.json.Json;
@@ -29,11 +29,13 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import org.wildfly.mcp.api.ContentMapper;
+import java.util.stream.StreamSupport;
+import org.wildfly.extension.mcp.api.Cursor;
+import org.wildfly.extension.mcp.api.ContentMapper;
 import org.wildfly.extension.mcp.api.MCPConnection;
 import org.wildfly.extension.mcp.api.Responder;
 import org.wildfly.extension.mcp.injection.MCPLogger;
@@ -41,9 +43,7 @@ import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
 import org.wildfly.extension.mcp.injection.tool.MCPResource;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
-import org.wildfly.mcp.api.BlobResourceContents;
-import org.wildfly.mcp.api.ResourceContents;
-import org.wildfly.mcp.api.TextResourceContents;
+import org.mcp_java.model.resource.ResourceContents;
 import org.wildfly.security.manager.WildFlySecurityManager;
 
 public class ResourceMessageHandler {
@@ -52,37 +52,38 @@ public class ResourceMessageHandler {
     private final WildFlyMCPRegistry registry;
     private final ObjectMapper mapper;
     private final ClassLoader classLoader;
-    private ManagedExecutorService executorService;
+    private final ExecutorService executorService;
+    private final int pageSize;
 
-    ResourceMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader) {
+    ResourceMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader, ExecutorService executorService) {
+        this(registry, classLoader, executorService, 0);
+    }
+
+    ResourceMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader, ExecutorService executorService, int pageSize) {
         this.schemaGenerator = new SchemaGenerator(
                 new SchemaGeneratorConfigBuilder(SchemaVersion.DRAFT_2020_12, OptionPreset.PLAIN_JSON).build());
         this.registry = registry;
         this.mapper = new ObjectMapper();
         this.classLoader = classLoader;
-        InitialContext context = null;
-        try {
-            context = new InitialContext();
-            executorService = (ManagedExecutorService) context.lookup("java:jboss/ee/concurrency/executor/default");
-        } catch (NamingException ex) {
-            MCPLogger.ROOT_LOGGER.error("Error accessing managed executor service ", ex);
-        } finally {
-            if (context != null) {
-                try {
-                    context.close();
-                } catch (NamingException ex) {
-                    MCPLogger.ROOT_LOGGER.debug("Error closing initial context", ex);
-                }
-            }
-        }
+        this.executorService = executorService;
+        this.pageSize = pageSize;
     }
 
     void resourcesList(JsonObject message, Responder responder) {
         String id = message.get("id").toString();
-        MCPLogger.ROOT_LOGGER.debugf("List resources [id: %s]", id);
+        JsonObject params = message.getJsonObject("params");
+        String cursorValue = params != null ? params.getString("cursor", null) : null;
+
+        List<MCPFeatureMetadata> sorted = StreamSupport.stream(registry.listResources().spliterator(), false)
+                .sorted(Comparator.comparing(MCPFeatureMetadata::name))
+                .toList();
+        List<MCPFeatureMetadata> page = applyPage(sorted, cursorValue);
+        String nextCursor = nextCursor(sorted, page);
+
+        MCPLogger.ROOT_LOGGER.debugf("List resources [id: %s, cursor: %s, pageSize: %d]", id, cursorValue, pageSize);
 
         JsonArrayBuilder resources = Json.createArrayBuilder();
-        for (MCPFeatureMetadata resourceMetadata : registry.listResources()) {
+        for (MCPFeatureMetadata resourceMetadata : page) {
             JsonObjectBuilder resource = Json.createObjectBuilder()
                     .add("name", resourceMetadata.name())
                     .add("description", resourceMetadata.description())
@@ -90,12 +91,80 @@ public class ResourceMessageHandler {
                     .add("mimeType", resourceMetadata.method().mimeType());
             resources.add(resource);
         }
-        responder.sendResult(id, Json.createObjectBuilder().add("resources", resources));
+        JsonObjectBuilder result = Json.createObjectBuilder().add("resources", resources);
+        if (nextCursor != null) {
+            result.add("nextCursor", nextCursor);
+        }
+        responder.sendResult(id, result);
+    }
+
+    private List<MCPFeatureMetadata> applyPage(List<MCPFeatureMetadata> sorted, String cursorValue) {
+        int start = 0;
+        if (cursorValue != null) {
+            String lastName = Cursor.decode(cursorValue);
+            for (int i = 0; i < sorted.size(); i++) {
+                if (sorted.get(i).name().equals(lastName)) {
+                    start = i + 1;
+                    break;
+                }
+            }
+        }
+        if (pageSize > 0 && start + pageSize < sorted.size()) {
+            return sorted.subList(start, start + pageSize);
+        }
+        return sorted.subList(start, sorted.size());
+    }
+
+    private String nextCursor(List<MCPFeatureMetadata> all, List<MCPFeatureMetadata> page) {
+        if (pageSize > 0 && !page.isEmpty()) {
+            MCPFeatureMetadata last = page.get(page.size() - 1);
+            if (all.indexOf(last) < all.size() - 1) {
+                return Cursor.encode(last.name());
+            }
+        }
+        return null;
+    }
+
+    void resourcesSubscribe(JsonObject message, Responder responder) {
+        String id = message.get("id").toString();
+        JsonValue paramsValue = message.get("params");
+        if (paramsValue == null || paramsValue.getValueType() != JsonValue.ValueType.OBJECT) {
+            responder.sendError(id, INVALID_PARAMS, "Message params must be present");
+            return;
+        }
+        String resourceUri = paramsValue.asJsonObject().getString("uri", null);
+        if (resourceUri == null) {
+            responder.sendError(id, INVALID_PARAMS, "Resource URI not defined");
+            return;
+        }
+        MCPLogger.ROOT_LOGGER.debugf("Subscribe to resource %s [id: %s]", resourceUri, id);
+        responder.sendResult(id, Json.createObjectBuilder());
+    }
+
+    void resourcesUnsubscribe(JsonObject message, Responder responder) {
+        String id = message.get("id").toString();
+        JsonValue paramsValue = message.get("params");
+        if (paramsValue == null || paramsValue.getValueType() != JsonValue.ValueType.OBJECT) {
+            responder.sendError(id, INVALID_PARAMS, "Message params must be present");
+            return;
+        }
+        String resourceUri = paramsValue.asJsonObject().getString("uri", null);
+        if (resourceUri == null) {
+            responder.sendError(id, INVALID_PARAMS, "Resource URI not defined");
+            return;
+        }
+        MCPLogger.ROOT_LOGGER.debugf("Unsubscribe from resource %s [id: %s]", resourceUri, id);
+        responder.sendResult(id, Json.createObjectBuilder());
     }
 
     void resourceCall(JsonObject message, Responder responder, MCPConnection connection) {
         String id = message.get("id").toString();
-        JsonObject params = message.get("params").asJsonObject();
+        JsonValue paramsValue = message.get("params");
+        if (paramsValue == null || paramsValue.getValueType() != JsonValue.ValueType.OBJECT) {
+            responder.sendError(id, INVALID_PARAMS, "Message params must be present");
+            return;
+        }
+        JsonObject params = paramsValue.asJsonObject();
         String resourceUri = params.getString("uri");
         MCPLogger.ROOT_LOGGER.debugf("Call resource %s [id: %s]", resourceUri, id);
         Map<String, JsonValue> args = new HashMap<>();
@@ -150,26 +219,15 @@ public class ResourceMessageHandler {
                         JsonArrayBuilder jsonContent = Json.createArrayBuilder();
                         for (ResourceContents content : contents) {
                             JsonObjectBuilder contentResource = Json.createObjectBuilder();
-                            switch (content.type()) {
-                                case BLOB:
-                                    BlobResourceContents blob = content.asBlob();
-                                    contentResource.add("uri", blob.uri());
-                                    String blobMimeType = blob.mimeType() == null ? methodMetadata.mimeType() : blob.mimeType();
-                                    if (blobMimeType != null) {
-                                        contentResource.add("mimeType", blobMimeType);
-                                    }
-                                    contentResource.add("mimeType", blob.mimeType() == null ? methodMetadata.mimeType() : blob.mimeType());
-                                    contentResource.add("text", blob.blob());
-                                    break;
-                                case TEXT:
-                                    TextResourceContents text = content.asText();
-                                    contentResource.add("uri", text.uri());
-                                    String textMimeType = text.mimeType() == null ? methodMetadata.mimeType() : text.mimeType();
-                                    if (textMimeType != null) {
-                                        contentResource.add("mimeType", textMimeType);
-                                    }
-                                    contentResource.add("text", text.text());
-                                    break;
+                            contentResource.add("uri", content.uri());
+                            String mimeType = content.mimeType() != null ? content.mimeType() : methodMetadata.mimeType();
+                            if (mimeType != null && !mimeType.isEmpty()) {
+                                contentResource.add("mimeType", mimeType);
+                            }
+                            if (content.isBlob()) {
+                                contentResource.add("blob", content.blob());
+                            } else {
+                                contentResource.add("text", content.text());
                             }
                             jsonContent.add(contentResource);
                         }

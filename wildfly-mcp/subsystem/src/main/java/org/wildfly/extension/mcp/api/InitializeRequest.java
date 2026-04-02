@@ -9,4 +9,8 @@ import java.util.List;
 public record InitializeRequest(Implementation implementation, String protocolVersion,
         List<ClientCapability> clientCapabilities) {
 
+    public boolean supportsElicitation() {
+        return clientCapabilities != null && clientCapabilities.stream()
+                .anyMatch(c -> ClientCapability.ELICITATION.equals(c.name()));
+    }
 }

@@ -16,7 +16,7 @@ import com.github.victools.jsonschema.generator.OptionPreset;
 import com.github.victools.jsonschema.generator.SchemaGenerator;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 import com.github.victools.jsonschema.generator.SchemaVersion;
-import jakarta.enterprise.concurrent.ManagedExecutorService;
+import java.util.concurrent.ExecutorService;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.json.Json;
@@ -37,12 +37,14 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import org.wildfly.mcp.api.Content;
-import org.wildfly.mcp.api.ContentMapper;
+import java.util.stream.StreamSupport;
+import org.wildfly.extension.mcp.api.Cursor;
+import org.mcp_java.model.content.ContentBlock;
+import org.wildfly.extension.mcp.api.ContentMapper;
 import org.wildfly.extension.mcp.api.JsonRPC;
 import org.wildfly.extension.mcp.api.MCPConnection;
 import org.wildfly.extension.mcp.api.Responder;
@@ -52,6 +54,7 @@ import org.wildfly.extension.mcp.injection.tool.ArgumentMetadata;
 import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
 import org.wildfly.extension.mcp.injection.tool.MCPTool;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
+import org.wildfly.extension.mcp.injection.elicitation.ElicitationSender;
 import org.wildfly.security.manager.WildFlySecurityManager;
 
 public class ToolMessageHandler {
@@ -60,43 +63,47 @@ public class ToolMessageHandler {
     private final WildFlyMCPRegistry registry;
     private final ObjectMapper mapper;
     private final ClassLoader classLoader;
-    private ManagedExecutorService executorService;
+    private final ExecutorService executorService;
+    private final int pageSize;
 
-    ToolMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader) {
+    ToolMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader, ExecutorService executorService) {
+        this(registry, classLoader, executorService, 0);
+    }
+
+    ToolMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader, ExecutorService executorService, int pageSize) {
         this.schemaGenerator = new SchemaGenerator(
                 new SchemaGeneratorConfigBuilder(SchemaVersion.DRAFT_2020_12, OptionPreset.PLAIN_JSON).build());
         this.registry = registry;
         this.mapper = new ObjectMapper();
         this.classLoader = classLoader;
-        InitialContext context = null;
-        try {
-            context = new InitialContext();
-            executorService = (ManagedExecutorService) context.lookup("java:jboss/ee/concurrency/executor/default");
-        } catch (NamingException ex) {
-            MCPLogger.ROOT_LOGGER.error("Error accessing managed executor service ", ex);
-        } finally {
-            if (context != null) {
-                try {
-                    context.close();
-                } catch (NamingException ex) {
-                    MCPLogger.ROOT_LOGGER.debug("Error closing initial context", ex);
-                }
-            }
-        }
+        this.executorService = executorService;
+        this.pageSize = pageSize;
     }
 
     void toolsList(JsonObject message, Responder responder) {
         String id = message.get("id").toString();
-        MCPLogger.ROOT_LOGGER.debugf("List tools [id: %s]", id);
+        JsonObject params = message.getJsonObject("params");
+        String cursorValue = params != null ? params.getString("cursor", null) : null;
+
+        List<MCPFeatureMetadata> sorted = StreamSupport.stream(registry.listTools().spliterator(), false)
+                .sorted(Comparator.comparing(MCPFeatureMetadata::name))
+                .toList();
+        List<MCPFeatureMetadata> page = applyPage(sorted, cursorValue);
+        String nextCursor = nextCursor(sorted, page);
+
+        MCPLogger.ROOT_LOGGER.debugf("List tools [id: %s, cursor: %s, pageSize: %d]", id, cursorValue, pageSize);
 
         JsonArrayBuilder tools = Json.createArrayBuilder();
-        for (MCPFeatureMetadata toolMetadata : registry.listTools()) {
+        for (MCPFeatureMetadata toolMetadata : page) {
             JsonObjectBuilder tool = Json.createObjectBuilder()
                     .add("name", toolMetadata.name())
                     .add("description", toolMetadata.description());
             JsonObjectBuilder properties = Json.createObjectBuilder();
             JsonArrayBuilder required = Json.createArrayBuilder();
             for (ArgumentMetadata a : toolMetadata.arguments()) {
+                if (a.type() instanceof Class<?> clazz && ElicitationSender.class.isAssignableFrom(clazz)) {
+                    continue; // injected by the framework, not a client-supplied argument
+                }
                 properties.add(a.name(), generateSchema(a.type(), a));
                 if (a.required()) {
                     required.add(a.name());
@@ -108,7 +115,39 @@ public class ToolMessageHandler {
                     .add("required", required));
             tools.add(tool);
         }
-        responder.sendResult(id, Json.createObjectBuilder().add("tools", tools));
+        JsonObjectBuilder result = Json.createObjectBuilder().add("tools", tools);
+        if (nextCursor != null) {
+            result.add("nextCursor", nextCursor);
+        }
+        responder.sendResult(id, result);
+    }
+
+    private List<MCPFeatureMetadata> applyPage(List<MCPFeatureMetadata> sorted, String cursorValue) {
+        int start = 0;
+        if (cursorValue != null) {
+            String lastName = Cursor.decode(cursorValue);
+            for (int i = 0; i < sorted.size(); i++) {
+                if (sorted.get(i).name().equals(lastName)) {
+                    start = i + 1;
+                    break;
+                }
+            }
+        }
+        if (pageSize > 0 && start + pageSize < sorted.size()) {
+            return sorted.subList(start, start + pageSize);
+        }
+        return sorted.subList(start, sorted.size());
+    }
+
+    private String nextCursor(List<MCPFeatureMetadata> all, List<MCPFeatureMetadata> page) {
+        if (pageSize > 0 && !page.isEmpty()) {
+            MCPFeatureMetadata last = page.get(page.size() - 1);
+            int lastIndex = all.indexOf(last);
+            if (lastIndex < all.size() - 1) {
+                return Cursor.encode(last.name());
+            }
+        }
+        return null;
     }
 
     private JsonObject generateSchema(Type type, ArgumentMetadata argument) {
@@ -125,7 +164,12 @@ public class ToolMessageHandler {
 
     void toolsCall(JsonObject message, Responder responder, MCPConnection connection) {
         String id = message.get("id").toString();
-        JsonObject params = message.get("params").asJsonObject();
+        JsonValue paramsValue = message.get("params");
+        if (paramsValue == null || paramsValue.getValueType() != JsonValue.ValueType.OBJECT) {
+            responder.sendError(id, INVALID_PARAMS, "Message params must be present");
+            return;
+        }
+        JsonObject params = paramsValue.asJsonObject();
         String toolName = params.getString("name");
         MCPLogger.ROOT_LOGGER.debugf("Call tool %s [id: %s]", toolName, id);
         Map<String, JsonValue> args = new HashMap<>();
@@ -151,13 +195,14 @@ public class ToolMessageHandler {
                         Class<?> clazz = classLoader.loadClass(methodMetadata.declaringClassName());
                         Instance beanInstance = CDI.current().select(clazz, MCPTool.MCPToolLiteral.INSTANCE);
                         Object result = null;
+                        Object[] builtArgs = buildArguments(metadata, args, mapper, connection, responder);
                         if (beanInstance.isResolvable()) {
                             MCPLogger.ROOT_LOGGER.debug("We have found the Singleton instance of the tool" + toolName);
                             try {
-                                if (args.isEmpty()) {
+                                if (builtArgs.length == 0) {
                                     result = registry.getToolInvoker(toolName).invoke(beanInstance.get());
                                 } else {
-                                    ArrayList preparedArguments = new ArrayList(Arrays.asList(prepareArguments(metadata, args, mapper)));
+                                    ArrayList preparedArguments = new ArrayList(Arrays.asList(builtArgs));
                                     preparedArguments.add(0, beanInstance.get());
                                     result = registry.getToolInvoker(toolName).invokeWithArguments(preparedArguments);
                                 }
@@ -169,22 +214,33 @@ public class ToolMessageHandler {
                             MCPLogger.ROOT_LOGGER.warn("We have NOT found the Singleton instance of the tool" + toolName);
                             Method method = clazz.getMethod(methodMetadata.name(), methodMetadata.argumentTypes());
                             if (Modifier.isStatic(method.getModifiers())) {
-                                result = method.invoke(null, prepareArguments(metadata, args, mapper));
+                                result = method.invoke(null, builtArgs);
                             } else {
                                 Constructor defaultConstructor = clazz.getConstructor(new Class[0]);
                                 Object instance = defaultConstructor.newInstance(new Object[0]);
-                                result = method.invoke(instance, prepareArguments(metadata, args, mapper));
+                                result = method.invoke(instance, builtArgs);
                             }
                         }
-                        Collection<? extends Content> content = ContentMapper.processResultAsText(result);
-                        try (StringWriter out = new StringWriter()) {
-                            mapper.writeValue(out, content);
-                            try (StringReader in = new StringReader(out.toString())) {
-                                JsonObjectBuilder builder = Json.createObjectBuilder();
-                                builder.add("content", Json.createReader(in).readArray());
-                                responder.sendResult(id, builder);
+                        Collection<? extends ContentBlock> content = ContentMapper.processResultAsText(result);
+                        JsonArrayBuilder contentArray = Json.createArrayBuilder();
+                        for (var contentBlock : content) {
+                            try (StringWriter out = new StringWriter()) {
+                                mapper.writeValue(out, contentBlock);
+                                try (StringReader in = new StringReader(out.toString())) {
+                                    JsonObject contentJson = Json.createReader(in).readObject();
+                                    JsonObjectBuilder filtered = Json.createObjectBuilder();
+                                    for (String key : contentJson.keySet()) {
+                                        if (!contentJson.isNull(key)) {
+                                            filtered.add(key, contentJson.get(key));
+                                        }
+                                    }
+                                    contentArray.add(filtered);
+                                }
                             }
                         }
+                        JsonObjectBuilder builder = Json.createObjectBuilder();
+                        builder.add("content", contentArray);
+                        responder.sendResult(id, builder);
                     } catch (MCPException e) {
                         MCPLogger.ROOT_LOGGER.error(e);
                         responder.sendError(id, e.getJsonRpcError(), e.getMessage());
@@ -197,6 +253,50 @@ public class ToolMessageHandler {
         } finally {
             WildFlySecurityManager.setCurrentContextClassLoaderPrivileged(prevCL);
         }
+    }
+
+    /**
+     * Like {@link #prepareArguments} but additionally injects framework-managed parameters
+     * such as {@link ElicitationSender} based on the declared argument type.
+     */
+    private Object[] buildArguments(
+            MCPFeatureMetadata metadata,
+            Map<String, JsonValue> jsonArgs,
+            ObjectMapper objectMapper,
+            MCPConnection connection,
+            Responder responder) throws MCPException {
+        if (metadata.arguments().isEmpty()) {
+            return new Object[0];
+        }
+        Object[] ret = new Object[metadata.arguments().size()];
+        int idx = 0;
+        for (ArgumentMetadata arg : metadata.arguments()) {
+            if (arg.type() instanceof Class<?> clazz && ElicitationSender.class.isAssignableFrom(clazz)) {
+                ret[idx] = new ElicitationSenderImpl(
+                        connection.pendingRequests(),
+                        responder,
+                        connection.initializeRequest());
+            } else {
+                JsonValue val = jsonArgs.get(arg.name());
+                if (val == null && arg.required()) {
+                    throw new MCPException("Missing required argument: " + arg.name(), JsonRPC.INVALID_PARAMS);
+                }
+                // Delegate to the existing single-value conversion logic via a one-element map
+                Map<String, JsonValue> singleArg = val != null ? Map.of(arg.name(), val) : Map.of();
+                Object[] single = prepareArguments(
+                        new MCPFeatureMetadata(metadata.kind(), metadata.name(),
+                                new org.wildfly.extension.mcp.injection.tool.MethodMetadata(
+                                        metadata.method().name(), metadata.method().description(),
+                                        metadata.method().uri(), metadata.method().mimeType(),
+                                        List.of(arg),
+                                        metadata.method().declaringClassName(),
+                                        metadata.method().returnType())),
+                        singleArg, objectMapper);
+                ret[idx] = single[0];
+            }
+            idx++;
+        }
+        return ret;
     }
 
     @SuppressWarnings("unchecked")

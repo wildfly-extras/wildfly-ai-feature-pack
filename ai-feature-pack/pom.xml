@@ -35,8 +35,16 @@
             <artifactId>wildfly-ai-subsystem</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>wildfly-mcp-api</artifactId>
+            <groupId>org.mcp-java</groupId>
+            <artifactId>mcp-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mcp-java</groupId>
+            <artifactId>mcp-model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mcp-java</groupId>
+            <artifactId>mcp-server-api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

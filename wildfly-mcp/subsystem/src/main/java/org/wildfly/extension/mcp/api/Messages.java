@@ -46,8 +46,17 @@ public class Messages {
                 .build();
     }
 
+    public static JsonObject newRequest(long id, String method, JsonObjectBuilder params) {
+        return Json.createObjectBuilder()
+                .add("jsonrpc", JsonRPC.VERSION)
+                .add("id", id)
+                .add("method", method)
+                .add("params", params)
+                .build();
+    }
+
     public static boolean isResponse(JsonObject message) {
-        return message.containsKey("result") && message.containsKey("error");
+        return message.containsKey("result") || message.containsKey("error");
     }
 
 }

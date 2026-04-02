@@ -10,7 +10,7 @@ import static org.wildfly.extension.mcp.api.JsonRPC.INVALID_PARAMS;
 import static org.wildfly.extension.mcp.server.ToolMessageHandler.prepareArguments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.enterprise.concurrent.ManagedExecutorService;
+import java.util.concurrent.ExecutorService;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.json.Json;
@@ -28,10 +28,12 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import java.util.stream.StreamSupport;
+import org.wildfly.extension.mcp.api.Cursor;
 import org.wildfly.extension.mcp.api.MCPConnection;
 import org.wildfly.extension.mcp.api.Responder;
 import org.wildfly.extension.mcp.injection.MCPLogger;
@@ -40,8 +42,8 @@ import org.wildfly.extension.mcp.injection.tool.ArgumentMetadata;
 import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
 import org.wildfly.extension.mcp.injection.tool.MCPPrompt;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
-import org.wildfly.mcp.api.ContentMapper;
-import org.wildfly.mcp.api.PromptMessage;
+import org.wildfly.extension.mcp.api.ContentMapper;
+import org.mcp_java.model.prompt.PromptMessage;
 import org.wildfly.security.manager.WildFlySecurityManager;
 
 public class PromptMessageHandler {
@@ -49,35 +51,36 @@ public class PromptMessageHandler {
     private final WildFlyMCPRegistry registry;
     private final ObjectMapper mapper;
     private final ClassLoader classLoader;
-    private ManagedExecutorService executorService;
+    private final ExecutorService executorService;
+    private final int pageSize;
 
-    PromptMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader) {
+    PromptMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader, ExecutorService executorService) {
+        this(registry, classLoader, executorService, 0);
+    }
+
+    PromptMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader, ExecutorService executorService, int pageSize) {
         this.registry = registry;
         this.mapper = new ObjectMapper();
         this.classLoader = classLoader;
-        InitialContext context = null;
-        try {
-            context = new InitialContext();
-            executorService = (ManagedExecutorService) context.lookup("java:jboss/ee/concurrency/executor/default");
-        } catch (NamingException ex) {
-            MCPLogger.ROOT_LOGGER.error("Error accessing managed executor service ", ex);
-        } finally {
-            if (context != null) {
-                try {
-                    context.close();
-                } catch (NamingException ex) {
-                    MCPLogger.ROOT_LOGGER.debug("Error closing initial context", ex);
-                }
-            }
-        }
+        this.executorService = executorService;
+        this.pageSize = pageSize;
     }
 
     void promptsList(JsonObject message, Responder responder) {
         String id = message.get("id").toString();
-        MCPLogger.ROOT_LOGGER.debugf("List tools [id: %s]", id);
+        JsonObject params = message.getJsonObject("params");
+        String cursorValue = params != null ? params.getString("cursor", null) : null;
+
+        List<MCPFeatureMetadata> sorted = StreamSupport.stream(registry.listPrompts().spliterator(), false)
+                .sorted(Comparator.comparing(MCPFeatureMetadata::name))
+                .toList();
+        List<MCPFeatureMetadata> page = applyPage(sorted, cursorValue);
+        String nextCursor = nextCursor(sorted, page);
+
+        MCPLogger.ROOT_LOGGER.debugf("List prompts [id: %s, cursor: %s, pageSize: %d]", id, cursorValue, pageSize);
 
         JsonArrayBuilder prompts = Json.createArrayBuilder();
-        for (MCPFeatureMetadata promptMetadata : registry.listPrompts()) {
+        for (MCPFeatureMetadata promptMetadata : page) {
             JsonObjectBuilder promptJson = Json.createObjectBuilder()
                     .add("name", promptMetadata.name())
                     .add("description", promptMetadata.description());
@@ -93,12 +96,48 @@ public class PromptMessageHandler {
             promptJson.add("arguments", arguments);
             prompts.add(promptJson);
         }
-        responder.sendResult(id, Json.createObjectBuilder().add("prompts", prompts));
+        JsonObjectBuilder result = Json.createObjectBuilder().add("prompts", prompts);
+        if (nextCursor != null) {
+            result.add("nextCursor", nextCursor);
+        }
+        responder.sendResult(id, result);
+    }
+
+    private List<MCPFeatureMetadata> applyPage(List<MCPFeatureMetadata> sorted, String cursorValue) {
+        int start = 0;
+        if (cursorValue != null) {
+            String lastName = Cursor.decode(cursorValue);
+            for (int i = 0; i < sorted.size(); i++) {
+                if (sorted.get(i).name().equals(lastName)) {
+                    start = i + 1;
+                    break;
+                }
+            }
+        }
+        if (pageSize > 0 && start + pageSize < sorted.size()) {
+            return sorted.subList(start, start + pageSize);
+        }
+        return sorted.subList(start, sorted.size());
+    }
+
+    private String nextCursor(List<MCPFeatureMetadata> all, List<MCPFeatureMetadata> page) {
+        if (pageSize > 0 && !page.isEmpty()) {
+            MCPFeatureMetadata last = page.get(page.size() - 1);
+            if (all.indexOf(last) < all.size() - 1) {
+                return Cursor.encode(last.name());
+            }
+        }
+        return null;
     }
 
     void promptsGet(JsonObject message, Responder responder, MCPConnection connection) {
         String id = message.get("id").toString();
-        JsonObject params = message.get("params").asJsonObject();
+        JsonValue paramsValue = message.get("params");
+        if (paramsValue == null || paramsValue.getValueType() != JsonValue.ValueType.OBJECT) {
+            responder.sendError(id, INVALID_PARAMS, "Message params must be present");
+            return;
+        }
+        JsonObject params = paramsValue.asJsonObject();
         String promptName = params.getString("name");
         MCPLogger.ROOT_LOGGER.debugf("Call prompt %s [id: %s]", promptName, id);
         Map<String, JsonValue> args = new HashMap<>();
@@ -150,15 +189,31 @@ public class PromptMessageHandler {
                             }
                         }
                         Collection<? extends PromptMessage> promptMessages = ContentMapper.processResultAsPromptMessage(result);
-                        try (StringWriter out = new StringWriter()) {
-                            mapper.writeValue(out, promptMessages);
-                            try (StringReader in = new StringReader(out.toString())) {
-                                JsonObjectBuilder builder = Json.createObjectBuilder();
-                                builder.add("description", methodMetadata.description());
-                                builder.add("messages", Json.createReader(in).readArray());
-                                responder.sendResult(id, builder);
+                        JsonArrayBuilder messagesArray = Json.createArrayBuilder();
+                        for (PromptMessage promptMessage : promptMessages) {
+                            for (var contentBlock : promptMessage.content()) {
+                                JsonObjectBuilder messageJson = Json.createObjectBuilder();
+                                messageJson.add("role", promptMessage.role().getValue());
+                                try (StringWriter contentOut = new StringWriter()) {
+                                    mapper.writeValue(contentOut, contentBlock);
+                                    try (StringReader contentIn = new StringReader(contentOut.toString())) {
+                                        JsonObject contentJson = Json.createReader(contentIn).readObject();
+                                        JsonObjectBuilder filteredContent = Json.createObjectBuilder();
+                                        for (String key : contentJson.keySet()) {
+                                            if (!contentJson.isNull(key)) {
+                                                filteredContent.add(key, contentJson.get(key));
+                                            }
+                                        }
+                                        messageJson.add("content", filteredContent);
+                                    }
+                                }
+                                messagesArray.add(messageJson);
                             }
                         }
+                        JsonObjectBuilder builder = Json.createObjectBuilder();
+                        builder.add("description", methodMetadata.description());
+                        builder.add("messages", messagesArray);
+                        responder.sendResult(id, builder);
                     } catch (MCPException e) {
                         MCPLogger.ROOT_LOGGER.error(e);
                         responder.sendError(id, e.getJsonRpcError(), e.getMessage());

@@ -28,6 +28,7 @@ public class ServerSentEventResponder implements Responder, MCPConnection {
     private int lastEventId = -1;
     private final AtomicReference<Status> status;
     private final AtomicReference<InitializeRequest> initializeRequest;
+    private final PendingRequestRegistry pendingRequestRegistry = new PendingRequestRegistry();
     private Future future;
 
     ServerSentEventResponder(ServerSentEventConnection connection, String id) {
@@ -118,6 +119,16 @@ public class ServerSentEventResponder implements Responder, MCPConnection {
             task.cancel(true);
         }
 
+    }
+
+    @Override
+    public PendingRequestRegistry pendingRequests() {
+        return pendingRequestRegistry;
+    }
+
+    @Override
+    public InitializeRequest initializeRequest() {
+        return initializeRequest.get();
     }
 
     @Override
