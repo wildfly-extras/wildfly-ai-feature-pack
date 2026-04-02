@@ -22,6 +22,7 @@ import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.JandexReflection;
 import org.jboss.jandex.MethodInfo;
+import org.jboss.jandex.MethodParameterInfo;
 import org.jboss.modules.ModuleLoader;
 import org.wildfly.extension.mcp.Capabilities;
 import org.wildfly.extension.mcp.MCPLogger;
@@ -29,6 +30,7 @@ import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
 import org.wildfly.extension.mcp.injection.tool.ArgumentMetadata;
 import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
 import org.wildfly.extension.mcp.injection.tool.MethodMetadata;
+import org.wildfly.extension.mcp.injection.elicitation.ElicitationSender;
 import org.mcp_java.annotations.tools.Tool;
 import org.mcp_java.annotations.tools.ToolArg;
 import org.mcp_java.annotations.prompts.Prompt;
@@ -98,6 +100,8 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
         }
     }
 
+    private static final DotName ELICITATION_SENDER = DotName.createSimple(ElicitationSender.class);
+
     private void processTools(WildFlyMCPRegistry registry, List<AnnotationInstance> annotations) {
         if (annotations == null || annotations.isEmpty()) {
             return;
@@ -107,7 +111,26 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
             String name = annotation.value("name") != null ? annotation.value("name").asString() : annotation.target().asMethod().name();
             String description = annotation.value("description") != null ? annotation.value("description").asString() : "";
             MethodInfo info = annotation.target().asMethod();
-            List<ArgumentMetadata> arguments = buildArguments(info, toolArg);
+            List<ArgumentMetadata> arguments = new ArrayList<>();
+            // Iterate all parameters in declaration order so the MethodHandle signature matches exactly.
+            // @ToolArg-annotated parameters become client-supplied arguments; ElicitationSender parameters
+            // are included with their type so prepareTool() can build the correct MethodHandle, but they
+            // are filtered out of the input schema in ToolMessageHandler.
+            for (MethodParameterInfo param : info.parameters()) {
+                DotName paramTypeName = param.type().name();
+                if (ELICITATION_SENDER.equals(paramTypeName)) {
+                    arguments.add(new ArgumentMetadata(param.name(), "", false, ElicitationSender.class));
+                } else {
+                    AnnotationInstance toolArgAnnotation = param.annotation(toolArg);
+                    if (toolArgAnnotation != null) {
+                        String paramName = toolArgAnnotation.value("name") != null ? toolArgAnnotation.value("name").asString() : param.name();
+                        boolean required = toolArgAnnotation.value("required") == null ? true : toolArgAnnotation.value("required").asBoolean();
+                        String paramDescription = toolArgAnnotation.value("description") != null ? toolArgAnnotation.value("description").asString() : "";
+                        Type type = JandexReflection.loadType(param.type());
+                        arguments.add(new ArgumentMetadata(paramName, paramDescription, required, type));
+                    }
+                }
+            }
             MCPLogger.ROOT_LOGGER.debug("Tool detected on class " + info.declaringClass() + " with method " + info.name() + " with the following annotated parameters " + arguments);
             MCPFeatureMetadata metadata = new MCPFeatureMetadata(MCPFeatureMetadata.Kind.TOOL,
                     name,

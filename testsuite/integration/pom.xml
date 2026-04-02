@@ -155,6 +155,22 @@
     </dependencies>
 
     <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>provisioning.xml</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>provisioning.xml</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
         <plugins>
             <!-- WildFly Maven Plugin -->
             <plugin>
@@ -169,7 +185,7 @@
                             <goal>provision</goal>
                         </goals>
                         <configuration>
-                            <provisioning-file>${project.basedir}/src/test/resources/provisioning.xml</provisioning-file>
+                            <provisioning-file>${project.build.testOutputDirectory}/provisioning.xml</provisioning-file>
                             <extraServerContentDirs>extra-content</extraServerContentDirs>
                             <galleon-options>
                                 <jboss-fork-embedded>true</jboss-fork-embedded>

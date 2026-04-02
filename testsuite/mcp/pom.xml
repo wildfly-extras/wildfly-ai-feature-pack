@@ -110,9 +110,32 @@
             <artifactId>mcp-model</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <!-- WildFly MCP injection API (ElicitationSender, schema types, etc.) -->
+        <dependency>
+            <groupId>org.wildfly.generative-ai</groupId>
+            <artifactId>wildfly-mcp-injection</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>provisioning.xml</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>provisioning.xml</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
         <plugins>
             <!-- WildFly Maven Plugin - provision server with MCP support -->
             <plugin>
@@ -127,7 +150,7 @@
                             <goal>provision</goal>
                         </goals>
                         <configuration>
-                            <provisioning-file>${project.basedir}/src/test/resources/provisioning.xml</provisioning-file>
+                            <provisioning-file>${project.build.testOutputDirectory}/provisioning.xml</provisioning-file>
                             <stability-level>experimental</stability-level>
                             <galleon-options>
                                 <jboss-fork-embedded>true</jboss-fork-embedded>

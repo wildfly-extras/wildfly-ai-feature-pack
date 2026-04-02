@@ -18,7 +18,7 @@ public class WildFlyMCPRegistry {
 
     /**
      * Recommended pattern for tool names as defined in the MCP spec.
-     * Tool names should only contain ASCII letters, digits, underscore, hyphen, and dot,
+     * Tool names MUST only contain ASCII letters, digits, underscore, hyphen, and dot,
      * and be between 1 and 128 characters in length.
      */
     public static final Pattern TOOL_NAME_PATTERN = Pattern.compile("^[A-Za-z0-9_.\\-]{1,128}$");

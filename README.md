@@ -209,6 +209,7 @@ The feature pack can act as an MCP client with support for multiple transports:
 
 The feature pack also supports exposing your Jakarta EE application as an MCP Server using the `mcp-server` Galleon layer.
 What you need to do in that case is to use the `org.mcp-java:mcp-annotations` artifact as a provided dependency and annotate the code you want to expose with the annotations provided by the API.
+For more informations about `org.mcp-java:mcp-annotations` you can check [mcp_java](https://github.com/mcp-java/java-mcp-annotations).
 
 You may want to take a look at [wildfly-weather](https://github.com/ehsavoie/wildfly-weather) example.
 

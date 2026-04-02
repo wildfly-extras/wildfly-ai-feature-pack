@@ -5,6 +5,7 @@
 package org.wildfly.extension.mcp.api;
 import java.io.Closeable;
 import java.util.concurrent.Future;
+import org.wildfly.extension.mcp.server.PendingRequestRegistry;
 
 public interface MCPConnection extends Closeable {
 
@@ -29,4 +30,8 @@ public interface MCPConnection extends Closeable {
     void task(Future future);
 
     void cancel();
+
+    PendingRequestRegistry pendingRequests();
+
+    InitializeRequest initializeRequest();
 }

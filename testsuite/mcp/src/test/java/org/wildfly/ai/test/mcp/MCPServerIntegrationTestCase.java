@@ -68,6 +68,7 @@ public class MCPServerIntegrationTestCase {
                 .addClass(TestMCPTool.class)
                 .addClass(TestMCPPrompt.class)
                 .addClass(TestMCPResource.class)
+                .addClass(TestMCPElicitationTool.class)
                 .addAsLibraries(new File("target/test-libs/assertj-core-3.26.3.jar"))
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         return archive;
@@ -79,9 +80,9 @@ public class MCPServerIntegrationTestCase {
         sseResponses = new LinkedBlockingQueue<>();
 
         String initMessage = """
-                {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","clientInfo":{"name":"test-client","version":"1.0.0"},"capabilities":{}}}""";
+                {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","clientInfo":{"name":"test-client","version":"1.0.0"},"capabilities":{"elicitation":{}}}}""";
 
-        URL streamUrl = new URL(deploymentUrl, "stream");
+        URL streamUrl = deploymentUrl.toURI().resolve("stream").toURL();
         sseConnection = (HttpURLConnection) streamUrl.openConnection();
         sseConnection.setRequestMethod("POST");
         sseConnection.setRequestProperty("Content-Type", "application/json");
@@ -545,6 +546,126 @@ public class MCPServerIntegrationTestCase {
         String response = sseResponses.poll(10, TimeUnit.SECONDS);
         assertThat(response).as("Should receive logging response").isNotNull();
         assertThat(response).as("Should contain result").contains("\"result\"");
+    }
+
+    @Test
+    @Order(14)
+    public void testElicitationToolListedWithoutSenderParam() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        String toolsListMessage = """
+                {"jsonrpc":"2.0","id":20,"method":"tools/list"}""";
+
+        postToStreamable(toolsListMessage);
+        String response = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(response).as("Should receive tools list response").isNotNull();
+        assertThat(response).as("Should list the greet-with-name tool").contains("greet-with-name");
+        // ElicitationSender must NOT appear as a client-supplied input parameter
+        assertThat(response).as("ElicitationSender must not appear in inputSchema").doesNotContain("ElicitationSender");
+        assertThat(response).as("greet-with-name should have empty required array").isNotEmpty();
+    }
+
+    @Test
+    @Order(15)
+    public void testElicitationAcceptRoundTrip() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        // Call the elicitation tool — it will block the tool thread waiting for our response
+        String toolCallMessage = """
+                {"jsonrpc":"2.0","id":21,"method":"tools/call","params":{"name":"greet-with-name","arguments":{}}}""";
+
+        postToStreamable(toolCallMessage);
+
+        // The server should now send an elicitation/create request over the SSE stream
+        String elicitationJson = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(elicitationJson).as("Should receive elicitation/create request").isNotNull();
+        assertThat(elicitationJson).as("Should be an elicitation/create request").contains("elicitation/create");
+        assertThat(elicitationJson).as("Should contain the prompt message").contains("What is your name?");
+        assertThat(elicitationJson).as("Should contain requestedSchema").contains("requestedSchema");
+
+        // Parse the request id so we can respond to it
+        JsonObject elicitationMessage = Json.createReader(new StringReader(elicitationJson)).readObject();
+        long elicitationId = elicitationMessage.getJsonNumber("id").longValue();
+
+        // Simulate client accepting with the user's name
+        String clientResponse = """
+                {"jsonrpc":"2.0","id":%d,"result":{"action":"accept","content":{"name":"WildFly"}}}"""
+                .formatted(elicitationId);
+        int statusCode = postToStreamable(clientResponse);
+        assertThat(statusCode).as("Client response POST should succeed").isEqualTo(200);
+
+        // Now the tool should complete and send the tool result
+        String toolResult = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(toolResult).as("Should receive tool result after elicitation").isNotNull();
+
+        JsonObject resultJson = Json.createReader(new StringReader(toolResult)).readObject();
+        assertThat(resultJson.containsKey("result")).as("Should contain result").isTrue();
+
+        JsonArray content = resultJson.getJsonObject("result").getJsonArray("content");
+        assertThat(content).as("Should contain content array").isNotNull();
+        assertThat(content.getJsonObject(0).getString("text")).as("Should greet by name").contains("Hello, WildFly!");
+    }
+
+    @Test
+    @Order(16)
+    public void testElicitationDeclineRoundTrip() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        String toolCallMessage = """
+                {"jsonrpc":"2.0","id":22,"method":"tools/call","params":{"name":"greet-with-name","arguments":{}}}""";
+
+        postToStreamable(toolCallMessage);
+
+        String elicitationJson = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(elicitationJson).as("Should receive elicitation/create request").isNotNull();
+        assertThat(elicitationJson).as("Should be elicitation/create").contains("elicitation/create");
+
+        JsonObject elicitationMessage = Json.createReader(new StringReader(elicitationJson)).readObject();
+        long elicitationId = elicitationMessage.getJsonNumber("id").longValue();
+
+        // Client declines
+        String clientResponse = """
+                {"jsonrpc":"2.0","id":%d,"result":{"action":"decline"}}"""
+                .formatted(elicitationId);
+        postToStreamable(clientResponse);
+
+        String toolResult = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(toolResult).as("Should receive tool result after decline").isNotNull();
+
+        JsonObject resultJson = Json.createReader(new StringReader(toolResult)).readObject();
+        JsonArray content = resultJson.getJsonObject("result").getJsonArray("content");
+        assertThat(content.getJsonObject(0).getString("text")).as("Should indicate declined").contains("declined");
+    }
+
+    @Test
+    @Order(17)
+    public void testElicitationWithRegularArgsAndConfirmation() throws Exception {
+        assertThat(sessionId).as("Session must be initialized first").isNotNull();
+
+        String toolCallMessage = """
+                {"jsonrpc":"2.0","id":23,"method":"tools/call","params":{"name":"add-with-confirmation","arguments":{"a":"5","b":"3"}}}""";
+
+        postToStreamable(toolCallMessage);
+
+        String elicitationJson = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(elicitationJson).as("Should receive elicitation/create request").isNotNull();
+        assertThat(elicitationJson).as("Should ask for confirmation").contains("Confirm");
+
+        JsonObject elicitationMessage = Json.createReader(new StringReader(elicitationJson)).readObject();
+        long elicitationId = elicitationMessage.getJsonNumber("id").longValue();
+
+        // Client confirms
+        String clientResponse = """
+                {"jsonrpc":"2.0","id":%d,"result":{"action":"accept","content":{"confirm":true}}}"""
+                .formatted(elicitationId);
+        postToStreamable(clientResponse);
+
+        String toolResult = sseResponses.poll(10, TimeUnit.SECONDS);
+        assertThat(toolResult).as("Should receive tool result").isNotNull();
+
+        JsonObject resultJson = Json.createReader(new StringReader(toolResult)).readObject();
+        JsonArray content = resultJson.getJsonObject("result").getJsonArray("content");
+        assertThat(content.getJsonObject(0).getString("text")).as("Should contain sum result").contains("8");
     }
 
     /**

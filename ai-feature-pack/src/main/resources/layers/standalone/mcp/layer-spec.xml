@@ -4,13 +4,6 @@
   ~ SPDX-License-Identifier: Apache-2.0
   -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="mcp">
-    <props>
-        <prop name="org.wildfly.category" value="Model Context Protocol"/>
-        <prop name="org.wildfly.description" value="Support for MCP subsystem"/>
-        <prop name="org.wildfly.stability" value="experimental"/>
-        <prop name="org.wildfly.rule.class" value="org.mcp_java.*"/>
-        <prop name="org.wildfly.rule.annotations" value="org.mcp_java.annotations.*"/>
-    </props>
     <dependencies>
         <layer name="ee-concurrency"/>
     </dependencies>
