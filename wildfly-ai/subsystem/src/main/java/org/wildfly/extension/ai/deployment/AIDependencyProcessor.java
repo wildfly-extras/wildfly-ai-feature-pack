@@ -11,10 +11,13 @@ import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAP
 
 import dev.langchain4j.cdi.spi.RegisterAIService;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.store.embedding.EmbeddingStore;
 import jakarta.inject.Named;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.jboss.as.server.deployment.AttachmentList;
 import org.jboss.as.server.deployment.Attachments;
 import org.jboss.as.server.deployment.DeploymentPhaseContext;
 import org.jboss.as.server.deployment.DeploymentUnit;
@@ -129,8 +132,104 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
     };
 
     private static final DotName CHAT_MEMORY_PROVIDER_DOT_NAME = DotName.createSimple(ChatMemoryProvider.class);
+    private static final DotName CONTENT_RETRIEVER_DOT_NAME = DotName.createSimple(ContentRetriever.class);
+    private static final DotName EMBEDDING_STORE_DOT_NAME = DotName.createSimple(EmbeddingStore.class);
     private static final DotName NAMED_DOT_NAME = DotName.createSimple(Named.class);
     private static final DotName REGISTER_AI_SERVICE_DOT_NAME = DotName.createSimple(RegisterAIService.class);
+
+    /**
+     * Service type metadata for reducing code duplication.
+     * Provides record-like accessors for encapsulated properties.
+     */
+    private enum ServiceType {
+        CHAT_MODEL("ChatModel",
+                dev.langchain4j.model.chat.ChatModel.class,
+                AIAttachments.CHAT_MODEL_KEYS,
+                AIAttachments.CHAT_MODELS,
+                CHAT_MODEL_PROVIDER_CAPABILITY,
+                null),
+        STREAMING_CHAT_MODEL("StreamingChatModel",
+                dev.langchain4j.model.chat.StreamingChatModel.class,
+                AIAttachments.CHAT_MODEL_KEYS,
+                AIAttachments.CHAT_MODELS,
+                CHAT_MODEL_PROVIDER_CAPABILITY,
+                null),
+        EMBEDDING_MODEL("EmbeddingModel",
+                dev.langchain4j.model.embedding.EmbeddingModel.class,
+                AIAttachments.EMBEDDING_MODEL_KEYS,
+                AIAttachments.EMBEDDING_MODELS,
+                EMBEDDING_MODEL_PROVIDER_CAPABILITY,
+                null),
+        EMBEDDING_STORE("EmbeddingStore",
+                dev.langchain4j.store.embedding.EmbeddingStore.class,
+                AIAttachments.EMBEDDING_STORE_KEYS,
+                AIAttachments.EMBEDDING_STORES,
+                EMBEDDING_STORE_PROVIDER_CAPABILITY,
+                EMBEDDING_STORE_DOT_NAME),
+        CONTENT_RETRIEVER("ContentRetriever",
+                dev.langchain4j.rag.content.retriever.ContentRetriever.class,
+                AIAttachments.CONTENT_RETRIEVER_KEYS,
+                AIAttachments.CONTENT_RETRIEVERS,
+                Capabilities.CONTENT_RETRIEVER_PROVIDER_CAPABILITY,
+                CONTENT_RETRIEVER_DOT_NAME),
+        TOOL_PROVIDER("ToolProvider",
+                dev.langchain4j.service.tool.ToolProvider.class,
+                AIAttachments.TOOL_PROVIDER_KEYS,
+                AIAttachments.TOOL_PROVIDERS,
+                Capabilities.TOOL_PROVIDER_CAPABILITY,
+                null),
+        CHAT_MEMORY_PROVIDER("ChatMemoryProvider",
+                dev.langchain4j.memory.chat.ChatMemoryProvider.class,
+                AIAttachments.CHAT_MEMORY_PROVIDER_KEYS,
+                AIAttachments.CHAT_MEMORY_PROVIDERS,
+                Capabilities.CHAT_MEMORY_PROVIDER_CAPABILITY,
+                CHAT_MEMORY_PROVIDER_DOT_NAME);
+
+        private final String serviceName;
+        private final Class<?> serviceClass;
+        private final org.jboss.as.server.deployment.AttachmentKey<AttachmentList<String>> keysAttachment;
+        private final org.jboss.as.server.deployment.AttachmentKey<?> serviceAttachment;
+        private final org.jboss.as.controller.capability.RuntimeCapability<?> capability;
+        private final DotName interfaceName;
+
+        ServiceType(String serviceName, Class<?> serviceClass,
+                org.jboss.as.server.deployment.AttachmentKey<AttachmentList<String>> keysAttachment,
+                org.jboss.as.server.deployment.AttachmentKey<?> serviceAttachment,
+                org.jboss.as.controller.capability.RuntimeCapability<?> capability,
+                DotName interfaceName) {
+            this.serviceName = serviceName;
+            this.serviceClass = serviceClass;
+            this.keysAttachment = keysAttachment;
+            this.serviceAttachment = serviceAttachment;
+            this.capability = capability;
+            this.interfaceName = interfaceName;
+        }
+
+        public String serviceName() {
+            return serviceName;
+        }
+
+        public Class<?> serviceClass() {
+            return serviceClass;
+        }
+
+        public org.jboss.as.server.deployment.AttachmentKey<AttachmentList<String>> keysAttachment() {
+            return keysAttachment;
+        }
+
+        public org.jboss.as.server.deployment.AttachmentKey<?> serviceAttachment() {
+            return serviceAttachment;
+        }
+
+        public org.jboss.as.controller.capability.RuntimeCapability<?> capability() {
+            return capability;
+        }
+
+        public DotName interfaceName() {
+            return interfaceName;
+        }
+    }
+
     /**
      * Processes a deployment to add AI module dependencies and discover required services.
      *
@@ -170,149 +269,37 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         if ((annotations == null || annotations.isEmpty()) && (serviceAnnotations == null || serviceAnnotations.isEmpty())) {
             return;
         }
-        Set<String> requiredChatModels = new HashSet<>();
-        Set<String> requiredEmbeddingModels = new HashSet<>();
-        Set<String> requiredEmbeddingStores = new HashSet<>();
-        Set<String> requiredContentRetrievers = new HashSet<>();
-        Set<String> requiredToolProviders = new HashSet<>();
-        Set<String> requiredChatMemoryProviders = new HashSet<>();
-        for (AnnotationInstance annotation : serviceAnnotations) {
-            String chatLanguageModelName = getAnnotationValue(annotation, "chatModelName");
-            if (!chatLanguageModelName.isBlank()) {
-                ROOT_LOGGER.debugf("We need the ChatModel in the class %s", annotation.target());
-                ROOT_LOGGER.debugf("We need the ChatModel called %s", chatLanguageModelName);
-                requiredChatModels.add(chatLanguageModelName);
-            }
-            chatLanguageModelName = getAnnotationValue(annotation, "chatLanguageModelName");
-            if (!chatLanguageModelName.isBlank()) {
-                ROOT_LOGGER.debugf("We need the ChatModel in the class %s", annotation.target());
-                ROOT_LOGGER.debugf("We need the ChatModel called %s", chatLanguageModelName);
-                requiredChatModels.add(chatLanguageModelName);
-            }
-            chatLanguageModelName = getAnnotationValue(annotation, "streamingChatModelName");
-            if (!chatLanguageModelName.isBlank()) {
-                ROOT_LOGGER.debugf("We need the StreamingChatModel in the class %s", annotation.target());
-                ROOT_LOGGER.debugf("We need the StreamingChatModel called %s", chatLanguageModelName);
-                requiredChatModels.add(chatLanguageModelName);
-            }
-            chatLanguageModelName = getAnnotationValue(annotation, "streamingChatLanguageModelName");
-            if (!chatLanguageModelName.isBlank()) {
-                ROOT_LOGGER.debugf("We need the StreamingChatModel in the class %s", annotation.target());
-                ROOT_LOGGER.debugf("We need the StreamingChatModel called %s", chatLanguageModelName);
-                requiredChatModels.add(chatLanguageModelName);
-            }
-            String contentRetrieverName = getAnnotationValue(annotation, "contentRetrieverName");
-            if (!contentRetrieverName.isBlank()) {
-                ROOT_LOGGER.debugf("We need the ContentRetriever in the class %s", annotation.target());
-                ROOT_LOGGER.debugf("We need the ContentRetriever called %s", contentRetrieverName);
-                requiredContentRetrievers.add(contentRetrieverName);
-            }
-            String toolProviderName = getAnnotationValue(annotation, "toolProviderName");
-            if (!toolProviderName.isBlank()) {
-                ROOT_LOGGER.debugf("We need the ToolProvider in the class %s", annotation.target());
-                ROOT_LOGGER.debugf("We need the ToolProvider called %s", toolProviderName);
-                requiredToolProviders.add(toolProviderName);
-            }
-            String chatMemoryProviderName = getAnnotationValue(annotation, "chatMemoryProviderName");
-            if (!chatMemoryProviderName.isBlank()) {
-                ROOT_LOGGER.debugf("We need the chatMemoryProvider in the class %s", annotation.target());
-                ROOT_LOGGER.debugf("We need the ChatMemoryProvider called %s", chatMemoryProviderName);
-                requiredChatMemoryProviders.add(chatMemoryProviderName);
-            }
+        // Use map to store required services by type
+        java.util.Map<ServiceType, Set<String>> requiredServices = new java.util.EnumMap<>(ServiceType.class);
+        for (ServiceType type : ServiceType.values()) {
+            requiredServices.put(type, new HashSet<>());
         }
+
+        // Process @RegisterAIService annotations
+        for (AnnotationInstance annotation : serviceAnnotations) {
+            processAnnotationValue(annotation, "chatModelName", ServiceType.CHAT_MODEL, requiredServices);
+            processAnnotationValue(annotation, "chatLanguageModelName", ServiceType.CHAT_MODEL, requiredServices);
+            processAnnotationValue(annotation, "streamingChatModelName", ServiceType.STREAMING_CHAT_MODEL, requiredServices);
+            processAnnotationValue(annotation, "streamingChatLanguageModelName", ServiceType.STREAMING_CHAT_MODEL, requiredServices);
+            processAnnotationValue(annotation, "contentRetrieverName", ServiceType.CONTENT_RETRIEVER, requiredServices);
+            processAnnotationValue(annotation, "toolProviderName", ServiceType.TOOL_PROVIDER, requiredServices);
+            processAnnotationValue(annotation, "chatMemoryProviderName", ServiceType.CHAT_MEMORY_PROVIDER, requiredServices);
+        }
+
+        // Process @Named annotations
         for (AnnotationInstance annotation : annotations) {
             if (annotation.target().kind() == AnnotationTarget.Kind.FIELD) {
-                FieldInfo field = annotation.target().asField();
-                if (field.type().kind() == Type.Kind.CLASS) {
-                    String className = field.type().asClassType().name().toString();
-                    try {
-                        Class fieldClass = Class.forName(className);
-                        if (dev.langchain4j.model.chat.ChatModel.class.isAssignableFrom(fieldClass) || dev.langchain4j.model.chat.StreamingChatModel.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.debugf("We need the ChatModel in the class %s", field.declaringClass());
-                            String chatLanguageModelName = annotation.value().asString();
-                            ROOT_LOGGER.debugf("We need the ChatModel called %s", chatLanguageModelName);
-                            requiredChatModels.add(chatLanguageModelName);
-                        } else if (dev.langchain4j.model.embedding.EmbeddingModel.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.debugf("We need the EmbeddingModel in the class %s", field.declaringClass());
-                            String embeddingModelName = annotation.value().asString();
-                            ROOT_LOGGER.debugf("We need the EmbeddingModel called %s", embeddingModelName);
-                            requiredEmbeddingModels.add(embeddingModelName);
-                        } else if (dev.langchain4j.store.embedding.EmbeddingStore.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.debugf("We need the EmbeddingStore in the class %s", field.declaringClass());
-                            String embeddingStoreName = annotation.value().asString();
-                            ROOT_LOGGER.debugf("We need the EmbeddingStore called %s", embeddingStoreName);
-                            requiredEmbeddingStores.add(embeddingStoreName);
-                        } else if (dev.langchain4j.rag.content.retriever.ContentRetriever.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.debugf("We need the ContentRetriever in the class %s", field.declaringClass());
-                            String contentRetrieverName = annotation.value().asString();
-                            ROOT_LOGGER.debugf("We need the ContentRetriever called %s", contentRetrieverName);
-                            requiredContentRetrievers.add(contentRetrieverName);
-                        } else if (dev.langchain4j.service.tool.ToolProvider.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.debugf("We need the ToolProvider in the class %s", field.declaringClass());
-                            String toolProviderName = annotation.value().asString();
-                            ROOT_LOGGER.debugf("We need the ToolProvider called %s", toolProviderName);
-                            requiredToolProviders.add(toolProviderName);
-                        } else if (dev.langchain4j.memory.chat.ChatMemoryProvider.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.debugf("We need the ChatMemoryProvider in the class %s", field.declaringClass());
-                            String chatMemoryProviderName = annotation.value().asString();
-                            ROOT_LOGGER.warnf("We need the ChatMemory called %s", chatMemoryProviderName);
-                            requiredChatMemoryProviders.add(chatMemoryProviderName);
-                        }
-                    } catch (ClassNotFoundException ex) {
-                        ROOT_LOGGER.errorf(ex, "Couldn't get the class type for %s to be able to check what to inject", className);
-                    }
-                }
+                processFieldInjection(annotation, requiredServices);
             } else if (annotation.target().kind() == AnnotationTarget.Kind.CLASS) {
-                ClassInfo classInfo = annotation.target().asClass();
-                if (classInfo.interfaceNames().contains(CHAT_MEMORY_PROVIDER_DOT_NAME)) {
-                    String chatMemoryProviderName = annotation.value().asString();
-                    requiredChatMemoryProviders.remove(annotation.value().asString());
-                    ROOT_LOGGER.debugf("The ChatMemory called %s is provided via CDI", chatMemoryProviderName);
-                }
+                processCDIProvidedService(annotation, requiredServices);
             }
         }
-        if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty()) {
-            if (!requiredChatModels.isEmpty()) {
-                for (String chatLanguageModelName : requiredChatModels) {
-                    deploymentUnit.addToAttachmentList(AIAttachments.CHAT_MODEL_KEYS, chatLanguageModelName);
-                    deploymentPhaseContext.addDeploymentDependency(CHAT_MODEL_PROVIDER_CAPABILITY.getCapabilityServiceName(chatLanguageModelName), AIAttachments.CHAT_MODELS);
-                }
-            }
-            if (!requiredEmbeddingModels.isEmpty()) {
-                for (String embeddingModelName : requiredEmbeddingModels) {
-                    deploymentUnit.addToAttachmentList(AIAttachments.EMBEDDING_MODEL_KEYS, embeddingModelName);
-                    deploymentPhaseContext.addDeploymentDependency(EMBEDDING_MODEL_PROVIDER_CAPABILITY.getCapabilityServiceName(embeddingModelName), AIAttachments.EMBEDDING_MODELS);
-                }
-            }
-            if (!requiredEmbeddingStores.isEmpty()) {
-                for (String embeddingStoreName : requiredEmbeddingStores) {
-                    deploymentUnit.addToAttachmentList(AIAttachments.EMBEDDING_STORE_KEYS, embeddingStoreName);
-                    deploymentPhaseContext.addDeploymentDependency(EMBEDDING_STORE_PROVIDER_CAPABILITY.getCapabilityServiceName(embeddingStoreName), AIAttachments.EMBEDDING_STORES);
-                }
-            }
-            if (!requiredContentRetrievers.isEmpty()) {
-                for (String contentRetrieverName : requiredContentRetrievers) {
-                    deploymentUnit.addToAttachmentList(AIAttachments.CONTENT_RETRIEVER_KEYS, contentRetrieverName);
-                    deploymentPhaseContext.addDeploymentDependency(Capabilities.CONTENT_RETRIEVER_PROVIDER_CAPABILITY.getCapabilityServiceName(contentRetrieverName), AIAttachments.CONTENT_RETRIEVERS);
-                }
-            }
-            if (!requiredContentRetrievers.isEmpty()) {
-                for (String contentRetrieverName : requiredContentRetrievers) {
-                    deploymentUnit.addToAttachmentList(AIAttachments.CONTENT_RETRIEVER_KEYS, contentRetrieverName);
-                    deploymentPhaseContext.addDeploymentDependency(Capabilities.CONTENT_RETRIEVER_PROVIDER_CAPABILITY.getCapabilityServiceName(contentRetrieverName), AIAttachments.CONTENT_RETRIEVERS);
-                }
-            }
-            if (!requiredToolProviders.isEmpty()) {
-                for (String toolProviderName : requiredToolProviders) {
-                    deploymentUnit.addToAttachmentList(AIAttachments.TOOL_PROVIDER_KEYS, toolProviderName);
-                    deploymentPhaseContext.addDeploymentDependency(Capabilities.TOOL_PROVIDER_CAPABILITY.getCapabilityServiceName(toolProviderName), AIAttachments.TOOL_PROVIDERS);
-                }
-            }
-            if (!requiredChatMemoryProviders.isEmpty()) {
-                for (String chatMemoryProviderName : requiredChatMemoryProviders) {
-                    deploymentUnit.addToAttachmentList(AIAttachments.CHAT_MEMORY_PROVIDER_KEYS, chatMemoryProviderName);
-                    deploymentPhaseContext.addDeploymentDependency(Capabilities.CHAT_MEMORY_PROVIDER_CAPABILITY.getCapabilityServiceName(chatMemoryProviderName), AIAttachments.CHAT_MEMORY_PROVIDERS);
-                }
+
+        // Add deployment dependencies for all required services
+        for (ServiceType type : ServiceType.values()) {
+            Set<String> serviceNames = requiredServices.get(type);
+            if (!serviceNames.isEmpty()) {
+                addDeploymentDependencies(deploymentUnit, deploymentPhaseContext, type, serviceNames);
             }
         }
     }
@@ -330,5 +317,92 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
             return "";
         }
         return value.asString();
+    }
+
+    /**
+     * Processes an annotation value and adds it to the required services set if present.
+     *
+     * @param annotation the annotation instance
+     * @param attributeName the annotation attribute name
+     * @param serviceType the service type
+     * @param requiredServices map of required services by type
+     */
+    private void processAnnotationValue(AnnotationInstance annotation, String attributeName,
+            ServiceType serviceType, java.util.Map<ServiceType, Set<String>> requiredServices) {
+        String value = getAnnotationValue(annotation, attributeName);
+        if (!value.isBlank()) {
+            ROOT_LOGGER.debugf("We need the %s in the class %s", serviceType.serviceName(), annotation.target());
+            ROOT_LOGGER.debugf("We need the %s called %s", serviceType.serviceName(), value);
+            requiredServices.get(serviceType).add(value);
+        }
+    }
+
+    /**
+     * Processes a @Named field injection to determine required services.
+     *
+     * @param annotation the @Named annotation
+     * @param requiredServices map of required services by type
+     */
+    private void processFieldInjection(AnnotationInstance annotation, java.util.Map<ServiceType, Set<String>> requiredServices) {
+        FieldInfo field = annotation.target().asField();
+        if (field.type().kind() != Type.Kind.CLASS) {
+            return;
+        }
+
+        String className = field.type().asClassType().name().toString();
+        String serviceName = annotation.value().asString();
+
+        try {
+            Class<?> fieldClass = Class.forName(className);
+
+            for (ServiceType serviceType : ServiceType.values()) {
+                if (serviceType.serviceClass().isAssignableFrom(fieldClass)) {
+                    ROOT_LOGGER.debugf("We need the %s in the class %s", serviceType.serviceName(), field.declaringClass());
+                    ROOT_LOGGER.debugf("We need the %s called %s", serviceType.serviceName(), serviceName);
+                    requiredServices.get(serviceType).add(serviceName);
+                    return; // Found a match, no need to check other types
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            ROOT_LOGGER.errorf(ex, "Couldn't get the class type for %s to be able to check what to inject", className);
+        }
+    }
+
+    /**
+     * Processes CDI-provided services (classes with @Named that implement service interfaces)
+     * and removes them from required subsystem dependencies.
+     *
+     * @param annotation the @Named annotation on a class
+     * @param requiredServices map of required services by type
+     */
+    private void processCDIProvidedService(AnnotationInstance annotation, java.util.Map<ServiceType, Set<String>> requiredServices) {
+        ClassInfo classInfo = annotation.target().asClass();
+        String serviceName = annotation.value().asString();
+
+        for (ServiceType serviceType : ServiceType.values()) {
+            if (serviceType.interfaceName() != null && classInfo.interfaceNames().contains(serviceType.interfaceName())) {
+                requiredServices.get(serviceType).remove(serviceName);
+                ROOT_LOGGER.debugf("The %s called %s is provided via CDI", serviceType.serviceName(), serviceName);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Adds deployment dependencies for a set of required services of a given type.
+     *
+     * @param deploymentUnit the deployment unit
+     * @param deploymentPhaseContext the deployment phase context
+     * @param serviceType the service type
+     * @param serviceNames set of required service names
+     */
+    private void addDeploymentDependencies(DeploymentUnit deploymentUnit,
+            DeploymentPhaseContext deploymentPhaseContext, ServiceType serviceType, Set<String> serviceNames) {
+        for (String serviceName : serviceNames) {
+            deploymentUnit.addToAttachmentList(serviceType.keysAttachment(), serviceName);
+            deploymentPhaseContext.addDeploymentDependency(
+                    serviceType.capability().getCapabilityServiceName(serviceName),
+                    serviceType.serviceAttachment());
+        }
     }
 }
