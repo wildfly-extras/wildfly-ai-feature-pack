@@ -32,7 +32,7 @@ public class MCPPortableExtension implements Extension {
         Map<Class<?>, String> ids = new HashMap<>();
         for (MCPFeatureMetadata tool : registry.listTools()) {
             String className = tool.method().declaringClassName();
-            MCPLogger.ROOT_LOGGER.info("Adding " + className + " to CDI for discovery");
+            MCPLogger.ROOT_LOGGER.infof("Adding %s to CDI for discovery", className);
             try {
                 Class<?> clazz = Class.forName(className, true, deploymentClassLoader);
                 registry.prepareTool(tool.name(), clazz);
@@ -44,7 +44,7 @@ public class MCPPortableExtension implements Extension {
         }
         for (MCPFeatureMetadata prompt : registry.listPrompts()) {
             String className = prompt.method().declaringClassName();
-            MCPLogger.ROOT_LOGGER.info("Adding " + className + " to CDI for discovery");
+            MCPLogger.ROOT_LOGGER.infof("Adding %s to CDI for discovery", className);
             try {
                 Class clazz = Class.forName(className, true, deploymentClassLoader);
                 registry.preparePrompt(prompt.name(), clazz);
@@ -56,7 +56,7 @@ public class MCPPortableExtension implements Extension {
         }
         for (MCPFeatureMetadata resource : registry.listResources()) {
             String className = resource.method().declaringClassName();
-            MCPLogger.ROOT_LOGGER.info("Adding " + className + " to CDI for discovery");
+            MCPLogger.ROOT_LOGGER.infof("Adding %s to CDI for discovery", className);
             try {
                 Class clazz = Class.forName(className, true, deploymentClassLoader);
                 registry.prepareResource(resource.method().uri(), clazz);
@@ -68,7 +68,7 @@ public class MCPPortableExtension implements Extension {
         }
         for (MCPFeatureMetadata resourceTemplate : registry.listResourceTemplates()) {
             String className = resourceTemplate.method().declaringClassName();
-            MCPLogger.ROOT_LOGGER.info("Adding " + className + " to CDI for discovery");
+            MCPLogger.ROOT_LOGGER.infof("Adding %s to CDI for discovery", className);
             try {
                 Class clazz = Class.forName(className, true, deploymentClassLoader);
                 registry.prepareResourceTemplate(resourceTemplate.method().uri(), clazz);
@@ -105,7 +105,7 @@ public class MCPPortableExtension implements Extension {
             for (AnnotationLiteral annotation : bean.getValue()) {
                 config.add(annotation);
             }
-            MCPLogger.ROOT_LOGGER.info(bean.getKey().getName() + " should be discoverable by CDI");
+            MCPLogger.ROOT_LOGGER.infof("%s should be discoverable by CDI", bean.getKey().getName());
         }
     }
 

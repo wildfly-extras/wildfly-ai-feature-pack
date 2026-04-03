@@ -164,7 +164,7 @@ public class PromptMessageHandler {
                         Instance beanInstance = CDI.current().select(clazz, MCPPrompt.MCPPromptLiteral.INSTANCE);
                         Object result = null;
                         if (beanInstance.isResolvable()) {
-                            MCPLogger.ROOT_LOGGER.debug("We have found the Singleton instance of the prompt" + promptName);
+                            MCPLogger.ROOT_LOGGER.debugf("We have found the Singleton instance of the prompt %s", promptName);
                             try {
                                 if (args.isEmpty()) {
                                     result = registry.getPromptInvoker(promptName).invoke(beanInstance.get());
@@ -174,11 +174,11 @@ public class PromptMessageHandler {
                                     result = registry.getPromptInvoker(promptName).invokeWithArguments(preparedArguments);
                                 }
                             } catch (Throwable ex) {
-                                MCPLogger.ROOT_LOGGER.error("Error invoking tool " + promptName, ex);
+                                MCPLogger.ROOT_LOGGER.errorf(ex, "Error invoking tool %s", promptName);
                                 responder.sendError(id, INTERNAL_ERROR, ex.getMessage());
                             }
                         } else {
-                            MCPLogger.ROOT_LOGGER.warn("We have NOT found the Singleton instance of the prompt" + promptName);
+                            MCPLogger.ROOT_LOGGER.warnf("We have NOT found the Singleton instance of the prompt %s", promptName);
                             Method method = clazz.getMethod(methodMetadata.name(), methodMetadata.argumentTypes());
                             if (Modifier.isStatic(method.getModifiers())) {
                                 result = method.invoke(null, prepareArguments(metadata, args, mapper));
@@ -218,7 +218,7 @@ public class PromptMessageHandler {
                         MCPLogger.ROOT_LOGGER.error(e);
                         responder.sendError(id, e.getJsonRpcError(), e.getMessage());
                     } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException | IllegalArgumentException ex) {
-                        MCPLogger.ROOT_LOGGER.error("Error invoking prompt " + promptName, ex);
+                        MCPLogger.ROOT_LOGGER.errorf(ex, "Error invoking prompt %s", promptName);
                         responder.sendError(id, INTERNAL_ERROR, ex.getMessage());
                     }
                 }

@@ -99,7 +99,7 @@ public class WildFlyLLMConfig extends LLMConfig {
                     } else {
                         listeners = Collections.emptyList();
                     }
-                    ROOT_LOGGER.info("Bean " + beanName + " of type " + expectedType + " has been produced");
+                    ROOT_LOGGER.infof("Bean %s of type %s has been produced", beanName, expectedType);
                     if (ChatModel.class.isAssignableFrom(expectedType) && !config.isStreaming()) {
                         return config.createLanguageModel(listeners);
                     }
@@ -110,19 +110,19 @@ public class WildFlyLLMConfig extends LLMConfig {
                 };
             } else if (ContentRetriever.class.isAssignableFrom(expectedType)) {
                 return (Instance<Object> lookup, String beanName, LLMConfig llmConfig) -> {
-                    ROOT_LOGGER.info("Bean " + beanName + " of type " + expectedType + " has been produced");
+                    ROOT_LOGGER.infof("Bean %s of type %s has been produced", beanName, expectedType);
                     WildFlyContentRetrieverConfig config = (WildFlyContentRetrieverConfig) value;
                     return config.createContentRetriever(lookup);
                 };
             } else if (ChatMemoryProvider.class.isAssignableFrom(expectedType)) {
                 return (Instance<Object> lookup, String beanName, LLMConfig llmConfig) -> {
-                    ROOT_LOGGER.info("Bean " + beanName + " of type " + expectedType + " has been produced");
+                    ROOT_LOGGER.infof("Bean %s of type %s has been produced", beanName, expectedType);
                     WildFlyChatMemoryProviderConfig config = (WildFlyChatMemoryProviderConfig) value;
                     return config.createChatMemory(lookup);
                 };
             } else {
                 return (Instance<Object> lookup, String beanName, LLMConfig llmConfig) -> {
-                    ROOT_LOGGER.info("Bean " + beanName + " of type " + expectedType + " has been produced");
+                    ROOT_LOGGER.infof("Bean %s of type %s has been produced", beanName, expectedType);
                     return value;
                 };
             }

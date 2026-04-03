@@ -52,9 +52,9 @@ public class ChatModelConnectionCheckerOperationHandler implements OperationStep
             throw AILogger.ROOT_LOGGER.chatLanguageModelServiceUnavailable(context.getCurrentAddressValue());
         }
         ModelNode answer = executor.execute((WildFlyChatModelConfig chatLanguageModelConfig) -> {
-            AILogger.ROOT_LOGGER.debug("About to execute a chat call to the LLM with the following user message: " + userMessage);
+            AILogger.ROOT_LOGGER.debugf("About to execute a chat call to the LLM with the following user message: %s", userMessage);
             String response = (chatLanguageModelConfig.createLanguageModel(Collections.emptyList())).chat(userMessage);
-            AILogger.ROOT_LOGGER.debug("This is the answer I got: " + response);
+            AILogger.ROOT_LOGGER.debugf("This is the answer I got: %s", response);
             return new ModelNode(response);
         });
         context.getResult().set(answer);

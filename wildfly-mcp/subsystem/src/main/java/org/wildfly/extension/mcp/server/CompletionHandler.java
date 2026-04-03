@@ -93,7 +93,7 @@ public class CompletionHandler {
             }
             sendCompletionResponse(id, result, responder);
         } catch (Throwable ex) {
-            MCPLogger.ROOT_LOGGER.error("Error invoking completion " + metadata.name(), ex);
+            MCPLogger.ROOT_LOGGER.errorf(ex, "Error invoking completion %s", metadata.name());
             responder.sendError(id, INTERNAL_ERROR, ex.getMessage());
         }
     }
