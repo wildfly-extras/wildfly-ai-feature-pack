@@ -10,6 +10,7 @@ import static org.wildfly.extension.ai.Capabilities.EMBEDDING_MODEL_PROVIDER_CAP
 import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAPABILITY;
 
 import dev.langchain4j.cdi.spi.RegisterAIService;
+import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import jakarta.inject.Named;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.jboss.as.server.deployment.module.ModuleSpecification;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
 import org.jboss.jandex.AnnotationValue;
+import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.FieldInfo;
 import org.jboss.jandex.Type;
@@ -35,55 +37,60 @@ import org.wildfly.extension.ai.Capabilities;
 /**
  * Deployment processor for AI module dependencies and service discovery.
  *
- * <p>This processor runs during the {@code DEPENDENCIES} phase of deployment processing
+ * <p>
+ * This processor runs during the {@code DEPENDENCIES} phase of deployment processing
  * and performs two main functions:</p>
  *
  * <h3>1. Module Dependency Management</h3>
- * <p>Automatically adds LangChain4j and AI-related module dependencies to deployments:</p>
+ * <p>
+ * Automatically adds LangChain4j and AI-related module dependencies to deployments:</p>
  * <ul>
- *   <li><b>Exported modules</b> - Always added and re-exported to deployments:
- *     <ul>
- *       <li>{@code dev.langchain4j} - Core LangChain4j API</li>
- *       <li>{@code dev.langchain4j.cdi} - CDI integration</li>
- *       <li>{@code org.wildfly.extension.ai.injection} - WildFly AI injection support</li>
- *     </ul>
- *   </li>
- *   <li><b>Optional modules</b> - Added as optional dependencies (only loaded if needed):
- *     <ul>
- *       <li>{@code dev.langchain4j.chroma} - ChromaDB integration</li>
- *       <li>{@code dev.langchain4j.gemini} - Google Gemini models</li>
- *       <li>{@code dev.langchain4j.github-models} - GitHub Models marketplace</li>
- *       <li>{@code dev.langchain4j.ollama} - Ollama local LLM runtime</li>
- *       <li>{@code dev.langchain4j.openai} - OpenAI GPT models</li>
- *       <li>{@code dev.langchain4j.mcp-client} - Model Context Protocol</li>
- *       <li>{@code dev.langchain4j.mistral-ai} - Mistral AI models</li>
- *       <li>{@code dev.langchain4j.neo4j} - Neo4j graph database</li>
- *       <li>{@code dev.langchain4j.weaviate} - Weaviate vector database</li>
- *       <li>{@code dev.langchain4j.web-search-engines} - Web search integration</li>
- *     </ul>
- *   </li>
+ * <li><b>Exported modules</b> - Always added and re-exported to deployments:
+ * <ul>
+ * <li>{@code dev.langchain4j} - Core LangChain4j API</li>
+ * <li>{@code dev.langchain4j.cdi} - CDI integration</li>
+ * <li>{@code org.wildfly.extension.ai.injection} - WildFly AI injection support</li>
+ * </ul>
+ * </li>
+ * <li><b>Optional modules</b> - Added as optional dependencies (only loaded if needed):
+ * <ul>
+ * <li>{@code dev.langchain4j.chroma} - ChromaDB integration</li>
+ * <li>{@code dev.langchain4j.gemini} - Google Gemini models</li>
+ * <li>{@code dev.langchain4j.github-models} - GitHub Models marketplace</li>
+ * <li>{@code dev.langchain4j.ollama} - Ollama local LLM runtime</li>
+ * <li>{@code dev.langchain4j.openai} - OpenAI GPT models</li>
+ * <li>{@code dev.langchain4j.mcp-client} - Model Context Protocol</li>
+ * <li>{@code dev.langchain4j.mistral-ai} - Mistral AI models</li>
+ * <li>{@code dev.langchain4j.neo4j} - Neo4j graph database</li>
+ * <li>{@code dev.langchain4j.weaviate} - Weaviate vector database</li>
+ * <li>{@code dev.langchain4j.web-search-engines} - Web search integration</li>
+ * </ul>
+ * </li>
  * </ul>
  *
  * <h3>2. AI Service Discovery</h3>
- * <p>Scans deployment classes for AI service usage via annotations:</p>
+ * <p>
+ * Scans deployment classes for AI service usage via annotations:</p>
  * <ul>
- *   <li>{@code @Named} - CDI field injection (e.g., {@code @Inject @Named("ollama") ChatModel model})</li>
- *   <li>{@code @RegisterAIService} - LangChain4j AI service registration</li>
+ * <li>{@code @Named} - CDI field injection (e.g., {@code @Inject @Named("ollama") ChatModel model})</li>
+ * <li>{@code @RegisterAIService} - LangChain4j AI service registration</li>
  * </ul>
  *
- * <p>When AI services are detected, the processor:</p>
+ * <p>
+ * When AI services are detected, the processor:</p>
  * <ol>
- *   <li>Identifies required service types (chat models, embeddings, stores, etc.)</li>
- *   <li>Extracts bean names from annotations</li>
- *   <li>Adds deployment dependencies on corresponding capability services</li>
- *   <li>Attaches service keys to the deployment unit for later processing</li>
+ * <li>Identifies required service types (chat models, embeddings, stores, etc.)</li>
+ * <li>Extracts bean names from annotations</li>
+ * <li>Adds deployment dependencies on corresponding capability services</li>
+ * <li>Attaches service keys to the deployment unit for later processing</li>
  * </ol>
  *
- * <p>This ensures that:</p>
+ * <p>
+ * This ensures that:</p>
  * <ul>
- *   <li>Required AI services are started before the deployment</li>
- *   <li>Service availability is validated at deployment time</li>
- *   <li>Proper dependency injection can occur in {@link AIDeploymentProcessor}</li>
+ * <li>Required AI services are started before the deployment</li>
+ * <li>Service availability is validated at deployment time</li>
+ * <li>Proper dependency injection can occur in {@link AIDeploymentProcessor}</li>
  * </ul>
  *
  * @see AIDeploymentProcessor
@@ -121,17 +128,21 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         "org.wildfly.extension.ai.injection"
     };
 
+    private static final DotName CHAT_MEMORY_PROVIDER_DOT_NAME = DotName.createSimple(ChatMemoryProvider.class);
+    private static final DotName NAMED_DOT_NAME = DotName.createSimple(Named.class);
+    private static final DotName REGISTER_AI_SERVICE_DOT_NAME = DotName.createSimple(RegisterAIService.class);
     /**
      * Processes a deployment to add AI module dependencies and discover required services.
      *
-     * <p>This method performs the following operations:</p>
+     * <p>
+     * This method performs the following operations:</p>
      * <ol>
-     *   <li>Adds core and optional LangChain4j module dependencies</li>
-     *   <li>Scans for {@code @Named} injection points on AI service fields</li>
-     *   <li>Scans for {@code @RegisterAIService} annotations</li>
-     *   <li>Collects required service names for each AI service type</li>
-     *   <li>Adds deployment dependencies on required capability services</li>
-     *   <li>Attaches service keys to deployment unit for {@link AIDeploymentProcessor}</li>
+     * <li>Adds core and optional LangChain4j module dependencies</li>
+     * <li>Scans for {@code @Named} injection points on AI service fields</li>
+     * <li>Scans for {@code @RegisterAIService} annotations</li>
+     * <li>Collects required service names for each AI service type</li>
+     * <li>Adds deployment dependencies on required capability services</li>
+     * <li>Attaches service keys to deployment unit for {@link AIDeploymentProcessor}</li>
      * </ol>
      *
      * @param deploymentPhaseContext the deployment phase context
@@ -154,8 +165,8 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         if (index == null) {
             throw ROOT_LOGGER.unableToResolveAnnotationIndex(deploymentUnit);
         }
-        List<AnnotationInstance> annotations = index.getAnnotations(DotName.createSimple(Named.class));
-        List<AnnotationInstance> serviceAnnotations = index.getAnnotations(DotName.createSimple(RegisterAIService.class));
+        List<AnnotationInstance> annotations = index.getAnnotations(NAMED_DOT_NAME);
+        List<AnnotationInstance> serviceAnnotations = index.getAnnotations(REGISTER_AI_SERVICE_DOT_NAME);
         if ((annotations == null || annotations.isEmpty()) && (serviceAnnotations == null || serviceAnnotations.isEmpty())) {
             return;
         }
@@ -165,91 +176,99 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
         Set<String> requiredContentRetrievers = new HashSet<>();
         Set<String> requiredToolProviders = new HashSet<>();
         Set<String> requiredChatMemoryProviders = new HashSet<>();
-        for (AnnotationInstance annotation : annotations) {
-            if (annotation.target().kind() == AnnotationTarget.Kind.FIELD) {
-                FieldInfo field = annotation.target().asField();
-                if (field.type().kind() == Type.Kind.CLASS) {
-                    try {
-                        Class fieldClass = Class.forName(field.type().asClassType().name().toString());
-                        if (dev.langchain4j.model.chat.ChatModel.class.isAssignableFrom(fieldClass) || dev.langchain4j.model.chat.StreamingChatModel.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.debug("We need the ChatModel in the class " + field.declaringClass());
-                            String chatLanguageModelName = annotation.value().asString();
-                            ROOT_LOGGER.debug("We need the ChatModel called " + chatLanguageModelName);
-                            requiredChatModels.add(chatLanguageModelName);
-                        } else if (dev.langchain4j.model.embedding.EmbeddingModel.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.debug("We need the EmbeddingModel in the class " + field.declaringClass());
-                            String embeddingModelName = annotation.value().asString();
-                            ROOT_LOGGER.debug("We need the EmbeddingModel called " + embeddingModelName);
-                            requiredEmbeddingModels.add(embeddingModelName);
-                        } else if (dev.langchain4j.store.embedding.EmbeddingStore.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.debug("We need the EmbeddingStore in the class " + field.declaringClass());
-                            String embeddingStoreName = annotation.value().asString();
-                            ROOT_LOGGER.debug("We need the EmbeddingStore called " + embeddingStoreName);
-                            requiredEmbeddingStores.add(embeddingStoreName);
-                        } else if (dev.langchain4j.rag.content.retriever.ContentRetriever.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.debug("We need the ContentRetriever in the class " + field.declaringClass());
-                            String contentRetrieverName = annotation.value().asString();
-                            ROOT_LOGGER.debug("We need the ContentRetriever called " + contentRetrieverName);
-                            requiredContentRetrievers.add(contentRetrieverName);
-                        } else if (dev.langchain4j.service.tool.ToolProvider.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.debug("We need the ToolProvider in the class " + field.declaringClass());
-                            String toolProviderName = annotation.value().asString();
-                            ROOT_LOGGER.debug("We need the ToolProvider called " + toolProviderName);
-                            requiredToolProviders.add(toolProviderName);
-                        } else if (dev.langchain4j.memory.chat.ChatMemoryProvider.class.isAssignableFrom(fieldClass)) {
-                            ROOT_LOGGER.debug("We need the ChatMemoryProvider in the class " + field.declaringClass());
-                            String chatMemoryProviderName = annotation.value().asString();
-                            ROOT_LOGGER.debug("We need the ChatMemory called " + chatMemoryProviderName);
-                            requiredChatMemoryProviders.add(chatMemoryProviderName);
-                        }
-                    } catch (ClassNotFoundException ex) {
-                        ROOT_LOGGER.error("Couldn't get the class type for " + field.type().asClassType().name().toString() + " to be able to check what to inject", ex);
-                    }
-                }
-            }
-        }
         for (AnnotationInstance annotation : serviceAnnotations) {
             String chatLanguageModelName = getAnnotationValue(annotation, "chatModelName");
             if (!chatLanguageModelName.isBlank()) {
-                ROOT_LOGGER.debug("We need the ChatModel in the class " + annotation.target());
-                ROOT_LOGGER.debug("We need the ChatModel called " + chatLanguageModelName);
+                ROOT_LOGGER.debugf("We need the ChatModel in the class %s", annotation.target());
+                ROOT_LOGGER.debugf("We need the ChatModel called %s", chatLanguageModelName);
                 requiredChatModels.add(chatLanguageModelName);
             }
             chatLanguageModelName = getAnnotationValue(annotation, "chatLanguageModelName");
             if (!chatLanguageModelName.isBlank()) {
-                ROOT_LOGGER.debug("We need the ChatModel in the class " + annotation.target());
-                ROOT_LOGGER.debug("We need the ChatModel called " + chatLanguageModelName);
+                ROOT_LOGGER.debugf("We need the ChatModel in the class %s", annotation.target());
+                ROOT_LOGGER.debugf("We need the ChatModel called %s", chatLanguageModelName);
                 requiredChatModels.add(chatLanguageModelName);
             }
             chatLanguageModelName = getAnnotationValue(annotation, "streamingChatModelName");
             if (!chatLanguageModelName.isBlank()) {
-                ROOT_LOGGER.debug("We need the StreamingChatModel in the class " + annotation.target());
-                ROOT_LOGGER.debug("We need the StreamingChatModel called " + chatLanguageModelName);
+                ROOT_LOGGER.debugf("We need the StreamingChatModel in the class %s", annotation.target());
+                ROOT_LOGGER.debugf("We need the StreamingChatModel called %s", chatLanguageModelName);
                 requiredChatModels.add(chatLanguageModelName);
             }
             chatLanguageModelName = getAnnotationValue(annotation, "streamingChatLanguageModelName");
             if (!chatLanguageModelName.isBlank()) {
-                ROOT_LOGGER.debug("We need the StreamingChatModel in the class " + annotation.target());
-                ROOT_LOGGER.debug("We need the StreamingChatModel called " + chatLanguageModelName);
+                ROOT_LOGGER.debugf("We need the StreamingChatModel in the class %s", annotation.target());
+                ROOT_LOGGER.debugf("We need the StreamingChatModel called %s", chatLanguageModelName);
                 requiredChatModels.add(chatLanguageModelName);
             }
             String contentRetrieverName = getAnnotationValue(annotation, "contentRetrieverName");
             if (!contentRetrieverName.isBlank()) {
-                ROOT_LOGGER.debug("We need the ContentRetriever in the class " + annotation.target());
-                ROOT_LOGGER.debug("We need the ContentRetriever called " + contentRetrieverName);
+                ROOT_LOGGER.debugf("We need the ContentRetriever in the class %s", annotation.target());
+                ROOT_LOGGER.debugf("We need the ContentRetriever called %s", contentRetrieverName);
                 requiredContentRetrievers.add(contentRetrieverName);
             }
             String toolProviderName = getAnnotationValue(annotation, "toolProviderName");
             if (!toolProviderName.isBlank()) {
-                ROOT_LOGGER.debug("We need the ToolProvider in the class " + annotation.target());
-                ROOT_LOGGER.debug("We need the ToolProvider called " + toolProviderName);
+                ROOT_LOGGER.debugf("We need the ToolProvider in the class %s", annotation.target());
+                ROOT_LOGGER.debugf("We need the ToolProvider called %s", toolProviderName);
                 requiredToolProviders.add(toolProviderName);
             }
             String chatMemoryProviderName = getAnnotationValue(annotation, "chatMemoryProviderName");
             if (!chatMemoryProviderName.isBlank()) {
-                ROOT_LOGGER.debug("We need the chatMemoryProvider in the class " + annotation.target());
-                ROOT_LOGGER.debug("We need the ChatMemoryProvider called " + chatMemoryProviderName);
+                ROOT_LOGGER.debugf("We need the chatMemoryProvider in the class %s", annotation.target());
+                ROOT_LOGGER.debugf("We need the ChatMemoryProvider called %s", chatMemoryProviderName);
                 requiredChatMemoryProviders.add(chatMemoryProviderName);
+            }
+        }
+        for (AnnotationInstance annotation : annotations) {
+            if (annotation.target().kind() == AnnotationTarget.Kind.FIELD) {
+                FieldInfo field = annotation.target().asField();
+                if (field.type().kind() == Type.Kind.CLASS) {
+                    String className = field.type().asClassType().name().toString();
+                    try {
+                        Class fieldClass = Class.forName(className);
+                        if (dev.langchain4j.model.chat.ChatModel.class.isAssignableFrom(fieldClass) || dev.langchain4j.model.chat.StreamingChatModel.class.isAssignableFrom(fieldClass)) {
+                            ROOT_LOGGER.debugf("We need the ChatModel in the class %s", field.declaringClass());
+                            String chatLanguageModelName = annotation.value().asString();
+                            ROOT_LOGGER.debugf("We need the ChatModel called %s", chatLanguageModelName);
+                            requiredChatModels.add(chatLanguageModelName);
+                        } else if (dev.langchain4j.model.embedding.EmbeddingModel.class.isAssignableFrom(fieldClass)) {
+                            ROOT_LOGGER.debugf("We need the EmbeddingModel in the class %s", field.declaringClass());
+                            String embeddingModelName = annotation.value().asString();
+                            ROOT_LOGGER.debugf("We need the EmbeddingModel called %s", embeddingModelName);
+                            requiredEmbeddingModels.add(embeddingModelName);
+                        } else if (dev.langchain4j.store.embedding.EmbeddingStore.class.isAssignableFrom(fieldClass)) {
+                            ROOT_LOGGER.debugf("We need the EmbeddingStore in the class %s", field.declaringClass());
+                            String embeddingStoreName = annotation.value().asString();
+                            ROOT_LOGGER.debugf("We need the EmbeddingStore called %s", embeddingStoreName);
+                            requiredEmbeddingStores.add(embeddingStoreName);
+                        } else if (dev.langchain4j.rag.content.retriever.ContentRetriever.class.isAssignableFrom(fieldClass)) {
+                            ROOT_LOGGER.debugf("We need the ContentRetriever in the class %s", field.declaringClass());
+                            String contentRetrieverName = annotation.value().asString();
+                            ROOT_LOGGER.debugf("We need the ContentRetriever called %s", contentRetrieverName);
+                            requiredContentRetrievers.add(contentRetrieverName);
+                        } else if (dev.langchain4j.service.tool.ToolProvider.class.isAssignableFrom(fieldClass)) {
+                            ROOT_LOGGER.debugf("We need the ToolProvider in the class %s", field.declaringClass());
+                            String toolProviderName = annotation.value().asString();
+                            ROOT_LOGGER.debugf("We need the ToolProvider called %s", toolProviderName);
+                            requiredToolProviders.add(toolProviderName);
+                        } else if (dev.langchain4j.memory.chat.ChatMemoryProvider.class.isAssignableFrom(fieldClass)) {
+                            ROOT_LOGGER.debugf("We need the ChatMemoryProvider in the class %s", field.declaringClass());
+                            String chatMemoryProviderName = annotation.value().asString();
+                            ROOT_LOGGER.warnf("We need the ChatMemory called %s", chatMemoryProviderName);
+                            requiredChatMemoryProviders.add(chatMemoryProviderName);
+                        }
+                    } catch (ClassNotFoundException ex) {
+                        ROOT_LOGGER.errorf(ex, "Couldn't get the class type for %s to be able to check what to inject", className);
+                    }
+                }
+            } else if (annotation.target().kind() == AnnotationTarget.Kind.CLASS) {
+                ClassInfo classInfo = annotation.target().asClass();
+                if (classInfo.interfaceNames().contains(CHAT_MEMORY_PROVIDER_DOT_NAME)) {
+                    String chatMemoryProviderName = annotation.value().asString();
+                    requiredChatMemoryProviders.remove(annotation.value().asString());
+                    ROOT_LOGGER.debugf("The ChatMemory called %s is provided via CDI", chatMemoryProviderName);
+                }
             }
         }
         if (!requiredChatModels.isEmpty() || !requiredEmbeddingModels.isEmpty() || !requiredEmbeddingStores.isEmpty()) {

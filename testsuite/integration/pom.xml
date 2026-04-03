@@ -22,7 +22,7 @@
         <version.assertj>3.26.3</version.assertj>
         <version.wildfly.glow>1.5.2.Final</version.wildfly.glow>
         <version.wildfly.maven.plugin>5.1.0.Final</version.wildfly.maven.plugin>
-        <version.maven.surefire>3.5.2</version.maven.surefire>
+        <version.maven.surefire>3.5.3</version.maven.surefire>
         <jboss.home>${project.build.directory}/server</jboss.home>
 
         <!-- Ollama configuration for tests - defaults to local instance -->
@@ -107,6 +107,12 @@
         <!-- LangChain4j dependencies -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-core</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -114,6 +120,12 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-ollama</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j.cdi</groupId>
+            <artifactId>langchain4j-cdi-core</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -266,6 +278,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>
