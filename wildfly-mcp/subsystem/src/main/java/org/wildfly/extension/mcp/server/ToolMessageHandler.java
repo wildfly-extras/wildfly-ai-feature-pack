@@ -197,7 +197,7 @@ public class ToolMessageHandler {
                         Object result = null;
                         Object[] builtArgs = buildArguments(metadata, args, mapper, connection, responder);
                         if (beanInstance.isResolvable()) {
-                            MCPLogger.ROOT_LOGGER.debug("We have found the Singleton instance of the tool" + toolName);
+                            MCPLogger.ROOT_LOGGER.debugf("We have found the Singleton instance of the tool %s", toolName);
                             try {
                                 if (builtArgs.length == 0) {
                                     result = registry.getToolInvoker(toolName).invoke(beanInstance.get());
@@ -207,11 +207,11 @@ public class ToolMessageHandler {
                                     result = registry.getToolInvoker(toolName).invokeWithArguments(preparedArguments);
                                 }
                             } catch (Throwable ex) {
-                                MCPLogger.ROOT_LOGGER.error("Error invoking tool " + toolName, ex);
+                                MCPLogger.ROOT_LOGGER.errorf(ex, "Error invoking tool %s", toolName);
                                 responder.sendError(id, INTERNAL_ERROR, ex.getMessage());
                             }
                         } else {
-                            MCPLogger.ROOT_LOGGER.warn("We have NOT found the Singleton instance of the tool" + toolName);
+                            MCPLogger.ROOT_LOGGER.warnf("We have NOT found the Singleton instance of the tool %s", toolName);
                             Method method = clazz.getMethod(methodMetadata.name(), methodMetadata.argumentTypes());
                             if (Modifier.isStatic(method.getModifiers())) {
                                 result = method.invoke(null, builtArgs);
@@ -245,7 +245,7 @@ public class ToolMessageHandler {
                         MCPLogger.ROOT_LOGGER.error(e);
                         responder.sendError(id, e.getJsonRpcError(), e.getMessage());
                     } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException | IllegalArgumentException ex) {
-                        MCPLogger.ROOT_LOGGER.error("Error invoking tool " + toolName, ex);
+                        MCPLogger.ROOT_LOGGER.errorf(ex, "Error invoking tool %s", toolName);
                         responder.sendError(id, INTERNAL_ERROR, ex.getMessage());
                     }
                 }

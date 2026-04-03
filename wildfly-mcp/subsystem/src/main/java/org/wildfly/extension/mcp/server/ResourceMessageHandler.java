@@ -191,7 +191,7 @@ public class ResourceMessageHandler {
                         Instance beanInstance = CDI.current().select(clazz, MCPResource.MCPResourceLiteral.INSTANCE);
                         Object result = null;
                         if (beanInstance.isResolvable()) {
-                            MCPLogger.ROOT_LOGGER.info("We have found the Singleton instance of the resource" + resourceUri);
+                            MCPLogger.ROOT_LOGGER.infof("We have found the Singleton instance of the resource %s", resourceUri);
                             try {
                                 if (args.isEmpty()) {
                                     result = registry.getResourceInvoker(resourceUri).invoke(beanInstance.get());
@@ -201,11 +201,11 @@ public class ResourceMessageHandler {
                                     result = registry.getResourceInvoker(resourceUri).invokeWithArguments(preparedArguments);
                                 }
                             } catch (Throwable ex) {
-                                MCPLogger.ROOT_LOGGER.error("Error invoking resource " + resourceUri, ex);
+                                MCPLogger.ROOT_LOGGER.errorf(ex, "Error invoking resource %s", resourceUri);
                                 responder.sendError(id, INTERNAL_ERROR, ex.getMessage());
                             }
                         } else {
-                            MCPLogger.ROOT_LOGGER.warn("We have NOT found the Singleton instance of the resource" + resourceUri);
+                            MCPLogger.ROOT_LOGGER.warnf("We have NOT found the Singleton instance of the resource %s", resourceUri);
                             Method method = clazz.getMethod(methodMetadata.name(), methodMetadata.argumentTypes());
                             if (Modifier.isStatic(method.getModifiers())) {
                                 result = method.invoke(null, prepareArguments(metadata, args, mapper));
@@ -238,7 +238,7 @@ public class ResourceMessageHandler {
                         MCPLogger.ROOT_LOGGER.error(e);
                         responder.sendError(id, e.getJsonRpcError(), e.getMessage());
                     } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException | IllegalArgumentException ex) {
-                        MCPLogger.ROOT_LOGGER.error("Error invoking resource " + resourceUri, ex);
+                        MCPLogger.ROOT_LOGGER.errorf(ex, "Error invoking resource %s", resourceUri);
                         responder.sendError(id, INTERNAL_ERROR, ex.getMessage());
                     }
                 }

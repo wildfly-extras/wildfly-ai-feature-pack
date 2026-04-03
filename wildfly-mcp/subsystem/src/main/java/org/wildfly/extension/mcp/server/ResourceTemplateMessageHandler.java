@@ -152,7 +152,7 @@ public class ResourceTemplateMessageHandler {
                         Object result = null;
                         MethodHandle invoker = registry.findResourceTemplateInvokerByUri(resourceUri);
                         if (beanInstance.isResolvable()) {
-                            MCPLogger.ROOT_LOGGER.debug("We have found the Singleton instance of the resource template " + resourceUri);
+                            MCPLogger.ROOT_LOGGER.debugf("We have found the Singleton instance of the resource template %s", resourceUri);
                             try {
                                 if (args.isEmpty()) {
                                     result = invoker.invoke(beanInstance.get());
@@ -162,11 +162,11 @@ public class ResourceTemplateMessageHandler {
                                     result = invoker.invokeWithArguments(preparedArguments);
                                 }
                             } catch (Throwable ex) {
-                                MCPLogger.ROOT_LOGGER.error("Error invoking resource template " + resourceUri, ex);
+                                MCPLogger.ROOT_LOGGER.errorf(ex, "Error invoking resource template %s", resourceUri);
                                 responder.sendError(id, INTERNAL_ERROR, ex.getMessage());
                             }
                         } else {
-                            MCPLogger.ROOT_LOGGER.warn("We have NOT found the Singleton instance of the resource template " + resourceUri);
+                            MCPLogger.ROOT_LOGGER.warnf("We have NOT found the Singleton instance of the resource template %s", resourceUri);
                             Method method = clazz.getMethod(methodMetadata.name(), methodMetadata.argumentTypes());
                             if (Modifier.isStatic(method.getModifiers())) {
                                 result = method.invoke(null, prepareArguments(metadata, args, mapper));
@@ -199,7 +199,7 @@ public class ResourceTemplateMessageHandler {
                         MCPLogger.ROOT_LOGGER.error(e);
                         responder.sendError(id, e.getJsonRpcError(), e.getMessage());
                     } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException | IllegalArgumentException ex) {
-                        MCPLogger.ROOT_LOGGER.error("Error invoking resource template " + resourceUri, ex);
+                        MCPLogger.ROOT_LOGGER.errorf(ex, "Error invoking resource template %s", resourceUri);
                         responder.sendError(id, INTERNAL_ERROR, ex.getMessage());
                     }
                 }

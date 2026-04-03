@@ -74,12 +74,12 @@ public class ServerSentEventResponder implements Responder, MCPConnection {
     }
 
     public void send(String name, String message) {
-        MCPLogger.ROOT_LOGGER.debug("Sending message of type " + name + " with content " + message);
+        MCPLogger.ROOT_LOGGER.debugf("Sending message of type %s with content %s", name, message);
         connection.getResponseHeaders().add(MCP_SESSION_ID_HEADER, id);
         connection.send(message, name,""+ lastEventId(), new ServerSentEventConnection.EventCallback() {
             @Override
             public void done(ServerSentEventConnection connection, String data, String event, String id) {
-                MCPLogger.ROOT_LOGGER.warn("Message sent: " + data);
+                MCPLogger.ROOT_LOGGER.warnf("Message sent: %s", data);
             }
 
             @Override
