@@ -11,8 +11,13 @@ import static org.wildfly.extension.ai.Capabilities.EMBEDDING_STORE_PROVIDER_CAP
 
 import dev.langchain4j.cdi.spi.RegisterAIService;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
+import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.service.tool.ToolProvider;
 import dev.langchain4j.store.embedding.EmbeddingStore;
+import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
 import java.util.HashSet;
 import java.util.List;
@@ -27,11 +32,12 @@ import org.jboss.as.server.deployment.annotation.CompositeIndex;
 import org.jboss.as.server.deployment.module.ModuleDependency;
 import org.jboss.as.server.deployment.module.ModuleSpecification;
 import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.AnnotationTarget;
 import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.FieldInfo;
+import org.jboss.jandex.JandexReflection;
+import org.jboss.jandex.MethodInfo;
 import org.jboss.jandex.Type;
 import org.jboss.modules.Module;
 import org.jboss.modules.ModuleLoader;
@@ -84,15 +90,31 @@ import org.wildfly.extension.ai.Capabilities;
  * <ol>
  * <li>Identifies required service types (chat models, embeddings, stores, etc.)</li>
  * <li>Extracts bean names from annotations</li>
- * <li>Adds deployment dependencies on corresponding capability services</li>
+ * <li>Detects CDI-provided services (via {@code @Produces} methods or {@code @Named} classes)</li>
+ * <li>Filters out CDI-provided services from subsystem dependency requirements</li>
+ * <li>Adds deployment dependencies only for subsystem-provided capability services</li>
  * <li>Attaches service keys to the deployment unit for later processing</li>
  * </ol>
+ *
+ * <h3>3. CDI Producer Detection</h3>
+ * <p>
+ * To avoid conflicts between application-provided services and subsystem-provided services,
+ * the processor identifies services that the application provides via CDI:</p>
+ * <ul>
+ * <li><b>Producer methods</b> - Methods annotated with {@code @Produces @Named("name")} that return AI service types</li>
+ * <li><b>Named classes</b> - Classes annotated with {@code @Named("name")} that implement AI service interfaces</li>
+ * </ul>
+ *
+ * <p>
+ * CDI-provided services are excluded from subsystem dependency resolution, allowing applications
+ * to supply their own service implementations without requiring subsystem configuration.</p>
  *
  * <p>
  * This ensures that:</p>
  * <ul>
  * <li>Required AI services are started before the deployment</li>
  * <li>Service availability is validated at deployment time</li>
+ * <li>Application-provided CDI beans take precedence over subsystem services</li>
  * <li>Proper dependency injection can occur in {@link AIDeploymentProcessor}</li>
  * </ul>
  *
@@ -132,34 +154,39 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
     };
 
     private static final DotName CHAT_MEMORY_PROVIDER_DOT_NAME = DotName.createSimple(ChatMemoryProvider.class);
+    private static final DotName CHAT_MODEL_DOT_NAME = DotName.createSimple(ChatModel.class);
     private static final DotName CONTENT_RETRIEVER_DOT_NAME = DotName.createSimple(ContentRetriever.class);
+    private static final DotName EMBEDDING_MODEL_DOT_NAME = DotName.createSimple(EmbeddingModel.class);
     private static final DotName EMBEDDING_STORE_DOT_NAME = DotName.createSimple(EmbeddingStore.class);
     private static final DotName NAMED_DOT_NAME = DotName.createSimple(Named.class);
+    private static final DotName PRODUCES_DOT_NAME = DotName.createSimple(Produces.class);
     private static final DotName REGISTER_AI_SERVICE_DOT_NAME = DotName.createSimple(RegisterAIService.class);
+    private static final DotName STREAMING_CHAT_MODEL_DOT_NAME = DotName.createSimple(StreamingChatModel.class);
+    private static final DotName TOOL_PROVIDER_DOT_NAME = DotName.createSimple(ToolProvider.class);
 
     /**
      * Service type metadata for reducing code duplication.
      * Provides record-like accessors for encapsulated properties.
      */
-    private enum ServiceType {
+    enum ServiceType {
         CHAT_MODEL("ChatModel",
                 dev.langchain4j.model.chat.ChatModel.class,
                 AIAttachments.CHAT_MODEL_KEYS,
                 AIAttachments.CHAT_MODELS,
                 CHAT_MODEL_PROVIDER_CAPABILITY,
-                null),
+                CHAT_MODEL_DOT_NAME),
         STREAMING_CHAT_MODEL("StreamingChatModel",
                 dev.langchain4j.model.chat.StreamingChatModel.class,
                 AIAttachments.CHAT_MODEL_KEYS,
                 AIAttachments.CHAT_MODELS,
                 CHAT_MODEL_PROVIDER_CAPABILITY,
-                null),
+                STREAMING_CHAT_MODEL_DOT_NAME),
         EMBEDDING_MODEL("EmbeddingModel",
                 dev.langchain4j.model.embedding.EmbeddingModel.class,
                 AIAttachments.EMBEDDING_MODEL_KEYS,
                 AIAttachments.EMBEDDING_MODELS,
                 EMBEDDING_MODEL_PROVIDER_CAPABILITY,
-                null),
+                EMBEDDING_MODEL_DOT_NAME),
         EMBEDDING_STORE("EmbeddingStore",
                 dev.langchain4j.store.embedding.EmbeddingStore.class,
                 AIAttachments.EMBEDDING_STORE_KEYS,
@@ -177,7 +204,7 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                 AIAttachments.TOOL_PROVIDER_KEYS,
                 AIAttachments.TOOL_PROVIDERS,
                 Capabilities.TOOL_PROVIDER_CAPABILITY,
-                null),
+                TOOL_PROVIDER_DOT_NAME),
         CHAT_MEMORY_PROVIDER("ChatMemoryProvider",
                 dev.langchain4j.memory.chat.ChatMemoryProvider.class,
                 AIAttachments.CHAT_MEMORY_PROVIDER_KEYS,
@@ -239,8 +266,10 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
      * <li>Adds core and optional LangChain4j module dependencies</li>
      * <li>Scans for {@code @Named} injection points on AI service fields</li>
      * <li>Scans for {@code @RegisterAIService} annotations</li>
+     * <li>Detects CDI-provided services (producer methods and named classes)</li>
      * <li>Collects required service names for each AI service type</li>
-     * <li>Adds deployment dependencies on required capability services</li>
+     * <li>Removes CDI-provided services from subsystem dependency requirements</li>
+     * <li>Adds deployment dependencies only on subsystem-provided capability services</li>
      * <li>Attaches service keys to deployment unit for {@link AIDeploymentProcessor}</li>
      * </ol>
      *
@@ -294,10 +323,18 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
 
         // Process @Named annotations
         for (AnnotationInstance annotation : annotations) {
-            if (annotation.target().kind() == AnnotationTarget.Kind.FIELD) {
-                processFieldInjection(annotation, requiredServices);
-            } else if (annotation.target().kind() == AnnotationTarget.Kind.CLASS) {
-                processCDIProvidedService(annotation, cdiProvidedServices);
+            if (null != annotation.target().kind()) switch (annotation.target().kind()) {
+                case FIELD:
+                    processFieldInjection(annotation, requiredServices);
+                    break;
+                case METHOD:
+                    processCDIMethodProvidedService(annotation, cdiProvidedServices);
+                    break;
+                case CLASS:
+                    processCDIProvidedService(annotation, cdiProvidedServices);
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -380,8 +417,13 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
     }
 
     /**
-     * Processes CDI-provided services (classes with @Named that implement service interfaces)
+     * Processes CDI bean classes ({@code @Named}) that implement AI service interfaces
      * and tracks them for later removal from required subsystem dependencies.
+     *
+     * <p>
+     * Detects classes annotated with {@code @Named} that directly implement one of the
+     * supported AI service interfaces (ChatModel, StreamingChatModel, EmbeddingModel,
+     * EmbeddingStore, ContentRetriever, ToolProvider, ChatMemoryProvider).</p>
      *
      * @param annotation the @Named annotation on a class
      * @param cdiProvidedServices map to collect CDI-provided services by type
@@ -395,6 +437,48 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
                 cdiProvidedServices.get(serviceType).add(serviceName);
                 ROOT_LOGGER.debugf("The %s called %s is provided via CDI", serviceType.serviceName(), serviceName);
                 return;
+            }
+        }
+    }
+
+    /**
+     * Processes CDI producer methods ({@code @Produces @Named}) that provide AI services
+     * and tracks them for later removal from required subsystem dependencies.
+     *
+     * <p>
+     * Detects methods annotated with both {@code @Produces} and {@code @Named} whose return type
+     * is assignable to one of the supported AI service interfaces.</p>
+     *
+     * @param annotation the @Named annotation on a producer method
+     * @param cdiProvidedServices map to collect CDI-provided services by type
+     */
+    private void processCDIMethodProvidedService(AnnotationInstance annotation, java.util.Map<ServiceType, Set<String>> cdiProvidedServices) {
+        MethodInfo methodInfo = annotation.target().asMethod();
+        String serviceName = annotation.value().asString();
+
+        for (ServiceType serviceType : ServiceType.values()) {
+            if (methodInfo.hasAnnotation(PRODUCES_DOT_NAME)) {
+                Type returnType = methodInfo.returnType();
+                Class<?> returnClass = null;
+
+                // Handle both CLASS and PARAMETERIZED_TYPE (e.g., EmbeddingStore<?>)
+                if (returnType.kind() == Type.Kind.CLASS) {
+                    returnClass = (Class<?>) JandexReflection.loadType(returnType);
+                } else if (returnType.kind() == Type.Kind.PARAMETERIZED_TYPE) {
+                    java.lang.reflect.Type loadedType = JandexReflection.loadType(returnType);
+                    if (loadedType instanceof java.lang.reflect.ParameterizedType parameterizedType) {
+                        java.lang.reflect.Type rawType = parameterizedType.getRawType();
+                        if (rawType instanceof Class<?> rawClass) {
+                            returnClass = rawClass;
+                        }
+                    }
+                }
+
+                if (returnClass != null && serviceType.serviceClass().isAssignableFrom(returnClass)) {
+                    cdiProvidedServices.get(serviceType).add(serviceName);
+                    ROOT_LOGGER.debugf("The %s called %s is provided via CDI", serviceType.serviceName(), serviceName);
+                    return;
+                }
             }
         }
     }
