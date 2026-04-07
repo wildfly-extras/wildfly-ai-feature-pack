@@ -275,6 +275,12 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
             requiredServices.put(type, new HashSet<>());
         }
 
+        // Track CDI-provided services to remove from required services after all processing
+        java.util.Map<ServiceType, Set<String>> cdiProvidedServices = new java.util.EnumMap<>(ServiceType.class);
+        for (ServiceType type : ServiceType.values()) {
+            cdiProvidedServices.put(type, new HashSet<>());
+        }
+
         // Process @RegisterAIService annotations
         for (AnnotationInstance annotation : serviceAnnotations) {
             processAnnotationValue(annotation, "chatModelName", ServiceType.CHAT_MODEL, requiredServices);
@@ -291,8 +297,13 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
             if (annotation.target().kind() == AnnotationTarget.Kind.FIELD) {
                 processFieldInjection(annotation, requiredServices);
             } else if (annotation.target().kind() == AnnotationTarget.Kind.CLASS) {
-                processCDIProvidedService(annotation, requiredServices);
+                processCDIProvidedService(annotation, cdiProvidedServices);
             }
+        }
+
+        // Remove CDI-provided services from required services
+        for (ServiceType type : ServiceType.values()) {
+            requiredServices.get(type).removeAll(cdiProvidedServices.get(type));
         }
 
         // Add deployment dependencies for all required services
@@ -370,18 +381,18 @@ public class AIDependencyProcessor implements DeploymentUnitProcessor {
 
     /**
      * Processes CDI-provided services (classes with @Named that implement service interfaces)
-     * and removes them from required subsystem dependencies.
+     * and tracks them for later removal from required subsystem dependencies.
      *
      * @param annotation the @Named annotation on a class
-     * @param requiredServices map of required services by type
+     * @param cdiProvidedServices map to collect CDI-provided services by type
      */
-    private void processCDIProvidedService(AnnotationInstance annotation, java.util.Map<ServiceType, Set<String>> requiredServices) {
+    private void processCDIProvidedService(AnnotationInstance annotation, java.util.Map<ServiceType, Set<String>> cdiProvidedServices) {
         ClassInfo classInfo = annotation.target().asClass();
         String serviceName = annotation.value().asString();
 
         for (ServiceType serviceType : ServiceType.values()) {
             if (serviceType.interfaceName() != null && classInfo.interfaceNames().contains(serviceType.interfaceName())) {
-                requiredServices.get(serviceType).remove(serviceName);
+                cdiProvidedServices.get(serviceType).add(serviceName);
                 ROOT_LOGGER.debugf("The %s called %s is provided via CDI", serviceType.serviceName(), serviceName);
                 return;
             }
