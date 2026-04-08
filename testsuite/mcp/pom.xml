@@ -20,7 +20,7 @@
         <version.wildfly.arquillian>5.1.0.Final</version.wildfly.arquillian>
         <version.assertj>3.26.3</version.assertj>
         <version.wildfly.maven.plugin>5.1.0.Final</version.wildfly.maven.plugin>
-        <version.maven.surefire>3.5.2</version.maven.surefire>
+        <version.maven.surefire>3.5.5</version.maven.surefire>
         <jboss.home>${project.build.directory}/server</jboss.home>
     </properties>
 
