@@ -17,7 +17,7 @@
     <properties>
         <version.junit>5.11.4</version.junit>
         <version.arquillian>1.10.0.Final</version.arquillian>
-        <version.wildfly.arquillian>5.0.1.Final</version.wildfly.arquillian>
+        <version.wildfly.arquillian>5.1.0.Final</version.wildfly.arquillian>
         <version.assertj>3.26.3</version.assertj>
         <version.wildfly.maven.plugin>5.1.0.Final</version.wildfly.maven.plugin>
         <version.maven.surefire>3.5.2</version.maven.surefire>
