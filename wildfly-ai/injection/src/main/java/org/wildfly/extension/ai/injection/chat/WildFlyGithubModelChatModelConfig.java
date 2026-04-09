@@ -72,7 +72,7 @@ public class WildFlyGithubModelChatModelConfig implements WildFlyChatModelConfig
         } else {
             builder.responseFormat(new ChatCompletionsResponseFormatText());
         }
-        if (observable) {
+        if (listeners != null && !listeners.isEmpty()) {
             builder.listeners(listeners);
         }
         return builder.build();
@@ -107,6 +107,9 @@ public class WildFlyGithubModelChatModelConfig implements WildFlyChatModelConfig
         if (isJson) {
             builder.responseFormat(new ChatCompletionsResponseFormatJsonObject());
         }
+        if (listeners != null && !listeners.isEmpty()) {
+            builder.listeners(listeners);
+        }
         if (observable) {
             builder.listeners(listeners);
         }
@@ -114,7 +117,7 @@ public class WildFlyGithubModelChatModelConfig implements WildFlyChatModelConfig
     }
 
     public WildFlyGithubModelChatModelConfig customHeaders(Map<String, String> customHeaders) {
-        this.customHeaders = customHeaders;
+        this.customHeaders = Map.copyOf(customHeaders);
         return this;
     }
 

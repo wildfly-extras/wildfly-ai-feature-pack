@@ -75,6 +75,22 @@ public class WildFlyLLMConfig extends LLMConfig {
     }
 
     /**
+     * Checks if a ChatModelListener is an observability listener that should be filtered
+     * when observable is set to false.
+     *
+     * @param listener the ChatModelListener to check
+     * @return true if the listener is SpanChatModelListener or MetricsChatModelListener
+     */
+    private boolean isObservabilityListener(ChatModelListener listener) {
+        // Class names are matched as strings intentionally: importing the real classes would
+        // introduce a compile-time dependency on langchain4j-cdi, which is an optional runtime
+        // module not guaranteed to be present in all WildFly configurations.
+        String className = listener.getClass().getName();
+        return className.equals("dev.langchain4j.cdi.telemetry.SpanChatModelListener") ||
+               className.equals("dev.langchain4j.cdi.telemetry.MetricsChatModelListener");
+    }
+
+    /**
      * Creates a producer function for an AI service bean.
      *
      * <p>The producer function is type-specific and handles:</p>
@@ -97,7 +113,11 @@ public class WildFlyLLMConfig extends LLMConfig {
                     if(config.isObservable()) {
                         listeners = lookup.select(ChatModelListener.class).handlesStream().map(Handle<ChatModelListener>::get).collect(Collectors.toList());
                     } else {
-                        listeners = Collections.emptyList();
+                        // When observable is false, filter out SpanChatModelListener and MetricsChatModelListener
+                        listeners = lookup.select(ChatModelListener.class).handlesStream()
+                                .map(Handle<ChatModelListener>::get)
+                                .filter(listener -> !isObservabilityListener(listener))
+                                .collect(Collectors.toList());
                     }
                     ROOT_LOGGER.infof("Bean %s of type %s has been produced", beanName, expectedType);
                     if (ChatModel.class.isAssignableFrom(expectedType) && !config.isStreaming()) {

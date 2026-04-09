@@ -85,6 +85,9 @@
         <version.org.ow2.asm>9.9.1</version.org.ow2.asm>
         <version.org.reactivestreams.reactive-streams>1.0.4</version.org.reactivestreams.reactive-streams>
 
+        <version.junit>5.11.4</version.junit>
+        <version.assertj>3.26.3</version.assertj>
+
         <!-- Nexus deployment settings -->
         <nexus.staging.tag>ai-feature-pack-${project.version}</nexus.staging.tag>
         <nexus.repository.staging>wildfly-extras-staging</nexus.repository.staging>

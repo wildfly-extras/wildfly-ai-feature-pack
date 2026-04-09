@@ -60,7 +60,7 @@ public class WildFlyMistralAiChatModelConfig implements WildFlyChatModelConfig {
             if (isJson) {
                 builder.responseFormat(JSON);
             }
-            if (observable && listeners != null && !listeners.isEmpty()) {
+            if (listeners != null && !listeners.isEmpty()) {
                 builder.listeners(listeners);
             }
             if(httpClientBuilder != null) {
@@ -94,6 +94,9 @@ public class WildFlyMistralAiChatModelConfig implements WildFlyChatModelConfig {
             }
             if(httpClientBuilder != null) {
                 builder.httpClientBuilder(httpClientBuilder);
+            }
+            if (listeners != null && !listeners.isEmpty()) {
+                builder.listeners(listeners);
             }
             instance = builder.build();
         }
@@ -171,7 +174,7 @@ public class WildFlyMistralAiChatModelConfig implements WildFlyChatModelConfig {
     }
 
     public WildFlyMistralAiChatModelConfig stopSequences(List<String> stopSequences) {
-        this.stopSequences = stopSequences;
+        this.stopSequences = List.copyOf(stopSequences);
         return this;
     }
 
