@@ -2,13 +2,10 @@ package org.wildfly.ai.test.memory;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.io.File;
+import org.wildfly.ai.test.util.DeploymentFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,8 +33,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(ArquillianExtension.class)
 public class ChatMemoryProviderDeploymentTest {
 
-    private static final String TEST_LIBS_DIR = "target/test-libs";
-
     /**
      * Creates a deployment that includes a CDI-provided ChatMemoryProvider.
      *
@@ -49,20 +44,9 @@ public class ChatMemoryProviderDeploymentTest {
      */
     @Deployment
     public static WebArchive createDeployment() {
-        return ShrinkWrap.create(WebArchive.class, "chat-memory-cdi-test.war")
-                .addClasses(
-                        SimpleChatMemoryProvider.class,
-                        SimpleAIService.class
-                )
-                .addAsLibraries(getTestLibraries())
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-    }
-
-    private static File[] getTestLibraries() {
-        return new File[]{
-                new File(TEST_LIBS_DIR, "assertj-core-3.26.3.jar"),
-                new File(TEST_LIBS_DIR, "hamcrest-3.0.jar")
-        };
+        return DeploymentFactory.createMinimalDeployment("chat-memory-cdi-test.war",
+                SimpleChatMemoryProvider.class,
+                SimpleAIService.class);
     }
 
     /**

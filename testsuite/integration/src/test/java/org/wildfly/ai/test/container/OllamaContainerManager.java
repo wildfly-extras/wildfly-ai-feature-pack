@@ -42,6 +42,7 @@ public class OllamaContainerManager {
 
     private static OllamaContainer ollama;
     private static volatile boolean initialized = false;
+    private static volatile boolean available = false;
 
     /**
      * Static initializer that ensures Ollama is ready before any tests run.
@@ -58,8 +59,11 @@ public class OllamaContainerManager {
         try {
             initializeContainer();
             registerShutdownHook();
+            available = true;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize Ollama container", e);
+            System.err.println("Ollama initialization skipped: " + e.getMessage());
+            System.err.println("Tests requiring Ollama will be disabled");
+            available = false;
         }
     }
 
@@ -90,6 +94,7 @@ public class OllamaContainerManager {
      */
     public static synchronized void initializeContainer() throws Exception {
         if (!initialized) {
+            initialized = true; // Mark attempted first — prevents retries after Docker detection failure
             String endpoint = "http://localhost:11434";
 
             // Check if Ollama is already running on the default port
@@ -176,5 +181,17 @@ public class OllamaContainerManager {
      */
     public static boolean isInitialized() {
         return initialized;
+    }
+
+    /**
+     * Checks if Ollama is available for testing.
+     *
+     * <p>Ollama is considered available if either a local instance was detected on
+     * port 11434 or a Testcontainers-managed instance was successfully started.</p>
+     *
+     * @return {@code true} if Ollama is available, {@code false} otherwise
+     */
+    public static boolean isAvailable() {
+        return available;
     }
 }

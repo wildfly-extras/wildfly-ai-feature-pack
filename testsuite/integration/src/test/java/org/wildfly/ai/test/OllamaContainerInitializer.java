@@ -19,17 +19,19 @@ import org.wildfly.ai.test.container.OllamaContainerManager;
 public class OllamaContainerInitializer implements TestExecutionListener {
 
     static {
-        // Initialize the Ollama container before any tests run
-        try {
-            OllamaContainerManager.initializeContainer();
-            String endpoint = OllamaContainerManager.getEndpoint();
+        // Initialization already happened in OllamaContainerManager static block.
+        // Just report the status here (same pattern as LgtmContainerInitializer).
+        if (OllamaContainerManager.isAvailable()) {
             System.out.println("=================================================");
-            System.out.println("Ollama container initialized at: " + endpoint);
+            System.out.println("Ollama initialized at: " + OllamaContainerManager.getEndpoint());
             System.out.println("Model: " + OllamaContainerManager.getModelName());
             System.out.println("=================================================");
-        } catch (Exception e) {
-            System.err.println("Failed to initialize Ollama container: " + e.getMessage());
-            throw new RuntimeException("Failed to initialize Ollama container", e);
+        } else {
+            System.out.println("=================================================");
+            System.out.println("Ollama not available - chat/embedding tests disabled");
+            System.out.println("To enable: start Ollama locally on port 11434");
+            System.out.println("  or ensure Docker is available");
+            System.out.println("=================================================");
         }
     }
 }

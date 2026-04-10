@@ -1,14 +1,9 @@
 package org.wildfly.ai.test.observable;
 
-import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.wildfly.ai.test.util.DeploymentFactory;
@@ -21,105 +16,60 @@ import java.util.stream.StreamSupport;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test for observable configuration in chat models.
+ * Integration test for the non-observable server (no OpenTelemetry subsystem).
  *
- * <p>This test case validates that when observable is set to false,
- * the SpanChatModelListener and MetricsChatModelListener are filtered out
- * while other custom listeners can still be used.</p>
+ * <p>Validates that when {@code observable=false}, the telemetry listeners
+ * ({@code SpanChatModelListener} and {@code MetricsChatModelListener}) are not
+ * baked into the chat model at construction time. Verified via reflection on the
+ * model's internal listener list.</p>
  *
- * <p>When observable is true (and OpenTelemetry subsystem is enabled),
- * all listeners including SpanChatModelListener and MetricsChatModelListener
- * should be present.</p>
+ * <p>Tests that require the OpenTelemetry subsystem to be active (e.g. checking
+ * that telemetry listeners are present in CDI) belong in
+ * {@link ObservableChatModelTestCase}, which targets the {@code wildfly-observable}
+ * container.</p>
  */
 @ExtendWith(ArquillianExtension.class)
-public class NonObservableChatModelTestCase {
+public class NonObservableChatModelTestCase extends AbstractObservableChatModelTestCase {
 
     @Deployment
     public static WebArchive createDeployment() {
         return DeploymentFactory.createBaseDeployment("non-observable-chat-test.war")
-                .addClasses(TestChatModelListener.class);
+                .addClasses(TestChatModelListener.class, AbstractObservableChatModelTestCase.class);
     }
 
-    @Inject
-    @Named("ollama")
-    private ChatModel chatModel;
+    // ---- shared tests (must be declared here for Arquillian in-container routing) ----
 
-    @Inject
-    private Instance<ChatModelListener> allListeners;
-
-    @Inject
-    private TestChatModelListener testListener;
-
-    // Note: Container initialization is handled by OllamaContainerInitializer
-    // which is automatically discovered and executed by JUnit Platform before tests run
-
-    @BeforeEach
-    public void resetListener() {
-        testListener.reset();
-    }
-
-    /**
-     * Verifies that the chat model is properly injected.
-     */
     @Test
     public void testChatModelInjected() {
-        assertThat(chatModel)
-                .as("Chat model should be injected")
-                .isNotNull();
+        assertThat(chatModel).as("Chat model should be injected").isNotNull();
     }
 
-    /**
-     * Tests that the custom TestChatModelListener is properly injected
-     * and available in the CDI container.
-     */
     @Test
     public void testCustomListenerInjected() {
-        assertThat(testListener)
-                .as("TestChatModelListener should be injected")
-                .isNotNull();
+        assertThat(testListener).as("TestChatModelListener should be injected").isNotNull();
     }
 
-    /**
-     * Verifies that all available ChatModelListener beans are discoverable via CDI.
-     */
     @Test
     public void testListenersDiscoverable() {
         List<ChatModelListener> listeners = StreamSupport.stream(allListeners.spliterator(), false)
                 .collect(Collectors.toList());
-
-        assertThat(listeners)
-                .as("At least one ChatModelListener should be available")
-                .isNotEmpty();
-
-        assertThat(listeners)
-                .as("TestChatModelListener should be discovered")
-                .anyMatch(listener -> listener instanceof TestChatModelListener);
+        assertThat(listeners).as("At least one ChatModelListener should be available").isNotEmpty();
+        assertThat(listeners).as("TestChatModelListener should be discovered")
+                .anyMatch(l -> l instanceof TestChatModelListener);
     }
 
-    /**
-     * Tests that the chat model works correctly.
-     *
-     * Note: We cannot test that the TestChatModelListener receives events in this integration
-     * test because the ChatModel bean is created by the WildFly subsystem during server startup,
-     * before the test deployment is available. The listeners are collected at bean creation time,
-     * so deployment-scoped listeners are not included in subsystem-created models.
-     *
-     * The listener filtering logic itself is thoroughly tested in WildFlyLLMConfigTest unit tests.
-     */
     @Test
     public void testChatModelFunctionality() {
-        // Make a chat request
         String response = chatModel.chat("Say 'Test' and nothing else.");
-
-        // Verify response
-        assertThat(response)
-                .as("Chat model should generate responses")
-                .isNotNull()
-                .isNotEmpty();
+        assertThat(response).as("Chat model should generate responses").isNotNull().isNotEmpty();
     }
 
-    private static final String SPAN_LISTENER   = "dev.langchain4j.cdi.telemetry.SpanChatModelListener";
-    private static final String METRICS_LISTENER = "dev.langchain4j.cdi.telemetry.MetricsChatModelListener";
+    @Test
+    public void testCustomListenerState() {
+        assertThat(testListener).as("Test listener should be injectable").isNotNull();
+    }
+
+    // ---- test specific to the non-observable (no OTel) server ----
 
     /**
      * Uses reflection to read the listeners list that was baked into the injected ChatModel
@@ -187,21 +137,4 @@ public class NonObservableChatModelTestCase {
         }
         throw new NoSuchFieldException("No 'listeners' field found in class hierarchy of " + model.getClass().getName());
     }
-
-    /**
-     * Tests that our custom listener can be created and accessed via CDI.
-     * This verifies the listener is properly discoverable, even though it won't
-     * receive events from subsystem-created chat models.
-     *
-     * <p>Note: Counts are not verified because the listener is deployment-scoped
-     * while the ChatModel is subsystem-scoped — they are not connected, so counts
-     * will always be zero regardless of chat activity.</p>
-     */
-    @Test
-    public void testCustomListenerState() {
-        assertThat(testListener)
-                .as("Test listener should be injectable")
-                .isNotNull();
-    }
-
 }

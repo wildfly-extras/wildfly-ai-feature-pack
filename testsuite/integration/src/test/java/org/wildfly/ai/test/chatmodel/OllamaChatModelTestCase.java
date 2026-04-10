@@ -6,10 +6,9 @@ import jakarta.inject.Named;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.ai.test.container.OllamaContainerManager;
+import org.wildfly.ai.test.container.AbstractOllamaContainerTestCase;
 import org.wildfly.ai.test.util.DeploymentFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @see DeploymentFactory
  */
 @ExtendWith(ArquillianExtension.class)
-public class OllamaChatModelTestCase {
+public class OllamaChatModelTestCase extends AbstractOllamaContainerTestCase {
 
     /**
      * Creates the test deployment archive.
@@ -47,16 +46,6 @@ public class OllamaChatModelTestCase {
     @Inject
     @Named("ollama")
     private ChatModel chatModel;
-
-    /**
-     * Ensures the Ollama container is initialized before tests run.
-     *
-     * @throws Exception if container initialization fails
-     */
-    @BeforeAll
-    public static void setupContainer() throws Exception {
-        OllamaContainerManager.initializeContainer();
-    }
 
     /**
      * Verifies that the ChatModel bean is properly injected via CDI.

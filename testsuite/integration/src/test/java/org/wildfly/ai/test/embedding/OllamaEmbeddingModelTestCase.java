@@ -8,10 +8,9 @@ import jakarta.inject.Named;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wildfly.ai.test.container.OllamaContainerManager;
+import org.wildfly.ai.test.container.AbstractOllamaContainerTestCase;
 import org.wildfly.ai.test.util.DeploymentFactory;
 
 import java.util.List;
@@ -37,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @see EmbeddingModel
  */
 @ExtendWith(ArquillianExtension.class)
-public class OllamaEmbeddingModelTestCase {
+public class OllamaEmbeddingModelTestCase extends AbstractOllamaContainerTestCase {
 
     /**
      * Creates the test deployment archive.
@@ -52,16 +51,6 @@ public class OllamaEmbeddingModelTestCase {
     @Inject
     @Named("ollama-embeddings")
     private EmbeddingModel embeddingModel;
-
-    /**
-     * Ensures the Ollama container is initialized before tests run.
-     *
-     * @throws Exception if container initialization fails
-     */
-    @BeforeAll
-    public static void setupContainer() throws Exception {
-        OllamaContainerManager.initializeContainer();
-    }
 
     /**
      * Verifies that the Ollama EmbeddingModel bean is properly injected via CDI.

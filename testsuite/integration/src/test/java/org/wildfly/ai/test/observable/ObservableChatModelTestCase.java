@@ -1,14 +1,10 @@
 package org.wildfly.ai.test.observable;
 
-import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.TargetsContainer;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.wildfly.ai.test.util.DeploymentFactory;
@@ -19,10 +15,9 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import org.jboss.arquillian.container.test.api.TargetsContainer;
 
 /**
- * Integration test for the observable=true server (default container, with OpenTelemetry).
+ * Integration test for the observable=true server (with OpenTelemetry).
  *
  * <p>Validates that when the OpenTelemetry subsystem is present, both
  * SpanChatModelListener and MetricsChatModelListener are registered in CDI,
@@ -30,76 +25,48 @@ import org.jboss.arquillian.container.test.api.TargetsContainer;
  * preserving custom listeners.</p>
  */
 @ExtendWith(ArquillianExtension.class)
-public class ObservableChatModelTestCase {
+public class ObservableChatModelTestCase extends AbstractObservableChatModelTestCase {
 
     @Deployment
     @TargetsContainer("wildfly-observable")
     public static WebArchive createDeployment() {
         return DeploymentFactory.createBaseDeployment("observable-chat-test.war")
-                .addClasses(TestChatModelListener.class);
+                .addClasses(TestChatModelListener.class, AbstractObservableChatModelTestCase.class);
     }
 
-    @Inject
-    @Named("ollama")
-    private ChatModel chatModel;
-
-    @Inject
-    private Instance<ChatModelListener> allListeners;
-
-    @Inject
-    private TestChatModelListener testListener;
-
-    @BeforeEach
-    public void resetListener() {
-        testListener.reset();
-    }
+    // ---- shared tests (must be declared here for Arquillian in-container routing) ----
 
     @Test
     public void testChatModelInjected() {
-        assertThat(chatModel)
-                .as("Chat model should be injected")
-                .isNotNull();
+        assertThat(chatModel).as("Chat model should be injected").isNotNull();
     }
 
     @Test
     public void testCustomListenerInjected() {
-        assertThat(testListener)
-                .as("TestChatModelListener should be injected")
-                .isNotNull();
+        assertThat(testListener).as("TestChatModelListener should be injected").isNotNull();
     }
 
     @Test
     public void testListenersDiscoverable() {
         List<ChatModelListener> listeners = StreamSupport.stream(allListeners.spliterator(), false)
                 .collect(Collectors.toList());
-
-        assertThat(listeners)
-                .as("At least one ChatModelListener should be available")
-                .isNotEmpty();
-
-        assertThat(listeners)
-                .as("TestChatModelListener should be discovered")
-                .anyMatch(listener -> listener instanceof TestChatModelListener);
+        assertThat(listeners).as("At least one ChatModelListener should be available").isNotEmpty();
+        assertThat(listeners).as("TestChatModelListener should be discovered")
+                .anyMatch(l -> l instanceof TestChatModelListener);
     }
 
     @Test
     public void testChatModelFunctionality() {
         String response = chatModel.chat("Say 'Test' and nothing else.");
-
-        assertThat(response)
-                .as("Chat model should generate responses")
-                .isNotNull()
-                .isNotEmpty();
+        assertThat(response).as("Chat model should generate responses").isNotNull().isNotEmpty();
     }
 
-    private static final String SPAN_LISTENER    = "dev.langchain4j.cdi.telemetry.SpanChatModelListener";
-    private static final String METRICS_LISTENER = "dev.langchain4j.cdi.telemetry.MetricsChatModelListener";
-
-    /** Returns true for listeners that WildFlyLLMConfig removes when observable=false. */
-    private static boolean isObservabilityListener(ChatModelListener l) {
-        String name = l.getClass().getName();
-        return name.equals(SPAN_LISTENER) || name.equals(METRICS_LISTENER);
+    @Test
+    public void testCustomListenerState() {
+        assertThat(testListener).as("Test listener should be injectable").isNotNull();
     }
+
+    // ---- tests specific to the observable (OTel-enabled) server ----
 
     /**
      * Lists all CDI-discovered ChatModelListeners, showing which are telemetry listeners
@@ -154,7 +121,6 @@ public class ObservableChatModelTestCase {
         List<ChatModelListener> allCdiListeners = StreamSupport.stream(allListeners.spliterator(), false)
                 .collect(Collectors.toList());
 
-        // Telemetry listeners ARE present in CDI — filtering is needed
         assertThat(allCdiListeners)
                 .as("SpanChatModelListener should be present in CDI (filtering is meaningful)")
                 .anyMatch(l -> l.getClass().getName().equals(SPAN_LISTENER));
@@ -162,7 +128,6 @@ public class ObservableChatModelTestCase {
                 .as("MetricsChatModelListener should be present in CDI (filtering is meaningful)")
                 .anyMatch(l -> l.getClass().getName().equals(METRICS_LISTENER));
 
-        // Apply the production observable=false filter (mirrors WildFlyLLMConfig.isObservabilityListener)
         List<ChatModelListener> filtered = allCdiListeners.stream()
                 .filter(l -> !isObservabilityListener(l))
                 .collect(Collectors.toList());
@@ -172,12 +137,5 @@ public class ObservableChatModelTestCase {
                 .containsExactly(testListener)
                 .noneMatch(l -> l.getClass().getName().equals(SPAN_LISTENER))
                 .noneMatch(l -> l.getClass().getName().equals(METRICS_LISTENER));
-    }
-
-    @Test
-    public void testCustomListenerState() {
-        assertThat(testListener)
-                .as("Test listener should be injectable")
-                .isNotNull();
     }
 }
