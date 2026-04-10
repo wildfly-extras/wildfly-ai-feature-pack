@@ -20,7 +20,7 @@
         <version.testcontainers>1.21.4</version.testcontainers>
         <version.wildfly.glow>1.5.2.Final</version.wildfly.glow>
         <version.wildfly.maven.plugin>5.1.0.Final</version.wildfly.maven.plugin>
-        <version.maven.surefire>3.5.3</version.maven.surefire>
+        <version.maven.surefire>3.5.5</version.maven.surefire>
         <jboss.home>${project.build.directory}/server</jboss.home>
 
         <!-- Ollama configuration for tests - defaults to local instance -->
