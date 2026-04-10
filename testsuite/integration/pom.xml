@@ -15,11 +15,9 @@
     <description>Integration tests for WildFly AI Feature Pack using Arquillian and Testcontainers</description>
 
     <properties>
-        <version.junit>5.11.4</version.junit>
         <version.arquillian>1.10.0.Final</version.arquillian>
         <version.wildfly.arquillian>5.1.0.Final</version.wildfly.arquillian>
         <version.testcontainers>1.21.4</version.testcontainers>
-        <version.assertj>3.26.3</version.assertj>
         <version.wildfly.glow>1.5.2.Final</version.wildfly.glow>
         <version.wildfly.maven.plugin>5.1.0.Final</version.wildfly.maven.plugin>
         <version.maven.surefire>3.5.3</version.maven.surefire>
@@ -104,6 +102,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Grafana LGTM container for OpenTelemetry testing -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>grafana</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- LangChain4j dependencies -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
@@ -164,6 +169,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- OpenTelemetry for observability testing -->
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -173,6 +185,7 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>provisioning.xml</include>
+                    <include>provisioning-otel.xml</include>
                 </includes>
             </testResource>
             <testResource>
@@ -180,6 +193,7 @@
                 <filtering>false</filtering>
                 <excludes>
                     <exclude>provisioning.xml</exclude>
+                    <exclude>provisioning-otel.xml</exclude>
                 </excludes>
             </testResource>
         </testResources>
@@ -197,8 +211,38 @@
                             <goal>provision</goal>
                         </goals>
                         <configuration>
-                            <provisioning-file>${project.build.testOutputDirectory}/provisioning.xml</provisioning-file>
+                            <provisioning-file>${project.build.testOutputDirectory}/provisioning-otel.xml</provisioning-file>
+                            <provisioningDir>${project.build.directory}/server-otel</provisioningDir>
                             <extraServerContentDirs>extra-content</extraServerContentDirs>
+                            <galleon-options>
+                                <jboss-fork-embedded>true</jboss-fork-embedded>
+                            </galleon-options>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>configure-server</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>execute-commands</goal>
+                        </goals>
+                        <configuration>
+                            <jboss-home>${project.build.directory}/server-otel</jboss-home>
+                            <offline>true</offline>
+                            <scripts>
+                                <script>${project.build.directory}/server/standalone/configuration/configure-opentelemetry.cli</script>
+                            </scripts>
+                        </configuration>
+                    </execution>
+
+                    <!-- Provision the default server without OpenTelemetry layer (observable=false) -->
+                    <execution>
+                        <id>provision-server-otel</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>provision</goal>
+                        </goals>
+                        <configuration>
+                            <provisioning-file>${project.build.testOutputDirectory}/provisioning.xml</provisioning-file>
                             <galleon-options>
                                 <jboss-fork-embedded>true</jboss-fork-embedded>
                             </galleon-options>
@@ -211,7 +255,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <id>copy-server-resources</id>
@@ -225,6 +269,27 @@
                                 <resource>
                                     <directory>${project.basedir}/extra-content</directory>
                                     <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
+                    <!-- Copy non-OTel extra content to the second server (no CLI scripts) -->
+                    <execution>
+                        <id>copy-server-otel-resources</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/server-otel</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/extra-content</directory>
+                                    <filtering>false</filtering>
+                                    <excludes>
+                                        <exclude>**/*.cli</exclude>
+                                    </excludes>
                                 </resource>
                             </resources>
                         </configuration>
@@ -261,20 +326,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- Maven Surefire Plugin - Configure test execution -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${version.maven.surefire}</version>
-                <configuration>
-                    <!-- System properties that will be available to tests and arquillian.xml -->
-                    <systemPropertyVariables>
-                        <ollama.base.url>${ollama.base.url}</ollama.base.url>
-                        <ollama.model.name>${ollama.model.name}</ollama.model.name>
-                    </systemPropertyVariables>
-                </configuration>
             </plugin>
         </plugins>
     </build>

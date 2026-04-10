@@ -6,7 +6,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.junit.jupiter.api.TestInstance;
 import org.testcontainers.ollama.OllamaContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -21,31 +20,59 @@ import org.testcontainers.utility.DockerImageName;
  * <p>The manager uses {@code ollama/ollama:latest} image and automatically pulls
  * the {@code llama3.2:1b} model on first initialization.</p>
  *
+ * <p><strong>Lifecycle Management:</strong></p>
+ * <ul>
+ *   <li>Initialization happens in static block before any tests run</li>
+ *   <li>JVM shutdown hook registered to stop container when build finishes</li>
+ *   <li>Only stops Testcontainers-managed instances (local instances remain untouched)</li>
+ * </ul>
+ *
  * <p>System properties set by this manager:</p>
  * <ul>
  *   <li>{@code ollama.base.url} - The endpoint URL for Ollama API</li>
  *   <li>{@code ollama.model.name} - The name of the pulled model (llama3.2:1b)</li>
  * </ul>
+ *
+ * @see org.wildfly.ai.test.OllamaContainerInitializer
  */
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class OllamaContainerManager {
 
-    private static final String OLLAMA_IMAGE = "ollama/ollama:0.17.0";
+    private static final String OLLAMA_IMAGE = "mirror.gcr.io/ollama/ollama:latest";
     private static final String MODEL_NAME = "llama3.2:1b";
 
     private static OllamaContainer ollama;
     private static volatile boolean initialized = false;
+    private static volatile boolean available = false;
 
     /**
      * Static initializer that ensures Ollama is ready before any tests run.
-     * Throws {@link RuntimeException} if initialization fails.
+     *
+     * <p>Performs two operations:</p>
+     * <ol>
+     *   <li>Initializes the Ollama container or detects existing instance</li>
+     *   <li>Registers JVM shutdown hook for automatic cleanup</li>
+     * </ol>
+     *
+     * @throws RuntimeException if initialization fails
      */
     static {
         try {
             initializeContainer();
+            registerShutdownHook();
+            available = true;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize Ollama container", e);
+            System.err.println("Ollama initialization skipped: " + e.getMessage());
+            System.err.println("Tests requiring Ollama will be disabled");
+            available = false;
         }
+    }
+
+    /**
+     * Registers a shutdown hook to stop the container when the JVM exits.
+     * Only stops containers that were started by Testcontainers, not existing local instances.
+     */
+    private static void registerShutdownHook() {
+        ContainerLifecycleUtil.registerShutdownHook(ollama, "Ollama");
     }
 
     /**
@@ -67,6 +94,7 @@ public class OllamaContainerManager {
      */
     public static synchronized void initializeContainer() throws Exception {
         if (!initialized) {
+            initialized = true; // Mark attempted first — prevents retries after Docker detection failure
             String endpoint = "http://localhost:11434";
 
             // Check if Ollama is already running on the default port
@@ -76,8 +104,9 @@ public class OllamaContainerManager {
                 ollama = null;
             } else {
                 // Start a new container with Testcontainers
-                ollama = new OllamaContainer(DockerImageName.parse(OLLAMA_IMAGE))
-                        .withReuse(true);
+                // asCompatibleSubstituteFor is required when using a mirror image
+                ollama = new OllamaContainer(DockerImageName.parse(OLLAMA_IMAGE)
+                        .asCompatibleSubstituteFor("ollama/ollama"));
                 ollama.start();
                 endpoint = ollama.getEndpoint();
 
@@ -152,5 +181,17 @@ public class OllamaContainerManager {
      */
     public static boolean isInitialized() {
         return initialized;
+    }
+
+    /**
+     * Checks if Ollama is available for testing.
+     *
+     * <p>Ollama is considered available if either a local instance was detected on
+     * port 11434 or a Testcontainers-managed instance was successfully started.</p>
+     *
+     * @return {@code true} if Ollama is available, {@code false} otherwise
+     */
+    public static boolean isAvailable() {
+        return available;
     }
 }

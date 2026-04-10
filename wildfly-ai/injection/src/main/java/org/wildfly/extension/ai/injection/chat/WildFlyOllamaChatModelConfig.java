@@ -93,7 +93,7 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
             if(httpClientBuilder != null) {
                 builder.httpClientBuilder(httpClientBuilder);
             }
-            if (observable) {
+            if (listeners != null && !listeners.isEmpty()) {
                 builder.listeners(listeners);
             }
             instance = builder.build();
@@ -134,6 +134,9 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
                 builder.httpClientBuilder(httpClientBuilder);
             }
             if (observable) {
+                builder.listeners(listeners);
+            }
+            if (listeners != null && !listeners.isEmpty()) {
                 builder.listeners(listeners);
             }
             instance = builder.build();
@@ -211,7 +214,7 @@ public class WildFlyOllamaChatModelConfig implements WildFlyChatModelConfig {
     }
 
     public WildFlyOllamaChatModelConfig stopSequences(List<String> stopSequences) {
-        this.stopSequences = stopSequences;
+        this.stopSequences = List.copyOf(stopSequences);
         return this;
     }
 

@@ -87,7 +87,7 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
             if(httpClientBuilder != null) {
                 builder.httpClientBuilder(httpClientBuilder);
             }
-            if (observable) {
+            if (listeners != null && !listeners.isEmpty()) {
                 builder.listeners(listeners);
             }
             instance = builder.build();
@@ -129,7 +129,7 @@ public class WildFlyGeminiChatModelConfig implements WildFlyChatModelConfig {
             if(httpClientBuilder != null) {
                 builder.httpClientBuilder(httpClientBuilder);
             }
-            if (observable) {
+            if (listeners != null && !listeners.isEmpty()) {
                 builder.listeners(listeners);
             }
             instance = builder.build();

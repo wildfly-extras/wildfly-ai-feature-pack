@@ -56,7 +56,7 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
             if (isJson) {
                 builder.responseFormat("json_object");
             }
-            if (observable) {
+            if (listeners != null && !listeners.isEmpty()) {
                 builder.listeners(listeners);
             }
             if(httpClientBuilder != null) {
@@ -87,7 +87,7 @@ public class WildFlyOpenAiChatModelConfig implements WildFlyChatModelConfig {
             if (isJson) {
                 builder.responseFormat("json_object");
             }
-            if (observable) {
+            if (listeners != null && !listeners.isEmpty()) {
                 builder.listeners(listeners);
             }
             if(httpClientBuilder != null) {

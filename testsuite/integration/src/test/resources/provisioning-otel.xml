@@ -10,10 +10,11 @@
     </feature-pack>
     <config model="standalone" name="standalone.xml">
         <layers>
-            <!-- Base WildFly layers (no opentelemetry) -->
+            <!-- Base WildFly layers -->
             <include name="cdi"/>
             <include name="jaxrs"/>
             <include name="management"/>
+            <include name="opentelemetry"/>
 
             <!-- AI Feature Pack layers for testing -->
             <include name="ollama-chat-model"/>

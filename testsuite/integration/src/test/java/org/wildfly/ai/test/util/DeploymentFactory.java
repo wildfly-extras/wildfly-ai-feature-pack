@@ -3,6 +3,7 @@ package org.wildfly.ai.test.util;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.wildfly.ai.test.container.AbstractOllamaContainerTestCase;
 import org.wildfly.ai.test.container.OllamaContainerManager;
 
 import java.io.File;
@@ -90,6 +91,7 @@ public final class DeploymentFactory {
     public static WebArchive createBaseDeployment(String archiveName, Class<?>... additionalClasses) {
         WebArchive archive = ShrinkWrap.create(WebArchive.class, archiveName)
                 .addClass(OllamaContainerManager.class)
+                .addClass(AbstractOllamaContainerTestCase.class)
                 .addAsLibraries(getTestLibraries())
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 
