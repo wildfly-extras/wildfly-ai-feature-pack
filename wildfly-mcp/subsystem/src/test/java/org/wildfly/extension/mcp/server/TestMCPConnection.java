@@ -81,4 +81,9 @@ public class TestMCPConnection implements MCPConnection {
     public InitializeRequest initializeRequest() {
         return initializeRequest;
     }
+
+    @Override
+    public long lastActivity() {
+        return System.currentTimeMillis();
+    }
 }
