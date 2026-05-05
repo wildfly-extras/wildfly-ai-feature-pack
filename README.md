@@ -74,18 +74,38 @@ The feature pack provides 37 Galleon layers organized by functionality. For each
 * Support for WebAssembly:
   * `wasm`: WebAssembly WASI module support
   
-For more details on these you can take a look at [LangChain4J](https://docs.langchain4j.dev/) and [Smallrye-llm](https://github.com/smallrye/smallrye-llm).
+For more details on these you can take a look at [LangChain4J](https://docs.langchain4j.dev/) and [LangChain4j-CDI](https://github.com/langchain4j/langchain4j-cdi).
 
 The feature pack currently uses:
-* LangChain4j 1.10.0-beta18
-* LangChain4j-CDI 1.0.0
+* LangChain4j 1.12.2
+* LangChain4j-CDI 1.1.0
 * WildFly 39.0.0.Final
-* Chicory (WASM runtime) 1.6.1
+* Chicory (WASM runtime) 1.7.5
 * Extism SDK 0.3.0
+
+Breaking Changes
+========================
+
+### MCP Server Annotations (0.9.2+)
+
+The MCP server annotation API has moved to the **[`org.mcp-java:mcp-annotations`](https://github.com/mcp-java/java-mcp-annotations)** library to provide standardized annotations and APIs across Java runtimes.
+
+If you were using the previous `wildfly-mcp/api` module annotations, you must update your dependency:
+
+```xml
+<dependency>
+    <groupId>org.mcp-java</groupId>
+    <artifactId>mcp-annotations</artifactId>
+    <scope>provided</scope>
+</dependency>
+```
+
+The annotation classes and package names have changed accordingly. See the [java-mcp-annotations](https://github.com/mcp-java/java-mcp-annotations) project for the updated API.
 
 Recent Features
 ========================
 
+* **Standardized MCP Annotations**: MCP server annotations are now provided by [`org.mcp-java:mcp-annotations`](https://github.com/mcp-java/java-mcp-annotations) for cross-runtime compatibility.
 * **Async Execution Support**: All chat model layers now support the `executor-service` attribute, allowing you to configure a ManagedExecutorService for asynchronous AI operations.
 * **WildFly Preview Support**: The feature pack is now compatible with WildFly Preview releases.
 * **Enhanced MCP Support**: Added MCP server capabilities and multiple transport options (SSE, stdio, streamable).
@@ -193,7 +213,7 @@ You need to include the AI feature-pack and layers in the Maven Plugin configura
 This [example](https://github.com/ehsavoie/webchat/) contains a complete WildFly Maven Plugin configuration.
 
 
-[EXPERIMENTAL] Model Context Protocol
+Model Context Protocol
 ==========================
 
 The feature pack provides comprehensive support for the [Model Context Protocol (MCP)](https://spec.modelcontextprotocol.io/specification/2024-11-05/), both as a client and server.
@@ -209,7 +229,9 @@ The feature pack can act as an MCP client with support for multiple transports:
 
 The feature pack also supports exposing your Jakarta EE application as an MCP Server using the `mcp-server` Galleon layer.
 What you need to do in that case is to use the `org.mcp-java:mcp-annotations` artifact as a provided dependency and annotate the code you want to expose with the annotations provided by the API.
-For more informations about `org.mcp-java:mcp-annotations` you can check [mcp_java](https://github.com/mcp-java/java-mcp-annotations).
+For more information about `org.mcp-java:mcp-annotations` you can check [java-mcp-annotations](https://github.com/mcp-java/java-mcp-annotations).
+
+> **Breaking change (0.9.2+):** The MCP annotation API has moved from the `wildfly-mcp/api` module to [`org.mcp-java:mcp-annotations`](https://github.com/mcp-java/java-mcp-annotations) for standardized annotations and APIs across runtimes. Update your dependency and package imports accordingly.
 
 You may want to take a look at [wildfly-weather](https://github.com/ehsavoie/wildfly-weather) example.
 
@@ -252,10 +274,10 @@ To get the token associated to a user you can use the following command:
 curl -X POST http://localhost:8080/realms/myrealm/protocol/openid-connect/token -H 'content-type: application/x-www-form-urlencoded' -d 'client_id=mcp-client&client_secret=UmqLUYjlRbDXZqa6vsiOmonjysIxTL7W' -d 'username=myuser&password=myuser&grant_type=password' | jq --raw-output '.access_token'
 ```
 
-[EXPERIMENTAL] WASM Support
+[PROOF OF CONCEPT] WASM Support
 ==========================
 
-The feature pack supports also in a very experimental way [Wasm Wasi](https://wasi.dev/) modules using the Chicory Java WASM runtime (version 1.6.1) and Extism SDK (version 0.3.0).
+The feature pack includes a proof-of-concept integration for [Wasm Wasi](https://wasi.dev/) modules using the Chicory Java WASM runtime (version 1.7.5) and Extism SDK (version 0.3.0).
 What you need to do in that case is to use the `org.wildfly:wildfly-wasm-api` artifact as a provided dependency and annotate the code you want to expose with the annotations provided by the API.
 Wasm binaries can be defined in the `wasm subsystem` to be injected as `org.wildfly.wasm.api.WasmInvoker` via CDI. You can even expose `org.wildfly.wasm.api.WasmToolService` as MCP tools.
 
