@@ -138,12 +138,6 @@
             <artifactId>jackson-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.smallrye</groupId>
-            <artifactId>jandex</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.wildfly.core</groupId>
             <artifactId>wildfly-subsystem-test</artifactId>
             <type>pom</type>
