@@ -21,7 +21,7 @@ Resources:
 Galleon feature-pack compatible with WildFly
 ========================
 
-The Maven coordinates to use is: `org.wildfly:wildfly-ai-galleon-pack:0.9.2-SNAPSHOT`
+The Maven coordinates to use is: `org.wildfly:wildfly-ai-galleon-pack:0.10.0-SNAPSHOT`
 
 The feature pack is compatible with WildFly 39.0.0.Final and WildFly Preview.
 
@@ -86,7 +86,7 @@ The feature pack currently uses:
 Breaking Changes
 ========================
 
-### MCP Server Annotations (0.9.2+)
+### MCP Server Annotations (0.10.0+)
 
 The MCP server annotation API has moved to the **[`org.mcp-java:mcp-annotations`](https://github.com/mcp-java/java-mcp-annotations)** library to provide standardized annotations and APIs across Java runtimes.
 
@@ -129,7 +129,7 @@ You need to define a Galleon provisioning configuration file such as:
     <default-configs inherit="false"/>
     <packages inherit="false"/>
   </feature-pack>
-  <feature-pack location="org.wildfly:wildfly-ai-galleon-pack:0.9.2-SNAPSHOT">
+  <feature-pack location="org.wildfly:wildfly-ai-galleon-pack:0.10.0-SNAPSHOT">
     <default-configs inherit="false"/>
     <packages inherit="false"/>
   </feature-pack>
@@ -164,7 +164,7 @@ You need to include the AI feature-pack and layers in the Maven Plugin configura
     <location>org.wildfly:wildfly-galleon-pack:39.0.0.Final</location>
   </feature-pack>
   <feature-pack>
-    <location>org.wildfly:wildfly-ai-galleon-pack:0.9.2-SNAPSHOT</location>
+    <location>org.wildfly:wildfly-ai-galleon-pack:0.10.0-SNAPSHOT</location>
   </feature-pack>
 </feature-packs>
 <layers>
@@ -231,7 +231,7 @@ The feature pack also supports exposing your Jakarta EE application as an MCP Se
 What you need to do in that case is to use the `org.mcp-java:mcp-annotations` artifact as a provided dependency and annotate the code you want to expose with the annotations provided by the API.
 For more information about `org.mcp-java:mcp-annotations` you can check [java-mcp-annotations](https://github.com/mcp-java/java-mcp-annotations).
 
-> **Breaking change (0.9.2+):** The MCP annotation API has moved from the `wildfly-mcp/api` module to [`org.mcp-java:mcp-annotations`](https://github.com/mcp-java/java-mcp-annotations) for standardized annotations and APIs across runtimes. Update your dependency and package imports accordingly.
+> **Breaking change (0.10.0+):** The MCP annotation API has moved from the `wildfly-mcp/api` module to [`org.mcp-java:mcp-annotations`](https://github.com/mcp-java/java-mcp-annotations) for standardized annotations and APIs across runtimes. Update your dependency and package imports accordingly.
 
 You may want to take a look at [wildfly-weather](https://github.com/ehsavoie/wildfly-weather) example.
 
