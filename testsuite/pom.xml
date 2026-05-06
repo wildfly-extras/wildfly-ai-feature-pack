@@ -15,8 +15,19 @@
     <description>Integration testsuite for the WildFly AI Feature Pack</description>
 
     <modules>
-        <module>integration</module>
         <module>mcp</module>
     </modules>
 
+    <profiles>
+        <!-- Profile to run integration tests -->
+        <!-- They are disabled by default, as they require more CPUs that
+             what can be provided by GitHub Actions.
+        -->
+        <profile>
+            <id>integration-test</id>
+            <modules>
+                <module>integration</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>

@@ -21,10 +21,10 @@ The integration tests automatically manage containers using Testcontainers, elim
 
 ### From Maven
 
-Run integration tests with the `integration-test` profile:
+Run integration tests:
 
 ```bash
-mvn clean verify -Pintegration-test
+mvn clean verify
 ```
 
 ### From IDE
@@ -114,7 +114,7 @@ podman run -d -p 11434:11434 ollama/ollama
 podman exec <container-name> ollama pull llama3.2:1b
 
 # Run tests - will use existing instance
-mvn verify -Pintegration-test
+mvn verify
 ```
 
 ### LGTM (OpenTelemetry Testing)
@@ -124,7 +124,7 @@ docker run -d -p 3000:3000 -p 4318:4318 -p 9090:9090 \
   --name lgtm grafana/otel-lgtm:0.17.1
 
 # Run tests - OpenTelemetry tests will use existing instance
-mvn verify -Pintegration-test
+mvn verify
 ```
 
 Container managers will detect local instances and use them, providing faster test execution and persistent state between runs.
