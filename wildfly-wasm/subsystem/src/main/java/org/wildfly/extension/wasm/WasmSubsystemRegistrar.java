@@ -9,6 +9,7 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEP
 import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.SubsystemRegistration;
 import org.jboss.as.controller.SubsystemResourceRegistration;
+import org.jboss.as.version.Stability;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.descriptions.SubsystemResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
@@ -26,7 +27,7 @@ import org.wildfly.subsystem.resource.SubsystemResourceDefinitionRegistrar;
 class WasmSubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
 
     public static final String NAME = "wasm";
-    static final SubsystemResourceRegistration REGISTRATION = SubsystemResourceRegistration.of(NAME);
+    static final SubsystemResourceRegistration REGISTRATION = SubsystemResourceRegistration.of(NAME, Stability.EXPERIMENTAL);
     static final ParentResourceDescriptionResolver RESOLVER = new SubsystemResourceDescriptionResolver(NAME, WasmSubsystemRegistrar.class);
     private static final int PHASE_DEPENDENCIES_WASM = 0x1950;
     private static final int PHASE_POST_MODULE_WASM = 0x3850;

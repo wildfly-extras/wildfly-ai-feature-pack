@@ -4,6 +4,9 @@
   ~ SPDX-License-Identifier: Apache-2.0
   -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="mcp">
+    <props>
+        <prop name="org.wildfly.stability" value="experimental"/>
+    </props>
     <dependencies>
         <layer name="ee-concurrency"/>
     </dependencies>

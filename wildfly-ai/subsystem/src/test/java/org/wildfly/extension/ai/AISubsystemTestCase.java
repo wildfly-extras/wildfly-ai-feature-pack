@@ -10,6 +10,7 @@ import org.jboss.as.network.OutboundSocketBinding;
 
 import org.jboss.as.subsystem.test.AbstractSubsystemSchemaTest;
 import org.jboss.as.subsystem.test.AdditionalInitialization;
+import org.jboss.as.version.Stability;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -28,6 +29,6 @@ public class AISubsystemTestCase extends AbstractSubsystemSchemaTest<AISubsystem
 
     @Override
     protected AdditionalInitialization createAdditionalInitialization() {
-        return AdditionalInitialization.withCapabilities(RuntimeCapability.resolveCapabilityName(OutboundSocketBinding.SERVICE_DESCRIPTOR, "weaviate"));
+        return AdditionalInitialization.withCapabilities(Stability.EXPERIMENTAL, RuntimeCapability.resolveCapabilityName(OutboundSocketBinding.SERVICE_DESCRIPTOR, "weaviate"));
     }
 }

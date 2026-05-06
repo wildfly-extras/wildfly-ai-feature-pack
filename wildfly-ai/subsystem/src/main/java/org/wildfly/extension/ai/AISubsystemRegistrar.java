@@ -10,6 +10,7 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEP
 import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.SubsystemRegistration;
 import org.jboss.as.controller.SubsystemResourceRegistration;
+import org.jboss.as.version.Stability;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.descriptions.SubsystemResourceDescriptionResolver;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
@@ -106,7 +107,7 @@ class AISubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
     /** Subsystem name used in configuration (subsystem xmlns="urn:wildfly:ai:1.0"). */
     public static final String NAME = "ai";
 
-    static final SubsystemResourceRegistration REGISTRATION = SubsystemResourceRegistration.of(NAME);
+    static final SubsystemResourceRegistration REGISTRATION = SubsystemResourceRegistration.of(NAME, Stability.EXPERIMENTAL);
     static final ParentResourceDescriptionResolver RESOLVER = new SubsystemResourceDescriptionResolver(NAME, AISubsystemRegistrar.class);
 
     /** Phase priority for AI dependency injection (Phase.DEPENDENCIES). */
