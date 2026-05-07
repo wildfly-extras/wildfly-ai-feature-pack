@@ -21,7 +21,7 @@ Resources:
 Galleon feature-pack compatible with WildFly
 ========================
 
-The Maven coordinates to use is: `org.wildfly:wildfly-ai-galleon-pack:0.10.0-SNAPSHOT`
+The Maven coordinates to use is: `org.wildfly.generative-ai:wildfly-ai-feature-pack:0.10.0-SNAPSHOT`
 
 The feature pack is compatible with WildFly 39.0.0.Final and WildFly Preview.
 
@@ -138,7 +138,7 @@ You need to define a Galleon provisioning configuration file such as:
     <default-configs inherit="false"/>
     <packages inherit="false"/>
   </feature-pack>
-  <feature-pack location="org.wildfly:wildfly-ai-galleon-pack:0.10.0-SNAPSHOT">
+  <feature-pack location="org.wildfly.generative-ai:wildfly-ai-feature-pack:0.10.0-SNAPSHOT">
     <default-configs inherit="false"/>
     <packages inherit="false"/>
   </feature-pack>
@@ -174,7 +174,7 @@ You need to include the AI feature-pack and layers in the Maven Plugin configura
     <location>org.wildfly:wildfly-galleon-pack:39.0.0.Final</location>
   </feature-pack>
   <feature-pack>
-    <location>org.wildfly:wildfly-ai-galleon-pack:0.10.0-SNAPSHOT</location>
+    <location>org.wildfly.generative-ai:wildfly-ai-feature-pack:0.10.0-SNAPSHOT</location>
   </feature-pack>
 </feature-packs>
 <layers>
