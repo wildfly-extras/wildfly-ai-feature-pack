@@ -25,6 +25,15 @@ The Maven coordinates to use is: `org.wildfly:wildfly-ai-galleon-pack:0.10.0-SNA
 
 The feature pack is compatible with WildFly 39.0.0.Final and WildFly Preview.
 
+The feature pack is at the **experimental** stability level and must be explicitly provisioned
+at that level.
+When running the WildFly installation, you must also specify this stability level:
+
+```
+./bin/standalone.sh --stability experimental
+```
+
+
 Supported AI types
 ========================
 
@@ -159,6 +168,7 @@ You need to include the AI feature-pack and layers in the Maven Plugin configura
 
 ```xml
 ...
+<stability>experimental</stability>
 <feature-packs>
   <feature-pack>
     <location>org.wildfly:wildfly-galleon-pack:39.0.0.Final</location>
@@ -198,14 +208,15 @@ You need to include the AI feature-pack and layers in the Maven Plugin configura
   <artifactId>wildfly-maven-plugin</artifactId>
   <version>${version.wildfly.maven.plugin}</version>
     <configuration>
+      <stability>experimental</stability>
       <discoverProvisioningInfo>
         <spaces>
           <space>incubating</space>
         </spaces>
           <version>${version.wildfly.server}</version>
-        </discoverProvisioningInfo>
-        <name>ROOT.war</name>
-        ...
+      </discoverProvisioningInfo>
+      <name>ROOT.war</name>
+      ...
     </configuration>
 ...
 ```

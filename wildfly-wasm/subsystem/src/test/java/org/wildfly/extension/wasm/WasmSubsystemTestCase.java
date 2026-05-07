@@ -7,6 +7,8 @@ package org.wildfly.extension.wasm;
 import java.util.EnumSet;
 
 import org.jboss.as.subsystem.test.AbstractSubsystemSchemaTest;
+import org.jboss.as.subsystem.test.AdditionalInitialization;
+import org.jboss.as.version.Stability;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -21,5 +23,10 @@ public class WasmSubsystemTestCase extends AbstractSubsystemSchemaTest<WasmSubsy
 
     public WasmSubsystemTestCase(WasmSubsystemSchema schema) {
         super(WasmSubsystemRegistrar.NAME, new WasmExtension(), schema, WasmSubsystemSchema.CURRENT);
+    }
+
+    @Override
+    protected AdditionalInitialization createAdditionalInitialization() {
+        return AdditionalInitialization.withCapabilities(Stability.EXPERIMENTAL);
     }
 }

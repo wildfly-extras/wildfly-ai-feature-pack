@@ -4,5 +4,8 @@
   ~ SPDX-License-Identifier: Apache-2.0
   -->
 <layer-spec xmlns="urn:jboss:galleon:layer-spec:2.0" name="ai">
-     <feature spec="subsystem.ai"/>
+    <props>
+        <prop name="org.wildfly.stability" value="experimental"/>
+    </props>
+    <feature spec="subsystem.ai"/>
 </layer-spec>

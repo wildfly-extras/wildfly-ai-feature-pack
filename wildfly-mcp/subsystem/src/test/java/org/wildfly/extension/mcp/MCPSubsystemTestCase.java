@@ -7,6 +7,8 @@ package org.wildfly.extension.mcp;
 import java.util.EnumSet;
 
 import org.jboss.as.subsystem.test.AbstractSubsystemSchemaTest;
+import org.jboss.as.subsystem.test.AdditionalInitialization;
+import org.jboss.as.version.Stability;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -21,5 +23,10 @@ public class MCPSubsystemTestCase extends AbstractSubsystemSchemaTest<MCPSubsyst
 
     public MCPSubsystemTestCase(MCPSubsystemSchema schema) {
         super(MCPSubsystemRegistrar.NAME, new MCPExtension(), schema, MCPSubsystemSchema.CURRENT);
+    }
+
+    @Override
+    protected AdditionalInitialization createAdditionalInitialization() {
+        return AdditionalInitialization.withCapabilities(Stability.EXPERIMENTAL);
     }
 }
