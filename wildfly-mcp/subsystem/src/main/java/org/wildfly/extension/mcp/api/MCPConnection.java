@@ -34,4 +34,6 @@ public interface MCPConnection extends Closeable {
     PendingRequestRegistry pendingRequests();
 
     InitializeRequest initializeRequest();
+
+    long lastActivity();
 }
