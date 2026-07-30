@@ -76,6 +76,9 @@ The feature pack provides 37 Galleon layers organized by functionality. For each
   * `mcp-client-stdio`: MCP Client using the Standard Input/Output (stdio) transport
   * `mcp-client-streable`: MCP Client using the Streamable transport
   * `mcp-server`: MCP Server support for exposing Jakarta EE applications as MCP servers
+* Support for [Guardrails](#guardrails) to validate or rewrite AI service input/output (no dedicated layer - works with any chat model layer already listed above), via `@RegisterAIService` attributes:
+  * `inputGuardrails` / `outputGuardrails`: reference guardrail classes directly
+  * `inputGuardrailNames` / `outputGuardrailNames`: reference named CDI guardrail beans
 * Support for WebAssembly:
   * `wasm`: WebAssembly WASI module support
   
@@ -280,6 +283,31 @@ To get the token associated to a user you can use the following command:
 ```
 curl -X POST http://localhost:8080/realms/myrealm/protocol/openid-connect/token -H 'content-type: application/x-www-form-urlencoded' -d 'client_id=mcp-client&client_secret=UmqLUYjlRbDXZqa6vsiOmonjysIxTL7W' -d 'username=myuser&password=myuser&grant_type=password' | jq --raw-output '.access_token'
 ```
+
+Guardrails
+==========================
+
+The feature pack lets AI services use [LangChain4j Guardrails](https://docs.langchain4j.dev/tutorials/guardrails)
+to validate or rewrite messages going into and coming out of the model. This is provided by
+`langchain4j-cdi`, so it works with any chat model layer already - there is no dedicated Galleon
+layer to provision.
+
+`@RegisterAIService` supports:
+
+* `inputGuardrails` / `outputGuardrails`: `Class<? extends InputGuardrail/OutputGuardrail>[]`,
+  instantiated directly (no CDI needed) - use this when the guardrail has no dependencies of its
+  own.
+* `inputGuardrailNames` / `outputGuardrailNames`: `String[]` referencing `@Named` CDI beans
+  implementing `InputGuardrail`/`OutputGuardrail` - use this when the guardrail needs `@Inject`
+  (for example, to call a moderation service).
+
+A guardrail can reject a request or response (`failure(...)`/`fatal(...)`, surfaced to the caller
+as a `GuardrailException`), or rewrite it transparently (`successWith(...)`).
+
+See the [`guardrails-assistant`](examples/guardrails-assistant) example for a complete
+input-rejection and output-rewriting walkthrough.
+
+
 
 [PROOF OF CONCEPT] WASM Support
 ==========================
