@@ -15,6 +15,7 @@
         <artifact name="${ai.djl.huggingface:tokenizers}"/>
         <artifact name="${com.microsoft.onnxruntime:onnxruntime}"/>
         <artifact name="${dev.langchain4j:langchain4j}"/>
+        <artifact name="${dev.langchain4j:langchain4j-agentic}"/>
         <artifact name="${dev.langchain4j:langchain4j-core}"/>
         <artifact name="${dev.langchain4j:langchain4j-embeddings}"/>
         <artifact name="${dev.langchain4j:langchain4j-http-client}"/>
