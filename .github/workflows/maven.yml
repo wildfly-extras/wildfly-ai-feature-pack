@@ -1,4 +1,4 @@
-name: CI
+name: Maven
 on:
   push:
     branches:
@@ -9,7 +9,7 @@ on:
 permissions:
   contents: read
 jobs:
-  ci:
+  build-and-test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -23,6 +23,7 @@ jobs:
           - 17
           - 21
           - 25
+          - 26
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -35,3 +36,10 @@ jobs:
       - name: Build with Maven
         # The module 'wildfly-ai-feature-pack' requires the 'install' goal
         run: ./mvnw --batch-mode --no-transfer-progress clean install
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: ${{ matrix.os }}-${{ matrix.java }}-test-reports
+          path: |
+            **/surefire-reports*/*
+            **/failsafe-reports*/*
