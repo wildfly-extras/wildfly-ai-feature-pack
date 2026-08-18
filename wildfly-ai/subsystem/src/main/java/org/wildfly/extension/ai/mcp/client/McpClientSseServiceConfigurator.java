@@ -14,7 +14,7 @@ import static org.wildfly.extension.ai.mcp.client.McpClientSseProviderRegistrar.
 
 import dev.langchain4j.mcp.client.DefaultMcpClient;
 import dev.langchain4j.mcp.client.transport.McpTransport;
-import dev.langchain4j.mcp.client.transport.http.HttpMcpTransport;
+import dev.langchain4j.mcp.client.transport.http.StreamableHttpMcpTransport;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
@@ -46,11 +46,11 @@ public class McpClientSseServiceConfigurator implements ResourceServiceConfigura
             public WildFlyMcpClient get() {
                 try {
                     URI url = new URI(scheme, null, outboundSocketBinding.get().getUnresolvedDestinationAddress(), outboundSocketBinding.get().getDestinationPort(), path, null, null);
-                    McpTransport transport = new HttpMcpTransport.Builder()
-                            .logRequests(logRequests)
-                            .logResponses(logResponses)
+                    McpTransport transport = new StreamableHttpMcpTransport.Builder()
+                            .logRequests(Boolean.TRUE.equals(logRequests))
+                            .logResponses(Boolean.TRUE.equals(logResponses))
                             .timeout(connectTimeOut > 0L ? Duration.ofMillis(connectTimeOut) : null)
-                            .sseUrl(url.toString())
+                            .url(url.toString())
                             .build();
                     return new WildFlyMcpClient(new DefaultMcpClient.Builder()
                             .transport(transport)
