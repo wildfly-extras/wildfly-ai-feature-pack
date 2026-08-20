@@ -1,6 +1,6 @@
 # WildFly AI Integration Tests
 
-This module contains integration tests for the WildFly AI Feature Pack using Arquillian and Testcontainers.
+This module contains integration tests for the WildFly AI Feature-Pack using Arquillian and Testcontainers.
 
 ## Overview
 

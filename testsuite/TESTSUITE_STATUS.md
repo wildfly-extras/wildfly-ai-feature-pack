@@ -1,8 +1,8 @@
-# WildFly AI Feature Pack - Integration Testsuite Status
+# WildFly AI Feature-Pack - Integration Testsuite Status
 
 ## Overview
 
-A complete integration testsuite has been implemented for the WildFly AI Feature Pack following modern WildFly testing patterns (2024). The testsuite uses:
+A complete integration testsuite has been implemented for the WildFly AI Feature-Pack following modern WildFly testing patterns (2024). The testsuite uses:
 - **WildFly Glow** for automatic server provisioning
 - **Arquillian** for deployment management
 - **Testcontainers** for Ollama container lifecycle
@@ -255,7 +255,7 @@ tail -f integration/target/server/standalone/log/server.log
 
 ### Server Provisioning
 - **WildFly Version**: 39.0.0.Final
-- **AI Feature Pack**: 0.10.0-SNAPSHOT
+- **AI Feature-Pack**: 0.10.0-SNAPSHOT
 - **LangChain4j**: 1.10.0-beta18 (from parent BOM)
 - **Server Location**: `testsuite/integration/target/server/`
 
@@ -287,4 +287,4 @@ tail -f integration/target/server/standalone/log/server.log
 
 **Status Date**: February 13, 2026
 **Created By**: Claude Code (Sonnet 4.5)
-**Project**: WildFly AI Feature Pack v0.10.0-SNAPSHOT
+**Project**: WildFly AI Feature-Pack v0.10.0-SNAPSHOT

@@ -1,6 +1,6 @@
 # Contributing guide
 
-**First off all, thank you for taking the time to contribute into WildFly AI Feature Pack!** The below contents will help you through the steps for getting started with WildFly AI Feature Pack. Please make sure to read the relevant section before making your contribution. It will make it a lot easier for us maintainers and smooth out the experience for all involved. The community looks forward to your contributions.
+**First off all, thank you for taking the time to contribute into WildFly AI Feature-Pack!** The below contents will help you through the steps for getting started with WildFly AI Feature-Pack. Please make sure to read the relevant section before making your contribution. It will make it a lot easier for us maintainers and smooth out the experience for all involved. The community looks forward to your contributions.
 
 * Git Setup: https://github.com/wildfly/wildfly/blob/main/docs/src/main/asciidoc/_hacking/github_setup.adoc
 * Contributing: https://github.com/wildfly/wildfly/blob/main/docs/src/main/asciidoc/_hacking/contributing.adoc
@@ -32,7 +32,7 @@ Now you have the repository on your computer!
 
 ## Issues
 
-WildFly AI Feature Pack uses GitHub Issues to manage issues. All issues can be found [here](https://github.com/wildfly/wildfly-ai-feature-pack/issues).
+WildFly AI Feature-Pack uses GitHub Issues to manage issues. All issues can be found [here](https://github.com/wildfly/wildfly-ai-feature-pack/issues).
 
 ## Setting up your Developer Environment
 You will need:

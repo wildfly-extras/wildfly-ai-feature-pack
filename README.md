@@ -1,8 +1,8 @@
-WildFly AI Feature Pack
+WildFly AI Feature-Pack
 ========================
 
 This feature-pack for WildFly simplifies the integration of AI in applications.
-The AI Galleon feature-pack is to be provisioned along with the WildFly Galleon feature-pack.
+The AI feature-pack is to be provisioned along with WildFly's Galleon feature-pack.
 
 The Galleon layers defined in these feature-packs are decorator layers. This means that they need to be provisioned 
 in addition to a WildFly base layer. The WildFly [Installation Guide](https://docs.wildfly.org/33/#installation-guides) covers the 
@@ -15,7 +15,7 @@ Resources:
 * [WildFly Installation Guide](https://docs.wildfly.org/33/#installation-guides)
 * [Galleon documentation](https://docs.wildfly.org/galleon/)
 
-Galleon feature-pack compatible with WildFly
+Feature-pack compatible with WildFly
 ========================
 
 The Maven coordinates to use is: `org.wildfly.generative-ai:wildfly-ai-feature-pack:0.10.0-SNAPSHOT`
@@ -116,7 +116,7 @@ Recent Features
 * **Enhanced MCP Support**: Added MCP server capabilities and multiple transport options (SSE, stdio, streamable).
 * **Neo4j Content Retrievers**: Added specialized content retrievers for Neo4j with Ollama and OpenAI integration.
 
-Using the WildFly AI Feature Pack
+Using the WildFly AI Feature-Pack
 ==========================
 
 Provisioning of AI tools Galleon layers can be done in multiple ways according to the provisioning tooling in use.
