@@ -93,10 +93,8 @@
              opentelemetry-sdk-testing is not in the BOM so it needs an explicit version here. -->
         <version.io.opentelemetry.sdk.testing>1.48.0</version.io.opentelemetry.sdk.testing>
 
-        <!-- Nexus deployment settings -->
-        <nexus.staging.tag>ai-feature-pack-${project.version}</nexus.staging.tag>
-        <nexus.repository.staging>wildfly-staging</nexus.repository.staging>
-        <nexus.repository.release>wildfly</nexus.repository.release>
+        <central.autoPublish>false</central.autoPublish>
+        <central.deploymentName>${session.topLevelProject.artifactId}-${session.topLevelProject.version}</central.deploymentName>
     </properties>
 
     <dependencyManagement>
@@ -1011,6 +1009,7 @@
                     <localCheckout>true</localCheckout>
                     <pushChanges>false</pushChanges>
                     <preparationGoals>clean install</preparationGoals>
+                    <releaseProfiles>central-release</releaseProfiles>
                 </configuration>
             </plugin>
             <plugin>

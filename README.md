@@ -297,9 +297,10 @@ Releasing
 ==========================
 
 ```
-mvn release:prepare 
-mvn release:perform -Pjboss-release
+mvn release:prepare
+mvn release:perform
 git push origin main
 git push origin --tags
-nxrm3:staging-move
 ```
+
+Artifacts are published to Maven Central via the `central-release` profile (activated automatically by `maven-release-plugin`). Auto-publish is disabled; after `release:perform`, log in to [central.sonatype.com](https://central.sonatype.com) to review and publish the deployment.

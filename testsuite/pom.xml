@@ -15,7 +15,7 @@
     <description>Integration testsuite for the WildFly AI Feature Pack</description>
 
     <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
+        <central.skipPublishing>true</central.skipPublishing>
         <version.arquillian>1.10.0.Final</version.arquillian>
         <version.wildfly.arquillian>5.1.0.Final</version.wildfly.arquillian>
         <version.maven.surefire>3.5.5</version.maven.surefire>

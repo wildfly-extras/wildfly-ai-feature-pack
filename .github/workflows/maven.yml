@@ -43,3 +43,10 @@ jobs:
           path: |
             **/surefire-reports*/*
             **/failsafe-reports*/*
+      - name: Verify central-release profile builds
+        if: matrix.os == 'ubuntu-latest' && matrix.java == 17
+        run: >
+          mvn --batch-mode --no-transfer-progress install
+          -Pcentral-release
+          -DskipTests
+          -Dgpg.skip=true
