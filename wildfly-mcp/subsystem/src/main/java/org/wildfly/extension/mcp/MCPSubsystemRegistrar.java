@@ -19,6 +19,7 @@ import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
 import org.jboss.as.controller.SubsystemRegistration;
 import org.jboss.as.controller.SubsystemResourceRegistration;
+import org.jboss.as.controller.access.management.SensitiveTargetAccessConstraintDefinition;
 import org.jboss.as.controller.capability.RuntimeCapability;
 import org.jboss.as.controller.descriptions.ParentResourceDescriptionResolver;
 import org.jboss.as.controller.descriptions.SubsystemResourceDescriptionResolver;
@@ -87,7 +88,13 @@ class MCPSubsystemRegistrar implements SubsystemResourceDefinitionRegistrar {
             .setRestartAllServices()
             .setStability(Stability.EXPERIMENTAL)
             .build();
-    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(MESSAGES_PATH, SSE_PATH, STREAMABLE_PATH, PAGE_SIZE, TIMEOUT);
+    public static final SimpleAttributeDefinition REQUEST_STATE_SECRET = SimpleAttributeDefinitionBuilder.create("request-state-secret", ModelType.STRING, true)
+            .addAccessConstraint(SensitiveTargetAccessConstraintDefinition.CREDENTIAL)
+            .setAllowExpression(true)
+            .setRestartAllServices()
+            .setStability(Stability.EXPERIMENTAL)
+            .build();
+    public static final Collection<AttributeDefinition> ATTRIBUTES = List.of(MESSAGES_PATH, SSE_PATH, STREAMABLE_PATH, PAGE_SIZE, TIMEOUT, REQUEST_STATE_SECRET);
 
     @Override
     public ManagementResourceRegistration register(SubsystemRegistration parent, ManagementResourceRegistrationContext context) {

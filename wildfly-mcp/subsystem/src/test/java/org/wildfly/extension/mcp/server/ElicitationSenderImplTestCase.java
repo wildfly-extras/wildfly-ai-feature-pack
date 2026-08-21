@@ -13,6 +13,7 @@ import static org.junit.Assert.fail;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -31,7 +32,7 @@ public class ElicitationSenderImplTestCase {
     @Test
     public void testIsSupportedWhenElicitationCapabilityPresent() {
         InitializeRequest req = new InitializeRequest(CLIENT_INFO, "2025-03-26",
-                List.of(new ClientCapability("elicitation", java.util.Map.of())));
+                List.of(new ClientCapability("elicitation", java.util.Set.of())));
         ElicitationSenderImpl sender = new ElicitationSenderImpl(
                 new PendingRequestRegistry(), new TestResponder(), req);
         assertTrue(sender.isFormSupported());
@@ -40,7 +41,7 @@ public class ElicitationSenderImplTestCase {
     @Test
     public void testIsNotSupportedWhenUrlOnlyCapability() {
         InitializeRequest req = new InitializeRequest(CLIENT_INFO, "2025-03-26",
-                List.of(new ClientCapability("elicitation", java.util.Map.of("url", java.util.Map.of()))));
+                List.of(new ClientCapability("elicitation", java.util.Set.of("url"))));
         ElicitationSenderImpl sender = new ElicitationSenderImpl(
                 new PendingRequestRegistry(), new TestResponder(), req);
         assertFalse("Form mode should not be supported when only url is declared", sender.isFormSupported());
@@ -76,8 +77,8 @@ public class ElicitationSenderImplTestCase {
 
         try {
             sender.send(elicitation);
-            fail("Expected IllegalStateException");
-        } catch (IllegalStateException e) {
+            fail("Expected MCPException");
+        } catch (MCPException e) {
             assertTrue(e.getMessage().contains("elicitation"));
         }
     }
@@ -89,7 +90,7 @@ public class ElicitationSenderImplTestCase {
         PendingRequestRegistry registry = new PendingRequestRegistry();
         TestResponder responder = new TestResponder();
         InitializeRequest req = new InitializeRequest(CLIENT_INFO, "2025-03-26",
-                List.of(new ClientCapability("elicitation", java.util.Map.of())));
+                List.of(new ClientCapability("elicitation", java.util.Set.of())));
 
         ElicitationSenderImpl sender = new ElicitationSenderImpl(registry, responder, req);
 
@@ -146,7 +147,7 @@ public class ElicitationSenderImplTestCase {
         PendingRequestRegistry registry = new PendingRequestRegistry();
         TestResponder responder = new TestResponder();
         InitializeRequest req = new InitializeRequest(CLIENT_INFO, "2025-03-26",
-                List.of(new ClientCapability("elicitation", java.util.Map.of())));
+                List.of(new ClientCapability("elicitation", java.util.Set.of())));
         ElicitationSenderImpl sender = new ElicitationSenderImpl(registry, responder, req);
 
         Elicitation.FormBuilder form = Elicitation.formBuilder("Confirm?");
@@ -186,7 +187,7 @@ public class ElicitationSenderImplTestCase {
         PendingRequestRegistry registry = new PendingRequestRegistry();
         TestResponder responder = new TestResponder();
         InitializeRequest req = new InitializeRequest(CLIENT_INFO, "2025-03-26",
-                List.of(new ClientCapability("elicitation", java.util.Map.of())));
+                List.of(new ClientCapability("elicitation", java.util.Set.of())));
         ElicitationSenderImpl sender = new ElicitationSenderImpl(registry, responder, req);
 
         Elicitation.FormBuilder form = Elicitation.formBuilder("Quick timeout test");
@@ -216,7 +217,7 @@ public class ElicitationSenderImplTestCase {
     @Test
     public void testIsUrlSupportedWhenUrlPropertyPresent() {
         InitializeRequest req = new InitializeRequest(CLIENT_INFO, "2025-03-26",
-                List.of(new ClientCapability("elicitation", java.util.Map.of("form", java.util.Map.of(), "url", java.util.Map.of()))));
+                List.of(new ClientCapability("elicitation", java.util.Set.of("form", "url"))));
         ElicitationSenderImpl sender = new ElicitationSenderImpl(
                 new PendingRequestRegistry(), new TestResponder(), req);
         assertTrue(sender.isUrlSupported());
@@ -225,7 +226,7 @@ public class ElicitationSenderImplTestCase {
     @Test
     public void testIsUrlNotSupportedWhenNoUrlProperty() {
         InitializeRequest req = new InitializeRequest(CLIENT_INFO, "2025-03-26",
-                List.of(new ClientCapability("elicitation", java.util.Map.of())));
+                List.of(new ClientCapability("elicitation", java.util.Set.of())));
         ElicitationSenderImpl sender = new ElicitationSenderImpl(
                 new PendingRequestRegistry(), new TestResponder(), req);
         assertTrue(sender.isFormSupported());
@@ -245,7 +246,7 @@ public class ElicitationSenderImplTestCase {
     @Test
     public void testSendUrlThrowsWhenNotSupported() throws Exception {
         InitializeRequest req = new InitializeRequest(CLIENT_INFO, "2025-03-26",
-                List.of(new ClientCapability("elicitation", java.util.Map.of())));
+                List.of(new ClientCapability("elicitation", java.util.Set.of())));
         ElicitationSenderImpl sender = new ElicitationSenderImpl(
                 new PendingRequestRegistry(), new TestResponder(), req);
 
@@ -256,9 +257,9 @@ public class ElicitationSenderImplTestCase {
 
         try {
             sender.send(urlReq);
-            fail("Expected IllegalStateException");
-        } catch (IllegalStateException e) {
-            assertTrue(e.getMessage().contains("URL"));
+            fail("Expected MCPException");
+        } catch (MCPException e) {
+            assertTrue(e.getMessage().contains("elicitation"));
         }
     }
 
@@ -270,7 +271,7 @@ public class ElicitationSenderImplTestCase {
         TestResponder responder = new TestResponder();
         InitializeRequest req = new InitializeRequest(CLIENT_INFO, "2025-03-26",
                 List.of(new ClientCapability("elicitation",
-                        java.util.Map.of("form", java.util.Map.of(), "url", java.util.Map.of()))));
+                        java.util.Set.of("form", "url"))));
 
         ElicitationSenderImpl sender = new ElicitationSenderImpl(registry, responder, req);
 
@@ -319,7 +320,7 @@ public class ElicitationSenderImplTestCase {
         TestResponder responder = new TestResponder();
         InitializeRequest req = new InitializeRequest(CLIENT_INFO, "2025-03-26",
                 List.of(new ClientCapability("elicitation",
-                        java.util.Map.of("form", java.util.Map.of(), "url", java.util.Map.of()))));
+                        java.util.Set.of("form", "url"))));
 
         ElicitationSenderImpl sender = new ElicitationSenderImpl(registry, responder, req);
 
@@ -364,7 +365,7 @@ public class ElicitationSenderImplTestCase {
         TestResponder responder = new TestResponder();
         InitializeRequest req = new InitializeRequest(CLIENT_INFO, "2025-03-26",
                 List.of(new ClientCapability("elicitation",
-                        java.util.Map.of("form", java.util.Map.of(), "url", java.util.Map.of()))));
+                        java.util.Set.of("form", "url"))));
         ElicitationSenderImpl sender = new ElicitationSenderImpl(registry, responder, req);
 
         Elicitation urlReq = Elicitation.urlBuilder("Quick timeout",
@@ -394,7 +395,7 @@ public class ElicitationSenderImplTestCase {
         TestResponder responder = new TestResponder();
         InitializeRequest req = new InitializeRequest(CLIENT_INFO, "2025-03-26",
                 List.of(new ClientCapability("elicitation",
-                        java.util.Map.of("form", java.util.Map.of(), "url", java.util.Map.of()))));
+                        java.util.Set.of("form", "url"))));
         ElicitationSenderImpl sender = new ElicitationSenderImpl(registry, responder, req);
 
         sender.notifyElicitationComplete("auth-456");
@@ -413,7 +414,7 @@ public class ElicitationSenderImplTestCase {
         PendingRequestRegistry registry = new PendingRequestRegistry();
         TestResponder responder = new TestResponder();
         InitializeRequest req = new InitializeRequest(CLIENT_INFO, "2025-03-26",
-                List.of(new ClientCapability("elicitation", java.util.Map.of())));
+                List.of(new ClientCapability("elicitation", java.util.Set.of())));
 
         ElicitationSenderImpl sender = new ElicitationSenderImpl(registry, responder, req);
 

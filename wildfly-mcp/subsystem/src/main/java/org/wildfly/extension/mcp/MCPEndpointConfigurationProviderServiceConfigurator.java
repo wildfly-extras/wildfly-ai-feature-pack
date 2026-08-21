@@ -8,6 +8,7 @@ import static org.wildfly.extension.mcp.Capabilities.MCP_SERVER_PROVIDER_CAPABIL
 import static org.wildfly.extension.mcp.MCPSubsystemRegistrar.MESSAGES_PATH;
 import static org.wildfly.extension.mcp.MCPSubsystemRegistrar.PAGE_SIZE;
 import static org.wildfly.extension.mcp.MCPSubsystemRegistrar.SSE_PATH;
+import static org.wildfly.extension.mcp.MCPSubsystemRegistrar.REQUEST_STATE_SECRET;
 import static org.wildfly.extension.mcp.MCPSubsystemRegistrar.STREAMABLE_PATH;
 import static org.wildfly.extension.mcp.MCPSubsystemRegistrar.TIMEOUT;
 
@@ -29,10 +30,12 @@ public class MCPEndpointConfigurationProviderServiceConfigurator implements Reso
         final String streamablePath = STREAMABLE_PATH.resolveModelAttribute(context, model).asString();
         final int pageSize = PAGE_SIZE.resolveModelAttribute(context, model).asInt(0);
         final long timeout = TIMEOUT.resolve(context, model).getSeconds();
+        ModelNode secretNode = REQUEST_STATE_SECRET.resolveModelAttribute(context, model);
+        final String requestStateSecret = secretNode.isDefined() ? secretNode.asString() : null;
         Supplier<MCPEndpointConfiguration> factory = new Supplier<>() {
             @Override
             public MCPEndpointConfiguration get() {
-                return new MCPEndpointConfiguration(ssePath, messagesPath, streamablePath, pageSize, timeout);
+                return new MCPEndpointConfiguration(ssePath, messagesPath, streamablePath, pageSize, timeout, requestStateSecret);
             }
         };
         return CapabilityServiceInstaller.BlockingBuilder.of(MCP_SERVER_PROVIDER_CAPABILITY, factory)

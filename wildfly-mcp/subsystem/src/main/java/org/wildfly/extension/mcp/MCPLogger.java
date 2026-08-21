@@ -182,4 +182,23 @@ public interface MCPLogger extends BasicLogger {
     @Message(id = 44, value = "Unhandled content block type: %s")
     @LogMessage(level = WARN)
     void warnUnhandledContentBlockType(String className);
+
+    @LogMessage(level = WARN)
+    @Message(id = 45, value = "Origin header '%s' does not match host '%s'")
+    void originValidationFailed(String origin, String host);
+
+    @LogMessage(level = WARN)
+    @Message(id = 46, value = "JSON-RPC batch requests are not supported on Streamable HTTP")
+    void batchRequestRejected();
+
+    @LogMessage(level = WARN)
+    @Message(id = 47, value = "%s header '%s' does not match JSON-RPC %s '%s'")
+    void headerMismatch(String headerName, String headerValue, String fieldName, String fieldValue);
+
+    @LogMessage(level = WARN)
+    @Message(id = 48, value = "Unknown session: %s")
+    void unknownSession(String sessionId);
+
+    @Message(id = 49, value = "The 'request-state-secret' attribute must be a valid Base64-encoded value")
+    IllegalArgumentException invalidRequestStateSecret(@Cause Throwable cause);
 }

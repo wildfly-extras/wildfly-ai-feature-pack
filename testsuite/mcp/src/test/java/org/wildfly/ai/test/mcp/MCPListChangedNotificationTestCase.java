@@ -329,7 +329,7 @@ public class MCPListChangedNotificationTestCase {
         try (OutputStream os = conn.getOutputStream()) {
             os.write(jsonBody.getBytes(StandardCharsets.UTF_8));
         }
-        assertThat(conn.getResponseCode()).as("POST should succeed").isEqualTo(200);
+        assertThat(conn.getResponseCode()).as("POST should succeed").isIn(200, 202);
         conn.disconnect();
     }
 

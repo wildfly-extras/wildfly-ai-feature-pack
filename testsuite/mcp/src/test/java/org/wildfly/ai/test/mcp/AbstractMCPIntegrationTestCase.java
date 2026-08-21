@@ -29,6 +29,9 @@ import jakarta.json.JsonObjectBuilder;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,6 +62,16 @@ abstract class AbstractMCPIntegrationTestCase {
 
     @ArquillianResource
     protected URL deploymentUrl;
+
+    protected static WebArchive createStandardMCPDeployment(String warName) {
+        return ShrinkWrap.create(WebArchive.class, warName)
+                .addClass(TestMCPTool.class)
+                .addClass(TestMCPTool.AddResult.class)
+                .addClass(TestMCPPrompt.class)
+                .addClass(TestMCPResource.class)
+                .addClass(TestMCPCompletion.class)
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+    }
 
     @AfterEach
     public void cleanUpState() throws Exception {
@@ -142,7 +155,7 @@ abstract class AbstractMCPIntegrationTestCase {
                 {"jsonrpc":"2.0","method":"notifications/initialized"}""";
 
         int notifStatusCode = postToStreamable(initializedMessage);
-        assertThat(notifStatusCode).as("Initialized notification should succeed").isEqualTo(200);
+        assertThat(notifStatusCode).as("Initialized notification should return 202 Accepted").isEqualTo(202);
     }
 
     private void dispatchSseEvent(String data) {

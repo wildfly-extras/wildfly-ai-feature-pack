@@ -84,20 +84,26 @@ import org.wildfly.security.manager.WildFlySecurityManager;
 
 public class ToolMessageHandler {
 
+    private static final String REQUEST_STATE_META_KEY = "requestState";
+
     private final SchemaGenerator schemaGenerator;
     private final WildFlyMCPRegistry registry;
     private final ObjectMapper mapper;
     private final ClassLoader classLoader;
     private final ExecutorService executorService;
     private final int pageSize;
+    private final RequestStateCodec requestStateCodec;
     // Deployment-scoped cache: populated once per tool on first tools/list, never invalidated.
     // Safe because this handler instance is created per deployment and discarded on undeploy/redeploy.
     private final Map<String, JsonObject> toolJsonCache = new ConcurrentHashMap<>();
     // Tools whose schema generation failed permanently for this deployment — skipped on every tools/list.
     private final Set<String> failedToolNames = ConcurrentHashMap.newKeySet();
 
-
     ToolMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader, ExecutorService executorService, int pageSize) {
+        this(registry, classLoader, executorService, pageSize, null);
+    }
+
+    ToolMessageHandler(WildFlyMCPRegistry registry, ClassLoader classLoader, ExecutorService executorService, int pageSize, RequestStateCodec requestStateCodec) {
         if (pageSize < 0) {
             throw ROOT_LOGGER.invalidPageSize(pageSize);
         }
@@ -108,6 +114,7 @@ public class ToolMessageHandler {
         this.classLoader = classLoader;
         this.executorService = executorService;
         this.pageSize = pageSize;
+        this.requestStateCodec = requestStateCodec;
     }
 
     /**
@@ -149,6 +156,8 @@ public class ToolMessageHandler {
         addInputSchema(tool, toolMetadata);
         addToolAnnotations(tool, toolMetadata.toolAnnotations());
         addOutputSchema(tool, toolMetadata);
+        MCPServerUtils.addIcon(tool, toolMetadata);
+        MCPServerUtils.addCacheMeta(tool, toolMetadata);
         return tool.build();
     }
 
@@ -368,8 +377,16 @@ public class ToolMessageHandler {
                                 result = registry.getToolInvoker(toolName).invokeWithArguments(preparedArguments);
                             }
                         } catch (Throwable ex) {
-                            ROOT_LOGGER.errorInvokingTool(ex, toolName);
-                            sendInvocationFailureResult(id, ex, responder);
+                            Throwable cause = ex;
+                            while (cause.getCause() != null && cause.getCause() != cause) {
+                                cause = cause.getCause();
+                            }
+                            if (cause instanceof MCPException mce) {
+                                MCPException.sendError(mce, id, responder);
+                            } else {
+                                ROOT_LOGGER.errorInvokingTool(ex, toolName);
+                                sendInvocationFailureResult(id, ex, responder);
+                            }
                             return;
                         }
                     } else {
@@ -395,6 +412,7 @@ public class ToolMessageHandler {
                                 ROOT_LOGGER.errorSerializingStructuredContent(e, toolName);
                             }
                         });
+                        encodeRequestState(tr, id, builder);
                     } else {
                         Collection<? extends ContentBlock> content = ContentMapper.processResultAsText(result);
                         for (var contentBlock : content) {
@@ -457,4 +475,28 @@ public class ToolMessageHandler {
         return ret;
     }
 
+    private void encodeRequestState(ToolResponse tr, String requestId, JsonObjectBuilder builder) {
+        if (requestStateCodec == null) {
+            return;
+        }
+        Map<String, Object> meta = tr.metadata();
+        if (meta == null || !meta.containsKey(REQUEST_STATE_META_KEY)) {
+            return;
+        }
+        Object stateObj = meta.get(REQUEST_STATE_META_KEY);
+        JsonObject state;
+        if (stateObj instanceof JsonObject jo) {
+            state = jo;
+        } else {
+            try (var reader = Json.createReader(new StringReader(mapper.writeValueAsString(stateObj)))) {
+                state = reader.readObject();
+            } catch (Exception e) {
+                ROOT_LOGGER.debugf(e, "Failed to serialize requestState metadata to JSON");
+                return;
+            }
+        }
+        // TODO: source the authenticated principal from the security context once MCP auth is wired
+        String token = requestStateCodec.encode(state, null, requestId);
+        builder.add("_meta", Json.createObjectBuilder().add(REQUEST_STATE_META_KEY, token));
+    }
 }

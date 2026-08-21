@@ -26,8 +26,7 @@ import org.wildfly.mcp.api.elicitation.ElicitationSender;
 import org.wildfly.mcp.api.elicitation.ElicitationProperty;
 
 import static org.wildfly.extension.mcp.MCPLogger.ROOT_LOGGER;
-import static org.wildfly.mcp.api.elicitation.Elicitation.Mode.FORM;
-import static org.wildfly.mcp.api.elicitation.Elicitation.Mode.URL;
+import static org.wildfly.extension.mcp.api.MCPMethods.MISSING_REQUIRED_CLIENT_CAPABILITY;
 
 /**
  * Subsystem-side implementation of {@link ElicitationSender}.
@@ -86,7 +85,9 @@ class ElicitationSenderImpl implements ElicitationSender {
 
     private Elicitation.Response sendForm(Elicitation request) throws Exception {
         if (!isFormSupported()) {
-            throw ROOT_LOGGER.elicitationModeNotSupported(FORM);
+            throw new MCPException(
+                    "Client does not support required capability: elicitation (form)",
+                    MISSING_REQUIRED_CLIENT_CAPABILITY);
         }
 
         CompletableFuture<JsonObject> future = new CompletableFuture<>();
@@ -120,7 +121,9 @@ class ElicitationSenderImpl implements ElicitationSender {
 
     private Elicitation.Response sendUrl(Elicitation request) throws Exception {
         if (!isUrlSupported()) {
-            throw ROOT_LOGGER.elicitationModeNotSupported(URL);
+            throw new MCPException(
+                    "Client does not support required capability: elicitation (url)",
+                    MISSING_REQUIRED_CLIENT_CAPABILITY);
         }
 
         CompletableFuture<JsonObject> future = new CompletableFuture<>();

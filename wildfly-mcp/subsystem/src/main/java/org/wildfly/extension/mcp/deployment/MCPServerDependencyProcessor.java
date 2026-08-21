@@ -202,7 +202,7 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
                 toolAnnotations = new ToolAnnotations(title, null, null, null, null);
             }
             ROOT_LOGGER.debugf("Tool detected on class %s with method %s with the following annotated parameters %s", info.declaringClass(), info.name(), arguments);
-            MCPFeatureMetadata metadata = new MCPFeatureMetadata(MCPFeatureMetadata.Kind.TOOL,
+            MCPFeatureMetadata metadata = MCPFeatureMetadata.builder(MCPFeatureMetadata.Kind.TOOL,
                     name,
                     new MethodMetadata(
                             annotation.target().asMethod().name(),
@@ -211,12 +211,13 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
                             null,
                             arguments,
                             info.declaringClass().toString(),
-                            annotation.target().asMethod().returnType().name().toString()),
-                    toolAnnotations, structuredContent,
-                    Optional.ofNullable(inputSchemaGenerator).filter(s -> !s.isEmpty()),
-                    Optional.ofNullable(outputSchemaGenerator).filter(s -> !s.isEmpty()),
-                    Optional.ofNullable(outputSchemaFrom).filter(s -> !s.isEmpty())
-            );
+                            annotation.target().asMethod().returnType().name().toString()))
+                    .toolAnnotations(toolAnnotations)
+                    .structuredContent(structuredContent)
+                    .inputSchemaGenerator(inputSchemaGenerator.isEmpty() ? null : inputSchemaGenerator)
+                    .outputSchemaGenerator(outputSchemaGenerator.isEmpty() ? null : outputSchemaGenerator)
+                    .outputSchemaFrom(outputSchemaFrom.isEmpty() ? null : outputSchemaFrom)
+                    .build();
             registry.addTool(name, metadata);
         }
     }
