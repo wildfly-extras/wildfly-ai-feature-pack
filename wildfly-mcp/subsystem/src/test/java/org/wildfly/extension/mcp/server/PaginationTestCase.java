@@ -77,7 +77,7 @@ public class PaginationTestCase {
 
         ConnectionManager connectionManager = new ConnectionManager();
         handler = new MCPMessageHandler(connectionManager, registry, getClass().getClassLoader(),
-                "test-server", "1.0.0", PAGE_SIZE);
+                "test-server", "1.0.0", new MCPHandlerConfig(PAGE_SIZE, List.of(), null, null));
 
         responder = new TestResponder();
         connection = new TestMCPConnection("test-connection-1");
@@ -119,7 +119,7 @@ public class PaginationTestCase {
     public void testToolsListNoPaginationWhenDisabled() {
         ConnectionManager cm = new ConnectionManager();
         MCPMessageHandler noPagingHandler = new MCPMessageHandler(cm, registry,
-                getClass().getClassLoader(), "test-server", "1.0.0", 0);
+                getClass().getClassLoader(), "test-server", "1.0.0");
         TestMCPConnection conn = new TestMCPConnection("no-page-conn");
         cm.add(conn);
         TestResponder resp = new TestResponder();

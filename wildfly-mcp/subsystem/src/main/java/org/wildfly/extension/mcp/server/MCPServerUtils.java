@@ -4,10 +4,15 @@
  */
 package org.wildfly.extension.mcp.server;
 
+import static org.wildfly.extension.mcp.injection.MCPFieldNames.CACHE_SCOPE;
 import static org.wildfly.extension.mcp.injection.MCPFieldNames.CONTENT;
+import static org.wildfly.extension.mcp.injection.MCPFieldNames.ICON;
 import static org.wildfly.extension.mcp.injection.MCPFieldNames.IS_ERROR;
+import static org.wildfly.extension.mcp.injection.MCPFieldNames.META;
 import static org.wildfly.extension.mcp.injection.MCPFieldNames.TEXT;
+import static org.wildfly.extension.mcp.injection.MCPFieldNames.TTL_MS;
 import static org.wildfly.extension.mcp.injection.MCPFieldNames.TYPE;
+import static org.wildfly.extension.mcp.injection.MCPFieldNames.URI;
 
 import static org.wildfly.extension.mcp.MCPLogger.ROOT_LOGGER;
 
@@ -35,6 +40,7 @@ import org.wildfly.extension.mcp.injection.MCPFieldNames;
 import org.wildfly.extension.mcp.injection.elicitation.ElicitationSenderHolder;
 import org.wildfly.extension.mcp.injection.progress.ProgressHolder;
 import org.wildfly.extension.mcp.injection.tool.ArgumentMetadata;
+import org.wildfly.extension.mcp.injection.tool.MCPFeatureMetadata;
 
 /**
  * Package-private utilities shared across MCP message handler classes.
@@ -172,6 +178,21 @@ final class MCPServerUtils {
             version = version.substring(0, version.length() - 2);
         }
         return version;
+    }
+
+    static void addIcon(JsonObjectBuilder builder, MCPFeatureMetadata metadata) {
+        metadata.iconUri().ifPresent(uri ->
+                builder.add(ICON, Json.createObjectBuilder().add(URI, uri)));
+    }
+
+    static void addCacheMeta(JsonObjectBuilder builder, MCPFeatureMetadata metadata) {
+        if (metadata.ttlMs().isEmpty() && metadata.cacheScope().isEmpty()) {
+            return;
+        }
+        JsonObjectBuilder meta = Json.createObjectBuilder();
+        metadata.ttlMs().ifPresent(ttl -> meta.add(TTL_MS, ttl));
+        metadata.cacheScope().ifPresent(scope -> meta.add(CACHE_SCOPE, scope.wireValue()));
+        builder.add(META, meta);
     }
 
     /**

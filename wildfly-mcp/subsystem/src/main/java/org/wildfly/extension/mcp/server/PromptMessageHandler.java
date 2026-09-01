@@ -96,6 +96,8 @@ public class PromptMessageHandler {
                 arguments.add(argJson);
             }
             promptJson.add(ARGUMENTS, arguments);
+            MCPServerUtils.addIcon(promptJson, promptMetadata);
+            MCPServerUtils.addCacheMeta(promptJson, promptMetadata);
             prompts.add(promptJson);
         }
         JsonObjectBuilder resultBuilder = Json.createObjectBuilder().add(PROMPTS, prompts);

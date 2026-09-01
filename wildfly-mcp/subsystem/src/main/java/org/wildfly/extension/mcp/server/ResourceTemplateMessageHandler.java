@@ -102,6 +102,8 @@ public class ResourceTemplateMessageHandler {
                 template.add("title", metadata.title());
             }
             ResourceAnnotationsUtil.addAnnotations(template, metadata.audience(), metadata.priority());
+            MCPServerUtils.addIcon(template, metadata);
+            MCPServerUtils.addCacheMeta(template, metadata);
             templates.add(template);
         }
         JsonObjectBuilder resultBuilder = Json.createObjectBuilder().add(RESOURCE_TEMPLATES, templates);

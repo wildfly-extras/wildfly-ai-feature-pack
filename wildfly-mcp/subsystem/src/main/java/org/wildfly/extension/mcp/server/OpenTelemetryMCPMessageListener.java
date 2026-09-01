@@ -5,6 +5,7 @@
 package org.wildfly.extension.mcp.server;
 
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.baggage.Baggage;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
@@ -46,6 +47,8 @@ public class OpenTelemetryMCPMessageListener implements MCPMessageListener {
     // Package-private so unit tests can reference these constants instead of recreating them.
     static final MCPContextKey<Span> SPAN_ATTR_KEY = MCPContextKey.of("otel.span");
     static final MCPContextKey<Scope> SCOPE_ATTR_KEY = MCPContextKey.of("otel.scope");
+    static final MCPContextKey<Scope> BAGGAGE_SCOPE_KEY = MCPContextKey.of("otel.baggage.scope");
+    static final String BAGGAGE_PROTOCOL_VERSION = "io.modelcontextprotocol/protocolVersion";
 
     private static final AttributeKey<String> METHOD_KEY = AttributeKey.stringKey("mcp.method.name");
     private static final AttributeKey<String> ERROR_TYPE_KEY = AttributeKey.stringKey("error.type");
@@ -238,11 +241,17 @@ public class OpenTelemetryMCPMessageListener implements MCPMessageListener {
         }
 
         Span span = spanBuilder.startSpan();
-        // makeCurrent() links this span as the active parent for any child spans created
-        // during message dispatch; the Scope is closed in onAfterMessageDispatched/onError.
         Scope scope = span.makeCurrent();
         context.setAttribute(SPAN_ATTR_KEY, span);
         context.setAttribute(SCOPE_ATTR_KEY, scope);
+        String protoVer = context.protocolVersion();
+        if (protoVer != null) {
+            Scope baggageScope = Baggage.current().toBuilder()
+                    .put(BAGGAGE_PROTOCOL_VERSION, protoVer)
+                    .build()
+                    .makeCurrent();
+            context.setAttribute(BAGGAGE_SCOPE_KEY, baggageScope);
+        }
     }
 
     @Override
@@ -360,8 +369,11 @@ public class OpenTelemetryMCPMessageListener implements MCPMessageListener {
         return builder.build();
     }
 
-    // OTel spec: scope must be closed before span is ended to avoid leaving stale context on the thread.
     private void endSpanAndCloseScope(MCPMessageContext context) {
+        Scope baggageScope = context.getAttribute(BAGGAGE_SCOPE_KEY);
+        if (baggageScope != null) {
+            baggageScope.close();
+        }
         Scope scope = context.getAttribute(SCOPE_ATTR_KEY);
         if (scope != null) {
             scope.close();

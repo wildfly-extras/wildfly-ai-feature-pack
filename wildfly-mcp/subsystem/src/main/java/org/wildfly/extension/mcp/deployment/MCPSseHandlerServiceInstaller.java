@@ -39,6 +39,7 @@ import org.wildfly.extension.mcp.Capabilities;
 import org.wildfly.extension.mcp.api.ConnectionManager;
 import org.wildfly.extension.mcp.api.Messages;
 import org.wildfly.extension.mcp.injection.WildFlyMCPRegistry;
+import org.wildfly.extension.mcp.server.MCPHandlerConfig;
 import org.wildfly.extension.mcp.server.MCPMessageHandler;
 import org.wildfly.extension.mcp.server.MCPServerSentConnectionCallBack;
 import org.wildfly.extension.mcp.server.MCPStreamableConnectionCallBack;
@@ -99,8 +100,10 @@ public class MCPSseHandlerServiceInstaller implements DeploymentServiceInstaller
         // One shared handler instance for the deployment: both HTTP endpoints and the SSE callback
         // route through the same MCPMessageHandler so listener state (e.g. session tracking maps)
         // is consistent across connection types.
+        final String requestStateSecret = configuration.requestStateSecret();
         final MCPMessageHandler mcpMessageHandler = new MCPMessageHandler(
-                connectionManager, registry, classLoader, serverName, deploymentUnit.getName(), pageSize, listeners);
+                connectionManager, registry, classLoader, serverName, deploymentUnit.getName(),
+                new MCPHandlerConfig(pageSize, listeners, null, requestStateSecret));
         final MCPServerSentConnectionCallBack mcpServerSentConnectionCallBack = new MCPServerSentConnectionCallBack(messagesEndpoint, connectionManager);
         final MCPStreamableConnectionCallBack mcpStreamableConnectionCallBack = new MCPStreamableConnectionCallBack(connectionManager, mcpMessageHandler);
         final MessagesHttpHandler messagesHttpHandler = new MessagesHttpHandler(connectionManager, mcpMessageHandler);

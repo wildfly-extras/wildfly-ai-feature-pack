@@ -12,5 +12,5 @@ package org.wildfly.extension.mcp;
  * @param pageSize: maximum number of items per paginated list response; 0 disables pagination.
  * @param timeout: idle connection timeout in seconds; connections inactive for longer than this will be closed.
  */
-public record MCPEndpointConfiguration(String ssePath, String messagesPath, String streamablePath, int pageSize, long timeout) {
+public record MCPEndpointConfiguration(String ssePath, String messagesPath, String streamablePath, int pageSize, long timeout, String requestStateSecret) {
 }

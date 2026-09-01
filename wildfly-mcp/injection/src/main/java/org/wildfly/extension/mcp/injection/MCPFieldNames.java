@@ -48,4 +48,7 @@ public final class MCPFieldNames {
     public static final String SIZE = "size";
     public static final String AUDIENCE = "audience";
     public static final String PRIORITY = "priority";
+    public static final String TTL_MS = "ttlMs";
+    public static final String CACHE_SCOPE = "cacheScope";
+    public static final String ICON = "icon";
 }

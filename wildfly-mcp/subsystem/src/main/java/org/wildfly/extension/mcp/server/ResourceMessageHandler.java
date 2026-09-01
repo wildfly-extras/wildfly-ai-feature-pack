@@ -103,6 +103,8 @@ public class ResourceMessageHandler {
                 resource.add(SIZE, resourceMetadata.size());
             }
             ResourceAnnotationsUtil.addAnnotations(resource, resourceMetadata.audience(), resourceMetadata.priority());
+            MCPServerUtils.addIcon(resource, resourceMetadata);
+            MCPServerUtils.addCacheMeta(resource, resourceMetadata);
             resources.add(resource);
         }
         JsonObjectBuilder resultBuilder = Json.createObjectBuilder().add(RESOURCES, resources);
@@ -248,6 +250,7 @@ public class ResourceMessageHandler {
                     }
                     JsonObjectBuilder builder = Json.createObjectBuilder();
                     builder.add(CONTENTS, jsonContent);
+                    MCPServerUtils.addCacheMeta(builder, metadata);
                     responder.sendResult(id, builder);
                 } catch (MCPException e) {
                     MCPException.sendError(e, id, responder);
