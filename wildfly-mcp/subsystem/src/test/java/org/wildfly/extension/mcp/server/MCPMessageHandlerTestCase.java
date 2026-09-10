@@ -54,12 +54,13 @@ public class MCPMessageHandlerTestCase {
                                 new ArgumentMetadata("title", "Optional title", false, String.class)),
                         "org.test.GreetTool", "java.lang.String")));
 
-        // Register a test prompt
+        // Register a test prompt with a title
         registry.addPrompt("code-review", new MCPFeatureMetadata(
                 MCPFeatureMetadata.Kind.PROMPT, "code-review",
                 new MethodMetadata("codeReview", "Code review prompt", null, null,
                         List.of(new ArgumentMetadata("code", "The code to review", true, String.class)),
-                        "org.test.CodeReviewPrompt", "java.lang.String")));
+                        "org.test.CodeReviewPrompt", "java.lang.String"),
+                "Request Code Review", -1, java.util.Optional.empty(), java.util.OptionalDouble.empty()));
 
         // Register a test resource
         registry.addResource("file:///logs/server.log", new MCPFeatureMetadata(
@@ -235,6 +236,7 @@ public class MCPMessageHandlerTestCase {
         JsonObject prompt = prompts.getJsonObject(0);
         assertEquals("code-review", prompt.getString("name"));
         assertEquals("Code review prompt", prompt.getString("description"));
+        assertEquals("Request Code Review", prompt.getString("title"));
         JsonArray args = prompt.getJsonArray("arguments");
         assertEquals(1, args.size());
         assertEquals("code", args.getJsonObject(0).getString("name"));
