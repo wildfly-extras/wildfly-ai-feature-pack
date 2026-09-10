@@ -106,6 +106,7 @@ public class MCPServerIntegrationTestCase extends AbstractMCPIntegrationTestCase
         assertThat(response).as("Should contain prompts array").contains("\"prompts\"");
         assertThat(response).as("Should list the greeting prompt").contains("\"greeting\"");
         assertThat(response).as("Should contain prompt description").contains("Generates a greeting");
+        assertThat(response).as("Should contain prompt title").contains("Greeting Prompt");
     }
 
     @Test

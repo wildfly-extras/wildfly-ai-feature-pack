@@ -107,6 +107,7 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
         for (AnnotationInstance annotation : annotations) {
             String name = annotation.value(NAME) != null ? annotation.value(NAME).asString() : annotation.target().asMethod().name();
             String description = annotation.value(DESCRIPTION) != null ? annotation.value(DESCRIPTION).asString() : "";
+            String title = annotation.value(TITLE) != null ? annotation.value(TITLE).asString() : "";
             MethodInfo info = annotation.target().asMethod();
             List<ArgumentMetadata> arguments = buildArguments(info, promptArg);
             ROOT_LOGGER.debugf("Prompt detected on class %s with method %s with the following annotated parameters %s", info.declaringClass(), info.name(), arguments);
@@ -119,7 +120,8 @@ public class MCPServerDependencyProcessor implements DeploymentUnitProcessor {
                             null,
                             arguments,
                             info.declaringClass().toString(),
-                            annotation.target().asMethod().returnType().name().toString())
+                            annotation.target().asMethod().returnType().name().toString()),
+                    title, -1, Optional.empty(), OptionalDouble.empty()
             );
             registry.addPrompt(name, metadata);
         }

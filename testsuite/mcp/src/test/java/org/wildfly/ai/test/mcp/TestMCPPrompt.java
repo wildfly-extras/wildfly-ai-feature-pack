@@ -12,7 +12,7 @@ import org.mcpjava.server.prompts.PromptResponse;
 
 public class TestMCPPrompt {
 
-    @Prompt(name = "greeting", description = "Generates a greeting message")
+    @Prompt(name = "greeting", title = "Greeting Prompt", description = "Generates a greeting message")
     PromptResponse greeting(@PromptArg(description = "Name of the person to greet") String name) {
         return PromptResponse.of(Role.USER, TextContent.of("Hello, " + name + "! How can I help you today?"));
     }

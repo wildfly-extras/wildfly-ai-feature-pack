@@ -18,6 +18,7 @@ import static org.wildfly.extension.mcp.injection.MCPFieldNames.PARAMS;
 import static org.wildfly.extension.mcp.injection.MCPFieldNames.PROMPTS;
 import static org.wildfly.extension.mcp.injection.MCPFieldNames.REQUIRED;
 import static org.wildfly.extension.mcp.injection.MCPFieldNames.ROLE;
+import static org.wildfly.extension.mcp.injection.MCPFieldNames.TITLE;
 
 import static org.wildfly.extension.mcp.server.MCPServerUtils.SHARED_MAPPER;
 import static org.wildfly.extension.mcp.server.MCPServerUtils.getRequestId;
@@ -86,6 +87,9 @@ public class PromptMessageHandler {
             JsonObjectBuilder promptJson = Json.createObjectBuilder()
                     .add(NAME, promptMetadata.name())
                     .add(DESCRIPTION, promptMetadata.description());
+            if (promptMetadata.title() != null && !promptMetadata.title().isEmpty()) {
+                promptJson.add(TITLE, promptMetadata.title());
+            }
 
             JsonArrayBuilder arguments = Json.createArrayBuilder();
             for (ArgumentMetadata arg : promptMetadata.arguments()) {
